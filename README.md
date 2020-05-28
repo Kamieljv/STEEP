@@ -5,6 +5,6 @@ STEEP: A SpatioTemporal Emission Estimator for Passenger vehicles
 - Mountaineers
 - Altitude
 - Elevate GEO (Kamiel prefers this one)
-- Inselberg
+- Inselberg (This is quite nice - Eli) 
 - ? \[more suggestions welcome!\]
 
