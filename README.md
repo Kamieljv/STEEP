@@ -10,3 +10,12 @@ STEEP: A SpatioTemporal Emission Estimator for Passenger vehicles
 - AEC Guards
 - ? \[more suggestions welcome!\]
 
+## Using GraphHopper in Python
+- Making requests: https://github.com/graphhopper/directions-api-clients-route-optimization/tree/master/python
+- Plotting output on map:
+
+## Recommended skills
+- Visualization:
+- Routing: 
+- Working with files:
+
