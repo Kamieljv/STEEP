@@ -1,20 +1,20 @@
-# STEEP
+# STEEP (by Team Inselberg)
 STEEP: A SpatioTemporal Emission Estimator for Passenger vehicles
 
-## Suggestions for team names:
-- Mountaineers
-- Altitude
-- Elevate GEO (Kamiel prefers this one)
-- Inselberg (This is quite nice - Eli)
-- The Sustainable Aspect (aspect is also the direction in which a slope face).
-- AEC Guards
-- ? \[more suggestions welcome!\]
-
 ## Using GraphHopper in Python
-- Making requests: https://github.com/graphhopper/directions-api-clients-route-optimization/tree/master/python
-- Plotting output on map:
+Graphhopper is a routing API, which can be sent requests for certain route conditions and returns the computed route. 
+The route calculation is thus done externally. 
+
+In order to send requests to this API in a convenient way, an "API client" is needed, which is a library with a set of 
+functions that make request and response handling easier. 
+The GraphHopper provides this package in [this GitHub repository](https://github.com/graphhopper/directions-api-clients-route-optimization/tree/master/python).
+
+This API client is included in this code repository under `swagger_client/`. 
+
 
 ## Recommended skills
+- General: 
+    - Knowledge on APIs (POST, GET, request, response, JSON, XML)
 - Visualization:
 - Routing: 
 - Working with files:
