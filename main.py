@@ -35,7 +35,13 @@ body = swagger_client.Request(
             lon=9.999,
             lat=53.552
         )
-    )]
+    )],
+    configuration=swagger_client.models.configuration.Configuration(
+        routing=swagger_client.Routing(
+            calc_points=True,
+            consider_traffic=True,
+        )
+    )
 )
 
 ## Set parameters for request
