@@ -23,6 +23,8 @@ except ApiException as e:
     print("Exception when calling MapMatchingApi->post_gpx: %s\n" % e)
 
 ## Data frame test
+
+# Perform the imports
 import requests
 import geopandas as gpd
 import osmnx as ox
@@ -34,11 +36,15 @@ import pandas as pd
 from pandas.io.json import json_normalize
 import json
 import csv
+
+# Adding Url
 url = 'https://graphhopper.com/api/1/match?vehicle=car&key=3fccaaf9-1e62-4a69-ae2c-7c4ec49ec955\" --data @/path/to/some.gpx' #osm direction api
 response = requests.get(url)
 data = response.json()
 print(data)
+
 df = pd.io.json.json_normalize(data)
+
 def flatten_json(y):
     out = {}
 
