@@ -20,6 +20,7 @@ This API client is included in this code repository under `swagger_client/`.
     - Git branches
         - new branch: `git checkout -b [BRANCH_NAME]`
         - push branch: `git push origin [BRANCH NAME]`
+        - proposed branch names: `app`, `emissions`, `routing`
 - Visualization:
 - Routing: 
 - Working with files:
