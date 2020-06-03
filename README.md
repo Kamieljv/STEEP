@@ -19,7 +19,9 @@ This API client is included in this code repository under `swagger_client/`.
     - Add/commit/push/pull
     - Git branches
         - new branch: `git checkout -b [BRANCH_NAME]`
-        - push branch: `git push origin [BRANCH NAME]`
+        - push branch: `git push origin [BRANCH_NAME]`
+        - pull from branch (not master): `git pull origin [BRANCH_NAME]`
+        - proposed branch names: `app`, `emissions`, `routing`
 - Visualization:
 - Routing: 
 - Working with files:
