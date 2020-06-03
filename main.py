@@ -9,7 +9,6 @@ from pprint import pprint
 configuration = config.Configuration()
 configuration.api_key['key'] = '3fccaaf9-1e62-4a69-ae2c-7c4ec49ec955'
 
-
 ## create an instance of the API class
 api_instance = swagger_client.RouteOptimizationApi(swagger_client.ApiClient(configuration))
 body = swagger_client.Request(
