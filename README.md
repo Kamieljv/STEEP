@@ -15,6 +15,11 @@ This API client is included in this code repository under `swagger_client/`.
 ## Recommended skills
 - General: 
     - Knowledge on APIs (POST, GET, request, response, JSON, XML)
+- Git:
+    - Add/commit/push/pull
+    - Git branches
+        - new branch: `git checkout -b [BRANCH_NAME]`
+        - push branch: `git push origin [BRANCH NAME]`
 - Visualization:
 - Routing: 
 - Working with files:
