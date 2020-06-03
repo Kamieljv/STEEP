@@ -18,6 +18,11 @@
                     <div class="col-12">
                         <h4>Controls:</h4>
                         <!-- PLACE FORM ELEMENTS HERE -->
+                        <form action="{{ url_for('index') }}" method="post">
+                            <input type="text" name="x" />
+                            <input type="text" name="y" />
+                            <input type="submit" name="submit" value="Submit" />
+                        </form>
                     </div>
                 </div>
             </div>
