@@ -16,6 +16,8 @@ function send_form(form, url, type, formData) {
                 data = JSON.parse(response);
                 if (data.type == 'relocate') {
                     map.setView(new L.LatLng(data.lat, data.lon), 8);
+                } else if (data.type == 'addroute') {
+                    addRoute(map, data.route);
                 }
             },
             error: function(error) {

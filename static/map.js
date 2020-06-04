@@ -21,42 +21,44 @@ $(document).ready(function (e) {
         maxZoom: 19,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
-    //add a route
-    var segment1 = [100, 40]
-    var segment2 = [105, 45]
-    var segment3 = [110, 55]
-    var geojsonRoute = [{
-        "type": "Feature",
-        "properties": {"speed": "low"},
-        "geometry": {
-            "type": "LineString",
-            "coordinates": [segment1, segment3]
-        }
-    }, {
-        "type": "Feature",
-        "properties": {"speed": "high"},
-        "geometry": {
-            "type": "LineString",
-            "coordinates": [segment2]
-        }
-    }];
+});
 
-    var myStyle1 = {
-    "color": "#f17202",
-    "weight": 5,
-    "opacity": 0.65
+function addRoute(map, route) {
+    /*
+    Function that adds a route to the Leaflet map
+    map: a Leaflet object
+    route: GeoJSON object
+    */
+
+    // Define plot styles
+    var slow = {
+        "color": "#f55142",
+        "weight": 5,
+        "opacity": 0.8
     };
-    var myStyle2 = {
-    "color": "#020ef1",
-    "weight": 10,
-    "opacity": 0.65
+    var moderate = {
+        "color": "#fcbd00",
+        "weight": 10,
+        "opacity": 0.8
     };
-    L.geoJSON(geojsonRoute, {
+    var fast = {
+        "color": "#74f533",
+        "weight": 15,
+        "opacity": 0.8
+    }
+    // define multiline object with specific styling
+    var multiline = L.geoJSON(route, {
         style: function (feature) {
-            switch (feature.properties.speed) {
-                case "low": return myStyle1;
-                case "high": return myStyle2
+            var speed = feature.properties.speed;
+            switch (true) {
+                case (speed <= 50): return slow;
+                case (speed <= 80): return moderate;
+                case (speed > 80): return fast;
             }
         }
-    }).addTo(map);
-});
+    });
+    multiline.addTo(map);
+    // pan to multiline object
+    map.fitBounds(multiline.getBounds());
+
+}

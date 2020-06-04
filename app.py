@@ -31,6 +31,12 @@ def relocate():
     lon = request.form['longitude']
     return json.dumps({'type':'relocate', 'lat':lat, 'lon':lon})
 
+@app.route('/addroute', methods=['POST'])
+def addroute():
+    with open('static/sample.geojson') as f:
+        route = json.load(f)
+    return json.dumps({'type':'addroute', 'route':route})
+
 @app.after_request
 def add_header(response):
     """

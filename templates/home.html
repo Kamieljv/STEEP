@@ -24,7 +24,7 @@
                     <div class="col-12">
                         <h4>Controls:</h4>
                         <form id="form-coordinates" action="{{ url_for('relocate') }}" method="post" role="form">
-                            <div class="row">
+                            <div class="row mb-3">
                              <div class="col-4 pr-0">
                                  <input type="number" class="validate form-control" name="latitude" id="latitude" placeholder="Latitude" step="any" min="-90" max="90" required/>
                                  <span class="invalid-feedback" data-error="Only numeric entries are accepted." data-success=""></span>
@@ -34,8 +34,16 @@
                                  <span class="invalid-feedback" data-error="Only numeric entries are accepted." data-success=""></span>
                              </div>
                              <div class="col-4">
-                                 <button class="btn btn-primary" id="contact-form-button" type="submit" style="width:100%">Relocate</button>
+                                 <button class="btn btn-primary" type="submit" style="width:100%">Relocate</button>
                              </div>
+                            </div>
+                        </form>
+                        <form id="form-addroute" action="{{ url_for('addroute') }}" method="post" role="form">
+                            <div class="row">
+                                <div class="col-4">
+                                    <input type="hidden" name="route" value="value"/>
+                                    <button class="btn btn-primary" type="submit" style="width:100%">Plot Route</button>
+                                </div>
                             </div>
                         </form>
                     </div>
