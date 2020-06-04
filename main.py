@@ -65,3 +65,44 @@ except ApiException as e:
     print("Exception when calling RouteOptimizationApi->get_solution: %s\n" % e)
 ##
 
+# Extract data
+from ast import literal_eval
+
+string = str(api_response)
+routing = literal_eval(string)
+
+
+def find(key, dictionary):
+    for k, v in dictionary.items():
+        if k == key:
+            yield v
+        elif isinstance(v, dict):
+            for result in find(key, v):
+                yield result
+        elif isinstance(v, list):
+            for d in v:
+                if isinstance(d, dict):
+                    for result in find(key, d):
+                        yield result
+
+
+data = list(find('coordinates', routing))
+data = data[0]
+
+# Store as geodataframe
+import pandas as pd
+import geopandas as gpd
+from shapely.geometry import Point
+df = pd.DataFrame(data)
+my_columns = ['lat', 'lon']
+df.columns = my_columns
+print(df.head)
+geometry = [Point(xy) for xy in zip(df['lat'], df['lon'])]
+routingGDF = gpd.GeoDataFrame(df, geometry=geometry)
+routingGDF.crs = {'init': 'epsg:28992'}
+routingGDF.plot(marker='*', color='green', markersize=50)
+print(type(routingGDF), len(routingGDF))
+
+
+
+
