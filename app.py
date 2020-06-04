@@ -14,25 +14,34 @@
 
 """
 
-from flask import (Flask, render_template, request)
-
+from flask import Flask, render_template, request, json
 import folium
 
 app = Flask(__name__)
 
 
-@app.route('/', methods=["GET", "POST"])
+@app.route('/', methods=['GET'])
 def index():
-    start_coords = (46.9540700, 142.7360300)
+    return render_template('home.html')
 
-    if request.method == 'POST':
-        start_coords = (request.form["x"], request.form["y"])
 
-    folium_map = folium.Map(location=start_coords, zoom_start=14)._repr_html_()
+@app.route('/relocate', methods=['POST'])
+def relocate():
+    lat = request.form['latitude']
+    lon = request.form['longitude']
+    return json.dumps({'type':'relocate', 'lat':lat, 'lon':lon})
 
-    return render_template('home.html', map=folium_map, form=None)
+@app.after_request
+def add_header(response):
+    """
+    Add headers to both force latest IE rendering engine or Chrome Frame,
+    and also to cache the rendered page for 10 minutes.
+    """
+    response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+    response.headers['Cache-Control'] = 'no-cache, no-store'
+    response.headers['Pragma'] = 'no-cache'
+    return response
 
 
 if __name__ == '__main__':
     app.run(debug=True)
-
