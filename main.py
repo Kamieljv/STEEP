@@ -100,7 +100,7 @@ print(df.head)
 geometry = [Point(xy) for xy in zip(df['lat'], df['lon'])]
 routingGDF = gpd.GeoDataFrame(df, geometry=geometry)
 routingGDF.crs = {'init': 'epsg:28992'}
-routingGDF.plot(marker='*', color='green', markersize=50)
+routingGDF.plot(marker='.', color='green', markersize=50)
 print(type(routingGDF), len(routingGDF))
 
 
