@@ -65,3 +65,31 @@ except ApiException as e:
     print("Exception when calling RouteOptimizationApi->get_solution: %s\n" % e)
 ##
 
+# Extract data
+from ast import literal_eval
+
+string = str(api_response)
+routing = literal_eval(string)
+
+
+def find(key, dictionary):
+    for k, v in dictionary.items():
+        if k == key:
+            yield v
+        elif isinstance(v, dict):
+            for result in find(key, v):
+                yield result
+        elif isinstance(v, list):
+            for d in v:
+                if isinstance(d, dict):
+                    for result in find(key, d):
+                        yield result
+
+
+data = list(find('location_id', routing))
+
+# Store as geodataframe
+
+import pandas as pd
+import geopandas as gpd
+
