@@ -9,7 +9,8 @@ function send_form(form, url, type, formData) {
         $.ajax({
             url: url,
             data: formData,
-            type: type,processData: false,
+            type: type,
+            processData: false,
             contentType: false,
             success: function(response) {
                 data = JSON.parse(response);
