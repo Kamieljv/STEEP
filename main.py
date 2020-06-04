@@ -86,10 +86,23 @@ def find(key, dictionary):
                         yield result
 
 
-data = list(find('location_id', routing))
+data = list(find('coordinates', routing))
+data = data[0]
 
 # Store as geodataframe
-
 import pandas as pd
 import geopandas as gpd
+from shapely.geometry import Point
+df = pd.DataFrame(data)
+my_columns = ['lat', 'lon']
+df.columns = my_columns
+print(df.head)
+geometry = [Point(xy) for xy in zip(df['lat'], df['lon'])]
+routingGDF = gpd.GeoDataFrame(df, geometry=geometry)
+routingGDF.crs = {'init': 'epsg:28992'}
+routingGDF.plot(marker='*', color='green', markersize=50)
+print(type(routingGDF), len(routingGDF))
+
+
+
 
