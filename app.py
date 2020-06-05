@@ -31,11 +31,11 @@ def relocate():
     lon = request.form['longitude']
     return json.dumps({'type':'relocate', 'lat':lat, 'lon':lon})
 
-@app.route('/start_dest', methods=['POST'])
-def start_dest():
+@app.route('/addsearch', methods=['POST'])
+def addsearch():
     start = request.form['Start']
     dest = request.form['Destination']
-    return json.dumps({'type':'enter', 'start':start, 'dest':dest})
+    return json.dumps({'type':'search', 'start':start, 'dest':dest})
 
 @app.route('/addroute', methods=['POST'])
 def addroute():
