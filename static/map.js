@@ -23,9 +23,8 @@ $(document).ready(function (e) {
     }).addTo(map);
 });
 
-function add_search() {
-    var inp = document.getElementById("addr");
-    $.getJSON('https://nominatim.openstreetmap.org/search?format=[geojson&limit=5&q=]' + inp.value, function(data) {
+function add_search(query) {
+    $.getJSON('https://nominatim.openstreetmap.org/search?format=geojson&limit=5&q=' + query, function(data) {
         var items = [];
         $.each(data, function(key, val) {
             items.push(
@@ -34,7 +33,7 @@ function add_search() {
                 '</a></li>'
             );
         });
-        $('#results').empty();
+        // $('#results').empty();
         if (items.length != 0) {
             $('<p>', { html: "Search results:" }).appendTo('#results');
             $('<ul/>', {

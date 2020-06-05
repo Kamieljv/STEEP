@@ -62,10 +62,23 @@ function isFormDataEmpty(formData) {
 $('form button').click(function(event){
     // Prevent redirection with AJAX for contact form
     event.preventDefault();
-    var form = $(this).parents('form')[0];
-    var url = form.action;
-    var type = form.method;
-    var formData = new FormData(form);
 
-    send_form(form, url, type, formData);
+    // First check if the start and destination are entered,
+    // because in that case the input has to be geocoded by Nomatim first
+    if (this.id == 'search-btn' ) {
+        var form = $(this).parents('form')[0];
+        var data = $(form).serializeArray();
+        $.each(data, function(i, field){
+            add_search(field.value);
+        });
+    } else {
+
+        var form = $(this).parents('form')[0];
+        var url = form.action;
+        var type = form.method;
+        var formData = new FormData(form);
+
+        send_form(form, url, type, formData);
+
+     }
 });

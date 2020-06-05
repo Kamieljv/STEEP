@@ -39,7 +39,7 @@
                             </div>
                         </form>
                         <form id="form-addroute" action="{{ url_for('addroute') }}" method="post" role="form">
-                            <div class="row">
+                            <div class="row mb-3">
                                 <div class="col-4">
                                     <input type="hidden" name="route" value="value"/>
                                     <button class="btn btn-primary" type="submit" style="width:100%">Plot Route</button>
@@ -49,13 +49,13 @@
                         <form id="form-addsearch" action="{{ url_for('addsearch') }}" method="post" role="form">
                             <div class="row mb-3">
                                 <div class="col-4 pr-0">
-                                    <input type="text" class="validate form-control" name="Start" id="Start" placeholder="Start" required>
+                                    <input type="text" class="validate form-control" name="destination" placeholder="Start" required>
                                 </div>
                              <div class="col-4 pr-0">
-                                 <input type="text" class="validate form-control" name="Destination" id="addr" placeholder="Destination" required>
+                                 <input type="text" class="validate form-control" name="start" placeholder="Destination" required>
                              </div>
                              <div class="col-4">
-                                 <button class="btn btn-primary" type="button" style="width:100%" onclick="add_search();">Search</button>
+                                 <button id="search-btn" class="btn btn-primary" type="button" style="width:100%">Search</button>
                              </div>
                             <div id="results"></div>
                             </div>
