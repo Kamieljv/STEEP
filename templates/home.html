@@ -33,6 +33,15 @@
                                  <input type="number" class="validate form-control" name="longitude" id="longitude" placeholder="Longitude" step="any" min="-180" max="180" required>
                                  <span class="invalid-feedback" data-error="Only numeric entries are accepted." data-success=""></span>
                              </div>
+                             <div class="col-4 pr-0">
+                                 <input type="text" class="validate form-control" name="Start" id="Start" placeholder="Start" required>
+                             </div>
+                             <div class="col-4 pr-0">
+                                 <input type="text" class="validate form-control" name="Destination" id="addr" placeholder="Destination" required>
+                             </div>
+                             <div class="col-4">
+                                 <button class="btn btn-primary" type="button" style="width:100%" onclick="addr_search();">Search</button>
+                             </div>
                              <div class="col-4">
                                  <button class="btn btn-primary" type="submit" style="width:100%">Relocate</button>
                              </div>
