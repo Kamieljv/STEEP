@@ -23,6 +23,11 @@ $(document).ready(function (e) {
     }).addTo(map);
 });
 
+function addr_search() {
+    var inp = document.getElementById("addr");
+    $.getJSON('http://nomatin.openstreetmap.org/search?format=json&limit=5&q=' + inp.value, function(data))
+    };
+
 function addRoute(map, route) {
     /*
     Function that adds a route to the Leaflet map
