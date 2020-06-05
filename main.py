@@ -93,10 +93,12 @@ data = data[0]
 import pandas as pd
 import geopandas as gpd
 from shapely.geometry import Point
+
 df = pd.DataFrame(data)
 my_columns = ['lon', 'lat']
 df.columns = my_columns
 print(df.head)
+
 geometry = [Point(xy) for xy in zip(df['lon'], df['lat'])]
 routingGDF = gpd.GeoDataFrame(df, geometry=geometry)
 routingGDF.crs = {'init': 'epsg:28992'}
