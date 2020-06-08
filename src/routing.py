@@ -1,14 +1,7 @@
-# Tomtom API
-
-## Performing imports
+### test
 import requests
-import json
-import urllib.request
 
-# URL to the Tomtom API
-apiURL = "https://api.tomtom.com/routing/1/calculateRoute/"
-
-# APIkey
+apiURL = 'http://maps.googleapis.com/maps/api/directions/json'
 apiKEY = "x7b42zLGbh4VoCVGHgrDNjC2FKo2hZDo"
 
 # Coordinates
@@ -17,13 +10,24 @@ sourceLon = 13.384116
 destLat = 52.498929
 destLon = 13.41774
 
-# Adding coordinates to the url
+# Tomtom url
 tomtomURL = "%s/%s,%s:%s,%s/json?key=%s" % (apiURL, sourceLat, sourceLon, destLat, destLon, apiKEY)
 
-# Getting data
-getData = urllib.request.urlopen(tomtomURL).read()
-jsonTomTomString = json.loads(getData)
+# Parameters
+params = dict(
+    versionNumber=1,
+    location='Berlin:Hamburg',
+    maxAlternatives=3,
+    alternativeType='betterRoute',
+    instructionsType='text',
+    language='en-GB',
+    routeRepresentation='polyline',
+    computeTravelTimeFor='all',
+    sectionType='traffic'
+)
 
+resp = requests.get(tomtomURL, params=params)
+data = resp.json()
 
 
 
