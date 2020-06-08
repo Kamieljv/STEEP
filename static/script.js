@@ -71,7 +71,8 @@ $('form button').click(function(event){
 
         var objID = $(this).attr('for');
         var field = $('#' + objID)[0];
-        locationSearch(field.value, field);
+        var coordField = $(field).next()[0];
+        locationSearch(field.value, field, coordField);
 
     } else {
 

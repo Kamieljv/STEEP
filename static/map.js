@@ -1,5 +1,6 @@
 // Make sure the map's height is equal to the window height
 var map = null;
+var bounds = new L.LatLngBounds();
 
 $(document).ready(function (e) {
     var container = $('#map')
@@ -23,17 +24,17 @@ $(document).ready(function (e) {
     }).addTo(map);
 });
 
-function locationSearch(locationName, field) {
+function locationSearch(locationName, field, coordField) {
     $.getJSON("https://nominatim.openstreetmap.org/search?format=geojson&limit=5&q=" + locationName, function(data) {
         var items = [];
         first_hit = (data['features'].length != 0)? data['features'][0] : null;
 
         // Process the search result
         $.each(data['features'], function(i, feature) {
-            lon = feature['geometry']['coordinates'][0]
-            lat = feature['geometry']['coordinates'][1]
-            type = feature['geometry']['type']
-            display_name = feature['properties']['display_name']
+            lon = feature['geometry']['coordinates'][0];
+            lat = feature['geometry']['coordinates'][1];
+            type = feature['geometry']['type'];
+            display_name = feature['properties']['display_name'];
 
             items.push(
                 "<li><a href='#' onclick='zoomToFeature(" +
@@ -58,10 +59,26 @@ function locationSearch(locationName, field) {
             isValid = false;
         }
 
-        // set the input field value
-        field.value = (first_hit)? first_hit['properties']['display_name'] : null;
         // set the input field to valid
         $(field).toggleClass('is-invalid', !isValid).toggleClass('is-valid', isValid)
+
+        if (isValid && first_hit) {
+            // set the input field value
+            field.value = first_hit['properties']['display_name'];
+
+            // set the result coordinates in the hidden field
+            lon = first_hit['geometry']['coordinates'][0];
+            lat = first_hit['geometry']['coordinates'][1];
+            coordField.value = lat + ", " + lon;
+
+            // place a marker on the leaflet map
+            var location = new L.LatLng(lat, lon);
+            var marker = L.marker(location).addTo(map);
+
+            // pan/zoom to have all current features on screen
+            bounds.extend(marker.getLatLng());
+            map.fitBounds(bounds);
+        }
     });
 }
 function zoomToFeature(lat, lng, type) {
