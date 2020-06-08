@@ -23,13 +23,21 @@ $(document).ready(function (e) {
     }).addTo(map);
 });
 
-function add_search(query) {
-    $.getJSON('https://nominatim.openstreetmap.org/search?format=geojson&limit=5&q=' + query, function(data) {
+function add_search(locationName) {
+    $.getJSON("https://nominatim.openstreetmap.org/search?format=geojson&limit=5&q=" + locationName, function(data) {
         var items = [];
-        $.each(data, function(key, val) {
+        console.log(data)
+
+        $.each(data['features'], function(elementNumber, feature) {
+            console.log(feature)
+            lon = feature['geometry']['coordinates'][0]
+            lat = feature['geometry']['coordinates'][1]
+            display_name = feature['properties']['display_name']
+            console.log(lon)
+            console.log(lat)
             items.push(
                 "<li><a href='#' onclick='chooseAddr(" +
-                val.lat + ", " + val.lon + ");return false;'>" + val.display_name +
+                lat + ", " + lon + ");return false;'>" + display_name +
                 '</a></li>'
             );
         });
