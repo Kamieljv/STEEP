@@ -22,7 +22,7 @@
                 </div>
                 <div class="row">
                     <div class="col-12">
-                        <h4>Controls:</h4>
+                        <h4>Example Controls:</h4>
                         <form id="form-coordinates" action="{{ url_for('relocate') }}" method="post" role="form">
                             <div class="row mb-3">
                              <div class="col-4 pr-0">
@@ -58,6 +58,42 @@
                                  <button id="search-btn" class="btn btn-primary" type="button" style="width:100%">Search</button>
                              </div>
                             <div id="results"></div>
+                            </div>
+                        </form>
+                        <form id="form-vehicle" action="{{ url_for('vehicle') }}" method="post" role="form">
+                            <h4>Vehicle Parameters:</h4>
+                            <div class="row mb-3">
+                                <div class="col-7 pr-0">
+                                    <label for="fuel">Fuel</label>
+                                    <select id="fuel" name="fuel" class="form-control">
+                                        {% for fuel in fuels %}
+                                            <option value="{{fuel}}" SELECTED>{{fuel}}</option>"
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-5">
+                                    <label for="segment">Segment</label>
+                                    <select id="segment" name="segment" class="form-control">
+                                        {% for segment in segments %}
+                                            <option value="{{segment}}" SELECTED>{{segment}}</option>"
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-7 pr-0">
+                                    <label for="standard">Standard</label>
+                                    <select id="standard" name="standard" class="form-control">
+                                        {% for standard in standards %}
+                                            <option value="{{standard}}" SELECTED>{{standard}}</option>"
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <button id="configure-btn" class="btn btn-primary" type="button" style="width:100%">Configure</button>
+                                </div>
                             </div>
                         </form>
                     </div>

@@ -18,6 +18,8 @@ function send_form(form, url, type, formData) {
                     map.setView(new L.LatLng(data.lat, data.lon), 8);
                 } else if (data.type == 'addroute') {
                     addRoute(map, data.route);
+                } else {
+                    console.log(data);
                 }
             },
             error: function(error) {
