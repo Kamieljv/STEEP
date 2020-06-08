@@ -67,12 +67,12 @@ $('form button').click(function(event){
 
     // First check if the start and destination are entered,
     // because in that case the input has to be geocoded by Nomatim first
-    if (this.id == 'search-btn' ) {
-        var form = $(this).parents('form')[0];
-        var data = $(form).serializeArray();
-        $.each(data, function(i, field){
-            add_search(field.value);
-        });
+    if (this.id == 'dest-btn' || this.id == 'start-btn' ) {
+
+        var objID = $(this).attr('for');
+        var field = $('#' + objID)[0];
+        locationSearch(field.value, field);
+
     } else {
 
         var form = $(this).parents('form')[0];

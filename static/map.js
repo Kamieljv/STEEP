@@ -14,7 +14,7 @@ $(document).ready(function (e) {
     });
 
     // define Leaflet Map
-    map = L.map('map').setView([51.505, -0.09], 14);
+    map = L.map('map').setView([51.9745, 5.664], 14);
 
     // Add tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -23,25 +23,28 @@ $(document).ready(function (e) {
     }).addTo(map);
 });
 
-function add_search(locationName) {
+function locationSearch(locationName, field) {
     $.getJSON("https://nominatim.openstreetmap.org/search?format=geojson&limit=5&q=" + locationName, function(data) {
         var items = [];
-        console.log(data)
+        first_hit = (data['features'].length != 0)? data['features'][0] : null;
 
-        $.each(data['features'], function(elementNumber, feature) {
-            console.log(feature)
+        // Process the search result
+        $.each(data['features'], function(i, feature) {
             lon = feature['geometry']['coordinates'][0]
             lat = feature['geometry']['coordinates'][1]
+            type = feature['geometry']['type']
             display_name = feature['properties']['display_name']
-            console.log(lon)
-            console.log(lat)
+
             items.push(
-                "<li><a href='#' onclick='chooseAddr(" +
-                lat + ", " + lon + ");return false;'>" + display_name +
+                "<li><a href='#' onclick='zoomToFeature(" +
+                lat + ", " + lon + ", " + type + ");return false;'>" + display_name +
                 '</a></li>'
             );
         });
-        // $('#results').empty();
+        // Clear the previous search result in the results div
+        $('#results').empty();
+
+        // Add all the search result to the results div
         if (items.length != 0) {
             $('<p>', { html: "Search results:" }).appendTo('#results');
             $('<ul/>', {
@@ -51,9 +54,12 @@ function add_search(locationName) {
         } else {
             $('<p>', { html: "No results found" }).appendTo('#results');
         }
-  });
+
+        // set the form field
+        field.value = first_hit['properties']['display_name'];
+    });
 }
-function chooseAddr(lat, lng, type) {
+function zoomToFeature(lat, lng, type) {
   var location = new L.LatLng(lat, lng);
   map.panTo(location);
 

@@ -48,17 +48,22 @@
                         </form>
                         <form id="form-addsearch" action="{{ url_for('addsearch') }}" method="post" role="form">
                             <div class="row mb-3">
-                                <div class="col-4 pr-0">
-                                    <input type="text" class="validate form-control" name="destination" placeholder="Start" required>
+                                <div class="col-8 pr-0">
+                                    <input id="start" type="text" class="validate form-control" name="start" placeholder="Start" required>
                                 </div>
-                             <div class="col-4 pr-0">
-                                 <input type="text" class="validate form-control" name="start" placeholder="Destination" required>
-                             </div>
-                             <div class="col-4">
-                                 <button id="search-btn" class="btn btn-primary" type="button" style="width:100%">Search</button>
-                             </div>
-                            <div id="results"></div>
+                                 <div class="col-4">
+                                     <button id="start-btn" for="start" class="btn btn-primary" type="button" style="width:100%">Set</button>
+                                 </div>
                             </div>
+                            <div class="row mb-3">
+                                 <div class="col-8 pr-0">
+                                     <input id="dest" type="text" class="validate form-control" name="dest" placeholder="Destination" required>
+                                 </div>
+                                 <div class="col-4">
+                                     <button id="dest-btn" for="dest" class="btn btn-primary" type="button" style="width:100%">Set</button>
+                                 </div>
+                            </div>
+                            <div id="results" style="display:none;"></div>
                         </form>
                         <form id="form-vehicle" action="{{ url_for('vehicle') }}" method="post" role="form">
                             <h4>Vehicle Parameters:</h4>
