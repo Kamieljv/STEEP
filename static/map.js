@@ -1,6 +1,17 @@
-// Make sure the map's height is equal to the window height
+// Initialize variables
 var map = null;
-var bounds = new L.LatLngBounds();
+var startMarker = null;
+var destMarker = null;
+var greenIcon = L.icon({
+    iconUrl: '/static/marker-green.png',
+    iconSize: [40, 40],
+    iconAnchor: [20, 40],
+});
+var redIcon = L.icon({
+    iconUrl: '/static/marker-red.png',
+    iconSize: [40, 40],
+    iconAnchor: [20, 40],
+});
 
 $(document).ready(function (e) {
     var container = $('#map')
@@ -73,10 +84,21 @@ function locationSearch(locationName, field, coordField) {
 
             // place a marker on the leaflet map
             var location = new L.LatLng(lat, lon);
-            var marker = L.marker(location).addTo(map);
+            var bounds = new L.LatLngBounds();
+
+            if (field.name == 'start') {
+                if (startMarker) {map.removeLayer(startMarker);}
+                startMarker = L.marker(location, {icon: greenIcon}).addTo(map);
+                bounds.extend(startMarker.getLatLng());
+                if (destMarker) {bounds.extend(destMarker.getLatLng());}
+            } else {
+                if (destMarker) {map.removeLayer(destMarker);}
+                destMarker = L.marker(location, {icon: redIcon}).addTo(map);
+                bounds.extend(destMarker.getLatLng());
+                if (startMarker) {bounds.extend(startMarker.getLatLng());}
+            }
 
             // pan/zoom to have all current features on screen
-            bounds.extend(marker.getLatLng());
             map.fitBounds(bounds);
         }
     });
