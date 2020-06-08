@@ -45,6 +45,7 @@ function locationSearch(locationName, field) {
         $('#results').empty();
 
         // Add all the search result to the results div
+        var isValid = true;
         if (items.length != 0) {
             $('<p>', { html: "Search results:" }).appendTo('#results');
             $('<ul/>', {
@@ -53,10 +54,14 @@ function locationSearch(locationName, field) {
             }).appendTo('#results');
         } else {
             $('<p>', { html: "No results found" }).appendTo('#results');
+            // set input field to invalid
+            isValid = false;
         }
 
-        // set the form field
-        field.value = first_hit['properties']['display_name'];
+        // set the input field value
+        field.value = (first_hit)? first_hit['properties']['display_name'] : null;
+        // set the input field to valid
+        $(field).toggleClass('is-invalid', !isValid).toggleClass('is-valid', isValid)
     });
 }
 function zoomToFeature(lat, lng, type) {

@@ -84,3 +84,7 @@ $('form button').click(function(event){
 
      }
 });
+
+$(document).on('keyup', 'input', function(e) {
+    $(this).toggleClass('is-invalid', false).toggleClass('is-valid', false);
+});
