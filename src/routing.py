@@ -1,21 +1,32 @@
-# openrouteservice 2.3.0
+# Tomtom API
 
-# Performing imports
-import openrouteservice as ors
+## Performing imports
 import requests
+import json
+import urllib.request
 
-# Making a POST request
-r = requests.post('https://api.openrouteservice.org/v2/directions/driving-car/geojson', data ={'key':'value'})
+# URL to the Tomtom API
+apiURL = "https://api.tomtom.com/routing/1/calculateRoute/"
 
-# Some coordinates in Berlin
-coordinates = [[13.384116, 52.533558], [13.41774, 52.498929], [13.428726, 52.519355], [13.374825, 52.496369]]
-client = ors.Client(key='5b3ce3597851110001cf6248c57990f293fd4de19877a58572bbceeb')
+# APIkey
+apiKEY = "x7b42zLGbh4VoCVGHgrDNjC2FKo2hZDo"
 
-route = client.directions(coordinates=coordinates,
-                          profile='driving-car',
-                          format='geojson',
-                          validate=False,
-                          extra_info='AvgSpeed')
+# Coordinates
+sourceLat = 52.533558
+sourceLon = 13.384116
+destLat = 52.498929
+destLon = 13.41774
+
+# Adding coordinates to the url
+tomtomURL = "%s/%s,%s:%s,%s/json?key=%s" % (apiURL, sourceLat, sourceLon, destLat, destLon, apiKEY)
+
+# Getting data
+getData = urllib.request.urlopen(tomtomURL).read()
+jsonTomTomString = json.loads(getData)
+
+
+
+
 
 
 

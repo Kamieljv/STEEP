@@ -7,7 +7,7 @@ from pprint import pprint
 
 ## Configure API key authorization: api_key
 configuration = config.Configuration()
-configuration.api_key['key'] = '3fccaaf9-1e62-4a69-ae2c-7c4ec49ec955'
+configuration.api_key['key'] = '300e1077-dc69-4d98-ba69-dc947e1f9228' # we are using another key for this branch
 
 ## create an instance of the API class
 api_instance = swagger_client.RouteOptimizationApi(swagger_client.ApiClient(configuration))
