@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/STEEP.iml" filepath="$PROJECT_DIR$/.idea/STEEP.iml" />
+      <module fileurl="file://$USER_HOME$/PycharmProjects/Start/.idea/Start.iml" filepath="$USER_HOME$/PycharmProjects/Start/.idea/Start.iml" />
     </modules>
   </component>
 </project>
