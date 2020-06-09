@@ -27,12 +27,12 @@ os.chdir('/home/alena/my_project/STEEP/')  # for Alena
 # spDF = read_csv(str(path))
 
 # create a sample dataFrame with speeds per segment
+
 speedPerSegmentDict = {'segment': [0, 1, 2, 3, 4],
                        'Speed': [9, 70, 55, 80, 70]}
 
 speedPerSegmentDF = pd.DataFrame(speedPerSegmentDict)
-speedPerSegmentDF.to_csv('sample_speed_per_segment.csv')
-
+speedPerSegmentDF.to_csv('data/b_SpeedFlow_sample.csv')
 
 # this function derive values for further emission factors calculation
 def derive_values_for_calc(path_input_emis_calc, category, fuel, segment, fuel_st, technology, pollutant):
@@ -82,10 +82,11 @@ def calculate_emission_factor(path_input_emis_calc, category, fuel, segment, fue
 
         emis_fs += [emis_f]
     emis_per_seg = pd.DataFrame(emis_fs)
+    emis_per_seg.to_csv('data/c02_emisFactor_perSeg_perCar.csv')
     return emis_per_seg
 
 
 # input to check the result
-result = calculate_emission_factor('data/EC_Factors_Passenger.csv', 'Passenger Cars', 'Petrol', 'Mini', 'Euro 4', 'GDI',
-                                   'EC', 'sample_speed_per_segment.csv')
+result = calculate_emission_factor('data/Ps_STEEP_a_emis.csv', 'Passenger Cars', 'Petrol', 'Mini', 'Euro 4', 'GDI',
+                                   'EC', 'data/b_SpeedFlow_sample.csv')
 print(result)
