@@ -1,7 +1,7 @@
 # Tomtom Calculate route API
 import requests
 
-apiURL = 'http://maps.googleapis.com/maps/api/directions/json'
+apiURL = "https://api.tomtom.com/routing/1/calculateRoute/"
 apiKEY = "x7b42zLGbh4VoCVGHgrDNjC2FKo2hZDo"
 
 # Coordinates
@@ -23,7 +23,6 @@ params = dict(
     instructionsType='text',
     language='en-GB',
     maxAlternatives='3',
-    alternativeType='betterRoute',
     sectionType='traffic',
     routeRepresentation='polyline',
     report='effectiveSettings',
@@ -35,6 +34,5 @@ params = dict(
     vehicleEngineType='combustion',
 )
 
-resp = requests.get(tomtomURL, headers=headers, params=params)
+resp = requests.get(tomtomURL, params=params, headers=headers)
 data = resp.json()
-
