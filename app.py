@@ -15,10 +15,8 @@
 """
 
 from flask import Flask, render_template, request, json
-import folium
 
 app = Flask(__name__)
-
 
 @app.route('/', methods=['GET'])
 def index():
