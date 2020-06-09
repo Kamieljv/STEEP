@@ -1,10 +1,16 @@
-# STEEP
-# Inselberg
-# Route
+""" routing.py
 
-## Tomtom Calculate route API
+    Required packages:
+    - requests
+    - pandas
+    - geopandas
 
-# Performing imports
+    Usage:
+    Start Tomtom API by running:
+        $ python routing.py
+
+"""
+
 import requests
 from ast import literal_eval
 import pandas as pd
@@ -16,44 +22,44 @@ apiURL = "https://api.tomtom.com/routing/1/calculateRoute/"
 apiKEY = "x7b42zLGbh4VoCVGHgrDNjC2FKo2hZDo"
 
 # Coordinates
-sourceLat = 52.533558
-sourceLon = 13.384116
+orLat = 52.533558
+orLon = 13.384116
 destLat = 52.498929
 destLon = 13.41774
 
-# Tomtom url
-tomtomURL = "%s/%s,%s:%s,%s/json?key=%s" % (apiURL, sourceLat, sourceLon, destLat, destLon, apiKEY)
+def tomtomAPI(apiURL, orLat, orLon, destLat, destLon, apiKEY):
+    """
+    Returns Tomtom API response
+    """
+    tomtomURL = "%s/%s,%s:%s,%s/json?key=%s" % (apiURL, orLat, orLon, destLat, destLon, apiKEY)
+    headers = {
+        'accept': '*/*',
+    }
+    params = dict(
+        instructionsType='text',
+        language='en-GB',
+        # maxAlternatives='3',
+        sectionType='traffic',
+        routeRepresentation='polyline',
+        report='effectiveSettings',
+        routeType='eco',
+        traffic='true',
+        avoid='unpavedRoads',
+        travelMode='car',
+        vehicleCommercial='false',
+        vehicleEngineType='combustion',
+    )
+    # Request and response
+    resp = requests.get(tomtomURL, params=params, headers=headers)
+    data = resp.json()
+    return data
 
-# Headers
-headers = {
-    'accept': '*/*',
-}
-
-# Parameters
-params = dict(
-    instructionsType='text',
-    language='en-GB',
-    # maxAlternatives='3',
-    sectionType='traffic',
-    routeRepresentation='polyline',
-    report='effectiveSettings',
-    routeType='eco',
-    traffic='true',
-    avoid='unpavedRoads',
-    travelMode='car',
-    vehicleCommercial='false',
-    vehicleEngineType='combustion',
-)
-
-# Request and response
-resp = requests.get(tomtomURL, params=params, headers=headers)
-data = resp.json()
+data = tomtomAPI(apiURL, orLat, orLon, destLat, destLon, apiKEY)
 
 ## Extract data from API response
 # Transform data object to string
 string = str(data)
 routing = literal_eval(string)
-
 
 # Function to find key in a dictionary
 def find(key, dictionary):
@@ -96,24 +102,19 @@ for point in seg_points:
     long_seg.append(point['longitude'])
 
 
-## Make a geodataframe
-
 # Make Geodataframe function
 def geodataframe(long, lat, column_long, column_lat):
-    # arg: Longitude and latitude points in a list and the name of the columns for each list
-    # fun: It makes a geodataframe using the coordinates list
-
+    """
+    It makes a geodataframe using the coordinates arrays
+    """
     # Make dataframe
     df = pd.DataFrame([long, lat])
     df = pd.DataFrame.transpose(df)
     df.columns = [column_long, column_lat]
-
     # Make geometry
     geometry = [Point(xy) for xy in zip(df[column_long], df[column_lat])]
-
     # Creates geodataframe
     df_gd = gpd.GeoDataFrame(df, geometry=geometry)
-
     return df_gd
 
 
@@ -123,11 +124,11 @@ seg_gpd = geodataframe(long_seg, lat_seg, 'longitude', 'latitude')
 
 # Geodataframe visualization
 lr_gpd.crs = {'init': 'epsg:28992'}
-lr_gpd.plot(marker='*', color='green', markersize=50)
+lr_gpd.plot(marker='.', color='green', markersize=50)
 print(type(lr_gpd), len(lr_gpd))
 
 seg_gpd.crs = {'init': 'epsg:28992'}
-seg_gpd.plot(marker='*', color='green', markersize=50)
+seg_gpd.plot(marker='.', color='red', markersize=50)
 print(type(seg_gpd), len(seg_gpd))
 
 ## Segments

@@ -3,6 +3,7 @@
     <words>
       <w>dataframe</w>
       <w>geodataframe</w>
+      <w>geopandas</w>
       <w>tomtom</w>
     </words>
   </dictionary>
