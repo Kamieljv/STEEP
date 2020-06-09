@@ -98,12 +98,17 @@ import pandas as pd
 import geopandas as gpd
 from shapely.geometry import Point
 
-df = pd.DataFrame(data)
-my_columns = ['lon', 'lat']
-df.columns = my_columns
-print(df.head)
+# Make a dataframe
+df = pd.DataFrame([long_lr, lat_lr])
+df_lr = pd.DataFrame.transpose(df)
+df_lr.columns = ['longitude', 'latitude']
 
-geometry = [Point(xy) for xy in zip(df['lon'], df['lat'])]
-routingGDF = gpd.GeoDataFrame(df, geometry=geometry)
+# Geodataframe
+geometry_lr = [Point(xy) for xy in zip(df_lr['longitude'], df_lr['latitude'])]
+lr_gpd = gpd.GeoDataFrame(df_lr, geometry=geometry_lr)
 
+## test visualization
+lr_gpd.crs = {'init': 'epsg:28992'}
+lr_gpd.plot(marker='*', color='green', markersize=50)
+print(type(lr_gpd), len(lr_gpd))
 
