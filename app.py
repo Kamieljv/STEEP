@@ -20,20 +20,25 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def index():
-    return render_template('home.html')
+    fuels = ['Petrol', 'Diesel', 'Petrol Hybrid', 'LPG Bifuel ~ LPG', 'LPG Bifuel ~ Petrol', 'CNG Bifuel ~ Petrol', 'CNG Bifuel ~ CNG']
+    segments = ['Mini', 'Small', 'Medium', 'Large-SUV-Executive', '2-Stroke']
+    standards = ['Conventional', 'ECE 15/00-01', 'ECE 15/02', 'ECE 15/03', 'ECE 15/04', 'Euro 1', 'Euro 2', 'Euro 3', 'Euro 4',\
+                'Euro 5', 'Euro 6', 'Euro 6 2017-2019', 'Euro 6 2020+', 'Euro 6 up to 2016', 'Improved Conventional', 'Open Loop', 'PRE ECE']
+    return render_template('home.html', fuels=fuels, segments=segments, standards=standards)
 
 
-@app.route('/relocate', methods=['POST'])
-def relocate():
-    lat = request.form['latitude']
-    lon = request.form['longitude']
-    return json.dumps({'type':'relocate', 'lat':lat, 'lon':lon})
+@app.route('/calculate_route', methods=['POST'])
+def calculate_route():
+    print(request.form)
+    start = request.form['start']
+    dest = request.form['dest']
+    startCoords = request.form['start-coords']
+    destCoords = request.form['dest-coords']
+    fuel = request.form['fuel']
+    segment = request.form['segment']
+    standard = request.form['standard']
+    return json.dumps({'start':start, 'startCoords':startCoords, 'destCoords':destCoords, 'dest':dest, 'fuel':fuel, 'segment':segment, 'standard':standard})
 
-@app.route('/addroute', methods=['POST'])
-def addroute():
-    with open('static/sample.geojson') as f:
-        route = json.load(f)
-    return json.dumps({'type':'addroute', 'route':route})
 
 @app.after_request
 def add_header(response):
