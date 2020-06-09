@@ -1,11 +1,15 @@
-## STEEP
-## Inselberg
-## Route
+# STEEP
+# Inselberg
+# Route
 
 ## Tomtom Calculate route API
 
 # Performing imports
 import requests
+from ast import literal_eval
+import pandas as pd
+import geopandas as gpd
+from shapely.geometry import Point
 
 # Tomtom url and key
 apiURL = "https://api.tomtom.com/routing/1/calculateRoute/"
@@ -29,7 +33,7 @@ headers = {
 params = dict(
     instructionsType='text',
     language='en-GB',
-    #maxAlternatives='3',
+    # maxAlternatives='3',
     sectionType='traffic',
     routeRepresentation='polyline',
     report='effectiveSettings',
@@ -46,12 +50,10 @@ resp = requests.get(tomtomURL, params=params, headers=headers)
 data = resp.json()
 
 ## Extract data from API response
-# Performing imports
-from ast import literal_eval
-
 # Transform data object to string
 string = str(data)
 routing = literal_eval(string)
+
 
 # Function to find key in a dictionary
 def find(key, dictionary):
@@ -66,6 +68,7 @@ def find(key, dictionary):
                 if isinstance(d, dict):
                     for result in find(key, d):
                         yield result
+
 
 # Extract points stored in legs
 lr_points = list(find('points', routing))
@@ -92,29 +95,33 @@ for point in seg_points:
     lat_seg.append(point['latitude'])
     long_seg.append(point['longitude'])
 
+
 ## Make a geodataframe
-# Performing imports
-import pandas as pd
-import geopandas as gpd
-from shapely.geometry import Point
 
 # Make Geodataframe function
 def geodataframe(long, lat, column_long, column_lat):
     # arg: Longitude and latitude points in a list and the name of the columns for each list
     # fun: It makes a geodataframe using the coordinates list
+
+    # Make dataframe
     df = pd.DataFrame([long, lat])
     df = pd.DataFrame.transpose(df)
     df.columns = [column_long, column_lat]
+
+    # Make geometry
     geometry = [Point(xy) for xy in zip(df[column_long], df[column_lat])]
+
+    # Creates geodataframe
     df_gd = gpd.GeoDataFrame(df, geometry=geometry)
 
     return df_gd
 
-# Geodataframes for the long route and the segments
+
+# Geodataframe for the long route and the segments
 lr_gpd = geodataframe(long_lr, lat_lr, 'longitude', 'latitude')
 seg_gpd = geodataframe(long_seg, lat_seg, 'longitude', 'latitude')
 
-## test visualization
+# Geodataframe visualization
 lr_gpd.crs = {'init': 'epsg:28992'}
 lr_gpd.plot(marker='*', color='green', markersize=50)
 print(type(lr_gpd), len(lr_gpd))
@@ -122,3 +129,5 @@ print(type(lr_gpd), len(lr_gpd))
 seg_gpd.crs = {'init': 'epsg:28992'}
 seg_gpd.plot(marker='*', color='green', markersize=50)
 print(type(seg_gpd), len(seg_gpd))
+
+## Segments
