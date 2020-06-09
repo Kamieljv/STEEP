@@ -14,13 +14,7 @@ function send_form(form, url, type, formData) {
             contentType: false,
             success: function(response) {
                 data = JSON.parse(response);
-                if (data.type == 'relocate') {
-                    map.setView(new L.LatLng(data.lat, data.lon), 8);
-                } else if (data.type == 'addroute') {
-                    addRoute(map, data.route);
-                } else {
-                    console.log(data);
-                }
+                console.log(data);
             },
             error: function(error) {
                 console.log(error);
@@ -29,9 +23,6 @@ function send_form(form, url, type, formData) {
 
     }
     else {
-        // first, scan the page for labels, and assign a reference to the label from the actual form element:
-        var labels = $(form).find('label');
-
         // then find all invalid input elements (form fields)
         var invalidList = form.querySelectorAll(':invalid');
 
@@ -40,9 +31,7 @@ function send_form(form, url, type, formData) {
 
             // for each invalid input element (form field) return error
             for (var item of invalidList) {
-                var errorContainer = item.nextElementSibling;
-                $(item.nextElementSibling).html(item.nextElementSibling.dataset.error);
-                $(errorContainer).show()
+                $(item).toggleClass('is-invalid', true).toggleClass('is-valid', false);
             }
         }
     }
@@ -88,4 +77,12 @@ $('form button').click(function(event){
 
 $(document).on('keyup', 'input', function(e) {
     $(this).toggleClass('is-invalid', false).toggleClass('is-valid', false);
+});
+
+// Search location on enter
+$(document).on('keyup', '#start, #dest', function(e) {
+    if (e.keyCode === 13) {
+        e.preventDefault();
+        $('#' + this.id + '-btn').click();
+    }
 });

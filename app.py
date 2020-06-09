@@ -29,30 +29,18 @@ def index():
     return render_template('home.html', fuels=fuels, segments=segments, standards=standards)
 
 
-@app.route('/relocate', methods=['POST'])
-def relocate():
-    lat = request.form['latitude']
-    lon = request.form['longitude']
-    return json.dumps({'type':'relocate', 'lat':lat, 'lon':lon})
-
-@app.route('/vehicle', methods=['POST'])
-def vehicle():
+@app.route('/calculate_route', methods=['POST'])
+def calculate_route():
+    print(request.form)
+    start = request.form['start']
+    dest = request.form['dest']
+    startCoords = request.form['start-coords']
+    destCoords = request.form['dest-coords']
     fuel = request.form['fuel']
     segment = request.form['segment']
     standard = request.form['standard']
-    return json.dumps({'type':'vehicle', 'fuel':fuel, 'segment':segment, 'standard':standard})
+    return json.dumps({'start':start, 'startCoords':startCoords, 'destCoords':destCoords, 'dest':dest, 'fuel':fuel, 'segment':segment, 'standard':standard})
 
-@app.route('/addsearch', methods=['POST'])
-def addsearch():
-    start = request.form['Start']
-    dest = request.form['Destination']
-    return json.dumps({'type':'search', 'start':start, 'dest':dest})
-
-@app.route('/addroute', methods=['POST'])
-def addroute():
-    with open('static/sample.geojson') as f:
-        route = json.load(f)
-    return json.dumps({'type':'addroute', 'route':route})
 
 @app.after_request
 def add_header(response):
