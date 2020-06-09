@@ -72,49 +72,9 @@ points_lr = list(find('points', routing))
 long_route = points_lr[0]
 
 # Extract points in instructions
-points_edg = list(find('point'), routing)
-split_points = points_edg[0]
+points_edg = list(find('point', routing))
 
+#
 
-# Extract data
-from ast import literal_eval
-
-string = str(data)
-routing = literal_eval(string)
-
-
-def find(key, dictionary):
-    for k, v in dictionary.items():
-        if k == key:
-            yield v
-        elif isinstance(v, dict):
-            for result in find(key, v):
-                yield result
-        elif isinstance(v, list):
-            for d in v:
-                if isinstance(d, dict):
-                    for result in find(key, d):
-                        yield result
-
-
-data = list(find('points', routing))
-data = data[0]
-street = list(find('street', routing))
-time = list(find('street', routing))
-# Store as geodataframe
-import pandas as pd
-import geopandas as gpd
-from shapely.geometry import Point
-
-df = pd.DataFrame(data)
-#my_columns = ['lon', 'lat']
-#df.columns = my_columns
-print(df.head)
-
-geometry = [Point(xy) for xy in zip(df['latitude'], df['longitude'])]
-routingGDF = gpd.GeoDataFrame(df, geometry=geometry)
-routingGDF.crs = {'init': 'epsg:28992'}
-routingGDF.plot(marker='.', color='green', markersize=50)
-print(type(routingGDF), len(routingGDF))
 
 
