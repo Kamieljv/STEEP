@@ -67,11 +67,11 @@ import geopandas as gpd
 from shapely.geometry import Point
 
 df = pd.DataFrame(data)
-my_columns = ['lon', 'lat']
-df.columns = my_columns
+#my_columns = ['lon', 'lat']
+#df.columns = my_columns
 print(df.head)
 
-geometry = [Point(xy) for xy in zip(df['lon'], df['lat'])]
+geometry = [Point(xy) for xy in zip(df['latitude'], df['longitude'])]
 routingGDF = gpd.GeoDataFrame(df, geometry=geometry)
 routingGDF.crs = {'init': 'epsg:28992'}
 routingGDF.plot(marker='.', color='green', markersize=50)
