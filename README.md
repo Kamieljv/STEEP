@@ -1,6 +1,9 @@
 # STEEP (by Team Inselberg)
 STEEP: A SpatioTemporal Emission Estimator for Passenger vehicles
 
+## Installation
+To run the application, a set of Python packages need to be installed. We recommend using [Conda](https://docs.conda.io/en/latest/) as a package manager.
+
 ## Using GraphHopper in Python
 Graphhopper is a routing API, which can be sent requests for certain route conditions and returns the computed route. 
 The route calculation is thus done externally. 
