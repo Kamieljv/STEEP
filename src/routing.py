@@ -22,7 +22,7 @@ headers = {
 params = dict(
     instructionsType='text',
     language='en-GB',
-    maxAlternatives='3',
+    #maxAlternatives='3',
     sectionType='traffic',
     routeRepresentation='polyline',
     report='effectiveSettings',
@@ -60,7 +60,8 @@ def find(key, dictionary):
 
 data = list(find('points', routing))
 data = data[0]
-
+street = list(find('street', routing))
+time = list(find('street', routing))
 # Store as geodataframe
 import pandas as pd
 import geopandas as gpd
