@@ -11,3 +11,4 @@ wageningenGDF = gpd.GeoDataFrame(df, geometry=geometry)
 wageningenGDF.crs = {'init': 'epsg:28992'}
 wageningenGDF.plot(marker='*', color='green', markersize=50)
 print(type(wageningenGDF), len(wageningenGDF))
+
