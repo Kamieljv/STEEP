@@ -47,7 +47,6 @@ dependencies:
   - libxml2=2.9.9=h464c3ec_0
   - lz4-c=1.9.2=h62dcd97_0
   - markupsafe=1.1.1=py37he774522_0
-  - mkl=2020.1=216
   - mkl-service=2.3.0=py37hb782905_0
   - mkl_fft=1.0.15=py37h14836fe_0
   - mkl_random=1.1.1=py37h47e9c7a_0
