@@ -81,7 +81,7 @@ import pandas as pd
 df_dis = pd.DataFrame(dis_list)
 df_time = pd.DataFrame(time_list)
 df_speed = (df_dis / df_time) * 3.6
-df_speed.rename(columns={0:'speed_km/h'})
+#df_speed.rename(columns={0:'speed_km/h'})
 
 # long route points
 seg_points = list(find('point', routing))
@@ -107,6 +107,8 @@ for t,i in enumerate(idlist):
     init=i
 df_long.loc[i] = df_speed.iloc[t - 1].values[0]
 print(df_long)
+# create ID column
+df_long['ID'] = (df_long['speed_km/h']).astype('category').cat.codes
 
 # geodataframe with speed
 import geopandas as gpd
