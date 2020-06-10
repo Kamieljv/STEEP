@@ -80,8 +80,8 @@ import pandas as pd
 
 df_dis = pd.DataFrame(dis_list)
 df_time = pd.DataFrame(time_list)
-df_speed = (df_dis /df_time) * 3.6
-df_speed.rename(columns={0:'speed'})
+df_speed = (df_dis / df_time) * 3.6
+df_speed.rename(columns={0:'speed_km/h'})
 
 # long route points
 seg_points = list(find('point', routing))
@@ -100,11 +100,12 @@ for i in range(df_seg.shape[0]) :
 
 # matching with speed
 init=0
-df_long["speed"]=''
+df_long["speed_km/h"]=''
 for t,i in enumerate(idlist):
     for j in range(init,i):
-        df_long.loc[i,"speed"]=df_speed.iloc[t-1].values[0]
+        df_long.loc[j]=df_speed.iloc[t-1].values[0]
     init=i
+df_long.loc[i] = df_speed.iloc[t - 1].values[0]
 print(df_long)
 
 # geodataframe with speed
