@@ -24,7 +24,7 @@ def derive_values_for_calc(path_input_emis_calc, category, fuel, segment, fuel_s
 
 # This a separate function for formula
 def formula_emission_factor(a, b, g, d, e, z, h, speed):
-    emis_f = a * speed ** 2 + b * speed + g + (d / speed) / (e * speed ** 2 + z * speed + h)
+    emis_f = (a * speed ** 2 + b * speed + g + (d / speed)) / (e * speed ** 2 + z * speed + h)
     return emis_f
 
 
@@ -55,6 +55,8 @@ def calculate_emission_factor(path_input_emis_calc, category, fuel, segment, fue
 
 
 # input to check the result
-result = calculate_emission_factor('../data/Ps_STEEP_a_emis.csv', 'Passenger Cars', 'Petrol', 'Mini', 'Euro 4', 'GDI',
-                                   'EC', '../data/b_SpeedFlow_sample.csv')
-print(result)
+#result = calculate_emission_factor('../data/Ps_STEEP_a_emis.csv', 'Passenger Cars', 'Petrol', 'Mini', 'Euro 4', 'GDI', 'EC', '../data/b_SpeedFlow_sample.csv')
+
+
+result_sample = calculate_emission_factor('../data/Ps_STEEP_a_emis.csv', 'Passenger Cars', 'Petrol', 'Mini', 'Euro 4', 'GDI', 'EC', '../data/b_SpeedFlow_sample.csv')
+print(result_sample)
