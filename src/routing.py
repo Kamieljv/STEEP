@@ -22,10 +22,10 @@ apiURL = "https://api.tomtom.com/routing/1/calculateRoute/"
 apiKEY = "x7b42zLGbh4VoCVGHgrDNjC2FKo2hZDo"
 
 # Coordinates
-startLat = 52.533558
-startLon = 13.384116
-destLat = 52.498929
-destLon = 13.41774
+startLat = 52.514426
+startLon = 13.315560
+destLat = 52.510458
+destLon = 13.286269
 
 def tomtomAPI(apiURL, startLat, startLon, destLat, destLon, apiKEY):
     """
@@ -80,41 +80,13 @@ long_route = lr_points[0]
 seg_points = list(find('point', routing))
 distance = list(find('routeOffsetInMeters', routing))
 all_time = list(find('travelTimeInSeconds', routing))
-time = all_time[2:] #can be improverd later
+time = all_time[2:]
 
-# Make Geodataframe function
-def geodataframe(points_list):
-    """
-    It makes a geodataframe using the data extracted from the API response
-    """
-    # Make dataframe
-    df = pd.DataFrame(points_list)
-    # Make geometry
-    geom = [Point(xy) for xy in zip(df['latitude'], df['longitude'])]
-    # Creates geodataframe
-    df_gd = gpd.GeoDataFrame(df, geometry=geom)
-    return df_gd
+# Dataframe for the long route and the segment points
+df_long = pd.DataFrame(long_route)
+df_seg = pd.DataFrame(seg_points)
 
-
-# Geodataframe for the long route and the segments
-lr_gpd = geodataframe(long_route)
-seg_gpd = geodataframe(seg_points)
-
-## Segments
-
-
-## Matching points
-def matchingPoints(points_seg):
-    """
-    Returns a geodataframe with the points of the
-    segments converted to lines
-    """
-    line = points_seg.groupby(['ID', 'speed'])['geometry'].apply(lambda x: LineString(x.tolist()))
-    gpd_line = gpd.GeoDataFrame(line, geometry=geometry)
-    return gpd_line
-
-
-## Calculations (distance, time, speed)
+# Calculations (distance, time, speed)
 def calculate(data):
     """
     Returns a list of the object to calculate
@@ -130,20 +102,36 @@ def calculate(data):
 dis_list = calculate(distance)
 time_list = calculate(time)
 
-# Speed function
-def speed(dis_list, time_list, geo_dataframe):
-    """
-    Returns the speed in a geodataframe
-    """
-    df_dis = pd.DataFrame(dis_list)
-    df_time = pd.DataFrame(time_list)
-    speed_calc = (df_dis /df_time) * 3.6
-    df_speed = speed_calc.fillna(0)
-    geo_dataframe['speed_km/h'] = df_speed
-    return df_speed
+# Calculate speed
+df_dis = pd.DataFrame(dis_list)
+df_time = pd.DataFrame(time_list)
+df_speed = (df_dis / df_time) * 3.6
+
+# Segments
+idlist=[]
+for i in range(df_seg.shape[0]) :
+    searcher=df_seg.iloc[i]
+    id =df_long[(df_long['latitude'] == searcher['latitude']) & (df_long['longitude'] == searcher['longitude'])].index.values[0]
+    idlist.append(id)
+
+# Match with speed
+init=0
+df_long["speed_km/h"]=''
+for t,i in enumerate(idlist):
+    for j in range(init,i):
+        df_long.loc[j]=df_speed.iloc[t-1].values[0]
+    init=i
+df_long.loc[i] = df_speed.iloc[t-1].values[0]
+
+# Zip the coordinates into a point object and convert to a GeoDataFrame
+geom = [Point(xy) for xy in zip(df_long.longitude, df_long.latitude)]
+long_routeGDF = gpd.GeoDataFrame(df_long, geometry=geom)
+
+# Matching points
+gpd_line = long_routeGDF.groupby(['speed_km/h'])['geometry'].apply(lambda x: LineString(x.tolist())if x.size > 1 else x.tolist())
+gpd_line = gpd.GeoDataFrame(gpd_line)
 
 
-# Geodataframe with speed
-geometry = [Point(xy) for xy in zip(df_point['latitude'], df_point['longitude'])]
-routingGDF = gpd.GeoDataFrame(df_point, geometry=geometry)
+
+
 
