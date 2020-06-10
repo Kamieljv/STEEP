@@ -63,9 +63,20 @@ distance = list(find('routeOffsetInMeters', routing))
 all_time = list(find('travelTimeInSeconds', routing))
 time = all_time[2:] #can be improverd later
 
-#calculate distance
+#calculate distance and time
+def calculate(data):
+    data_list = []
+    for i in range(len(data)):
+        if i < len(data) - 1:
+            data_sub = abs(data[i] - data[i+1])
+            data_list.append(data_sub)
+            return data_list
+
+
 dis_list = []
 for i in range(len(distance)):
+    if i == 0:
+        dis_list.append(0)
     if i < len(distance) - 1:
         dis = abs(distance[i]-distance[i+1])
         dis_list.append(dis)
@@ -74,32 +85,30 @@ for i in range(len(distance)):
 #calculate time
 time_list = []
 for i in range(len(time)):
+    if i == 0:
+        time_list.append(0)
     if i < len(time) - 1:
         tim = abs(time[i]-time[i+1])
         time_list.append(tim)
 #print(time_list)
 
 #calculate speed
-#import numpy as np
-#dis_ar = np.array(dis_list)
-#time_ar = np.array(time_list)
-#speed_ar = dis_ar/time_ar
 import pandas as pd
 df_dis = pd.DataFrame(dis_list)
 df_time = pd.DataFrame(time_list)
 df_speed = (df_dis /df_time) * 3.6
+df_speed = df_speed.fillna(0)
 
 # Store as geodataframe
 import geopandas as gpd
 from shapely.geometry import Point
 df_point = pd.DataFrame(seg_points)
-#my_columns = ['lon', 'lat']
-#df.columns = my_columns
 print(df_point.head)
+df_point['speed_km/h'] = df_speed
 
-# didnt finish
-geometry = [Point(xy) for xy in zip(df['lon'], df['lat'])]
-routingGDF = gpd.GeoDataFrame(df, geometry=geometry)
+# geodataframe with speed
+geometry = [Point(xy) for xy in zip(df_point['latitude'], df_point['longitude'])]
+routingGDF = gpd.GeoDataFrame(df_point, geometry=geometry)
 routingGDF.crs = {'init': 'epsg:28992'}
 routingGDF.plot(marker='.', color='green', markersize=50)
 print(type(routingGDF), len(routingGDF))
