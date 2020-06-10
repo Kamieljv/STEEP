@@ -31,15 +31,15 @@ def index():
 
 @app.route('/calculate_route', methods=['POST'])
 def calculate_route():
-    print(request.form)
     start = request.form['start']
     dest = request.form['dest']
+    departure = request.form['departure']
     startCoords = request.form['start-coords']
     destCoords = request.form['dest-coords']
     fuel = request.form['fuel']
     segment = request.form['segment']
     standard = request.form['standard']
-    return json.dumps({'start':start, 'startCoords':startCoords, 'destCoords':destCoords, 'dest':dest, 'fuel':fuel, 'segment':segment, 'standard':standard})
+    return json.dumps({'start':start, 'startCoords':startCoords, 'destCoords':destCoords, 'dest':dest, 'departure':departure, 'fuel':fuel, 'segment':segment, 'standard':standard})
 
 
 @app.after_request
