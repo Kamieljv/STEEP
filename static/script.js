@@ -2,7 +2,7 @@
 function send_form(form, url, type, formData) {
     // form validation and sending of form items
 
-    if ( form.checkValidity() && isFormDataEmpty(formData) == false ) { // checks if form is empty
+    if (!isFormDataEmpty(formData)) { // checks if form is empty
         event.preventDefault();
 
         // make AJAX call
@@ -22,60 +22,51 @@ function send_form(form, url, type, formData) {
         });
 
     }
-    else {
-        // then find all invalid input elements (form fields)
-        var invalidList = form.querySelectorAll(':invalid');
-
-        if ( typeof invalidList !== 'undefined' && invalidList.length > 0 ) {
-            // errors were found in the form (required fields not filled out)
-
-            // for each invalid input element (form field) return error
-            for (var item of invalidList) {
-                $(item).toggleClass('is-invalid', true).toggleClass('is-valid', false);
-            }
-        }
-    }
 }
 
 function isFormDataEmpty(formData) {
     // checks for all values in formData object if they are empty
+    var status = false;
     for (var [key, value] of formData.entries()) {
         if (key != 'csrf_token') {
-            if (value != '' && value != []) {
-                return false;
+            if (value == '' || value == []) {
+                var id = ($('#'+key)[0].type === 'hidden')? $('#'+key).prev()[0].id : key;
+                $('#'+id).toggleClass('is-invalid', true).toggleClass('is-valid', false);
+                status = true;
             }
         }
     }
-    return true;
+    return status;
 }
 
-
-$('form button').click(function(event){
+$('#calculate-btn').click(function(event){
     // Prevent redirection with AJAX for contact form
     event.preventDefault();
 
-    // First check if the start and destination are entered,
-    // because in that case the input has to be geocoded by Nomatim first
-    if (this.id == 'dest-btn' || this.id == 'start-btn' ) {
+    var form = $(this).parents('form')[0];
+    var url = form.action;
+    var type = form.method;
+    var formData = new FormData(form);
 
-        var objID = $(this).attr('for');
-        var field = $('#' + objID)[0];
-        var coordField = $(field).next()[0];
-        locationSearch(field.value, field, coordField);
-
-    } else {
-
-        var form = $(this).parents('form')[0];
-        var url = form.action;
-        var type = form.method;
-        var formData = new FormData(form);
-
-        send_form(form, url, type, formData);
-
-     }
+    send_form(form, url, type, formData);
 });
 
+$('form button.btn-loc').click(function(event){
+    // Prevent redirection with AJAX for contact form
+    event.preventDefault();
+    // Define parameters
+    var objID = $(this).attr('for');
+    var field = $('#' + objID)[0];
+    var coordField = $(field).next()[0];
+    // Geocode the input with Nomatim
+    locationSearch(field.value, field, coordField);
+});
+
+// Clear validation class on keyup/click
 $(document).on('keyup', 'input', function(e) {
+    $(this).toggleClass('is-invalid', false).toggleClass('is-valid', false);
+});
+$(document).on('click', '#departure', function(e) {
     $(this).toggleClass('is-invalid', false).toggleClass('is-valid', false);
 });
 
@@ -85,4 +76,23 @@ $(document).on('keyup', '#start, #dest', function(e) {
         e.preventDefault();
         $('#' + this.id + '-btn').click();
     }
+});
+
+// initialize date-time picker
+$('#departure').flatpickr({
+    'enableTime': true,
+    'dateFormat': "Y-m-d H:i",
+    'time_24hr': true
+    });
+
+// Set current date and time on button click
+$('#today-btn').click(function(e) {
+    // clear departure validation class
+    $('#departure').toggleClass('is-invalid', false).toggleClass('is-valid', false);
+    // get date
+    var today = new Date();
+    var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    var time = today.getHours() + ":" + today.getMinutes();
+    var dateTime = date+' '+time;
+    $('#departure')[0].value = dateTime;
 });
