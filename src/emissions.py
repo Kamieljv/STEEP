@@ -55,8 +55,5 @@ def calculate_emission_factor(path_input_emis_calc, category, fuel, segment, fue
 
 
 # input to check the result
-#result = calculate_emission_factor('../data/Ps_STEEP_a_emis.csv', 'Passenger Cars', 'Petrol', 'Mini', 'Euro 4', 'GDI', 'EC', '../data/b_SpeedFlow_sample.csv')
-
-
-result_sample = calculate_emission_factor('../data/Ps_STEEP_a_emis.csv', 'Passenger Cars', 'Petrol', 'Mini', 'Euro 4', 'GDI', 'EC', '../data/b_SpeedFlow_sample.csv')
-print(result_sample)
+result = calculate_emission_factor('../data/Ps_STEEP_a_emis.csv', 'Passenger Cars', 'Petrol', 'Mini', 'Euro 4', 'GDI', 'EC', '../data/b_SpeedFlow_sample.csv')
+print(result)
