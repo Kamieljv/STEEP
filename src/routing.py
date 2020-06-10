@@ -15,23 +15,23 @@ import requests
 from ast import literal_eval
 import pandas as pd
 import geopandas as gpd
-from shapely.geometry import Point
+from shapely.geometry import Point, LineString
 
 # Tomtom url and key
 apiURL = "https://api.tomtom.com/routing/1/calculateRoute/"
 apiKEY = "x7b42zLGbh4VoCVGHgrDNjC2FKo2hZDo"
 
 # Coordinates
-orLat = 52.533558
-orLon = 13.384116
+startLat = 52.533558
+startLon = 13.384116
 destLat = 52.498929
 destLon = 13.41774
 
-def tomtomAPI(apiURL, orLat, orLon, destLat, destLon, apiKEY):
+def tomtomAPI(apiURL, startLat, startLon, destLat, destLon, apiKEY):
     """
     Returns Tomtom API response
     """
-    tomtomURL = "%s/%s,%s:%s,%s/json?key=%s" % (apiURL, orLat, orLon, destLat, destLon, apiKEY)
+    tomtomURL = "%s/%s,%s:%s,%s/json?key=%s" % (apiURL, startLat, startLon, destLat, destLon, apiKEY)
     headers = {
         'accept': '*/*',
     }
@@ -54,13 +54,9 @@ def tomtomAPI(apiURL, orLat, orLon, destLat, destLon, apiKEY):
     data = resp.json()
     return data
 
-data = tomtomAPI(apiURL, orLat, orLon, destLat, destLon, apiKEY)
+data = tomtomAPI(apiURL, startLat, startLon, destLat, destLon, apiKEY)
 
 ## Extract data from API response
-# Transform data object to string
-string = str(data)
-routing = literal_eval(string)
-
 # Function to find key in a dictionary
 def find(key, dictionary):
     for k, v in dictionary.items():
@@ -75,13 +71,17 @@ def find(key, dictionary):
                     for result in find(key, d):
                         yield result
 
+# Transform data object to string
+string = str(data)
+routing = literal_eval(string)
 
-# Extract points stored in legs
+# Extract points stored in legs (long route, instructions, distance and time)
 lr_points = list(find('points', routing))
 long_route = lr_points[0]
-
-# Extract points from the instructions section
 seg_points = list(find('point', routing))
+distance = list(find('routeOffsetInMeters', routing))
+all_time = list(find('travelTimeInSeconds', routing))
+time = all_time[2:] #can be improverd later
 
 # Initialize our 2 arrays that will contain all the points of the long route
 lat_lr = []
@@ -112,9 +112,9 @@ def geodataframe(long, lat, column_long, column_lat):
     df = pd.DataFrame.transpose(df)
     df.columns = [column_long, column_lat]
     # Make geometry
-    geometry = [Point(xy) for xy in zip(df[column_long], df[column_lat])]
+    geom = [Point(xy) for xy in zip(df[column_long], df[column_lat])]
     # Creates geodataframe
-    df_gd = gpd.GeoDataFrame(df, geometry=geometry)
+    df_gd = gpd.GeoDataFrame(df, geometry=geom)
     return df_gd
 
 
@@ -132,3 +132,39 @@ seg_gpd.plot(marker='.', color='red', markersize=50)
 print(type(seg_gpd), len(seg_gpd))
 
 ## Segments
+
+
+## Matching points
+def matchingPoints(points_seg):
+    line = points_seg.groupby(['ID'])['geometry'].apply(lambda x: LineString(x.tolist()))
+    gpd_line = gpd.GeoDataFrame(line, geometry=geometry)
+    return gpd_line
+
+
+## Calculations (distance, time, speed)
+def calculate(data):
+    data_list = []
+    for i in range(len(data)):
+        if i < len(data) - 1:
+            data_sub = abs(data[i] - data[i+1])
+            data_list.append(data_sub)
+    return data_list
+
+# Calculate distance and time
+dis_list = calculate(distance)
+time_list = calculate(time)
+
+# Calculate speed
+df_dis = pd.DataFrame(dis_list)
+df_time = pd.DataFrame(time_list)
+df_speed = (df_dis /df_time) * 3.6
+df_speed = df_speed.fillna(0)
+
+# Store as geodataframe
+df_point = pd.DataFrame(seg_points)
+print(df_point.head)
+df_point['speed_km/h'] = df_speed
+
+# Geodataframe with speed
+geometry = [Point(xy) for xy in zip(df_point['latitude'], df_point['longitude'])]
+routingGDF = gpd.GeoDataFrame(df_point, geometry=geometry)
