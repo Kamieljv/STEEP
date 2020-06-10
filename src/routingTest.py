@@ -63,16 +63,16 @@ distance = list(find('routeOffsetInMeters', routing))
 all_time = list(find('travelTimeInSeconds', routing))
 time = all_time[2:] #can be improverd later
 
-#calculate distance and time
-def calculate(data):
-    data_list = []
-    for i in range(len(data)):
-        if i < len(data) - 1:
-            data_sub = abs(data[i] - data[i+1])
-            data_list.append(data_sub)
-            return data_list
+# try to make a function to calculate distance and time
+#def calculate(data):
+    #data_list = []
+    #for i in range(len(data)):
+        #if i < len(data) - 1:
+            #data_sub = abs(data[i] - data[i+1])
+            #data_list.append(data_sub)
+            #return data_list
 
-
+#calculate distance
 dis_list = []
 for i in range(len(distance)):
     if i == 0:
