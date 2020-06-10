@@ -63,34 +63,18 @@ distance = list(find('routeOffsetInMeters', routing))
 all_time = list(find('travelTimeInSeconds', routing))
 time = all_time[2:] #can be improverd later
 
-# try to make a function to calculate distance and time
-#def calculate(data):
-    #data_list = []
-    #for i in range(len(data)):
-        #if i < len(data) - 1:
-            #data_sub = abs(data[i] - data[i+1])
-            #data_list.append(data_sub)
-            #return data_list
+# calculate distance and time
+def calculate(data):
+    data_list = []
+    for i in range(len(data)):
+        if i < len(data) - 1:
+            data_sub = abs(data[i] - data[i+1])
+            data_list.append(data_sub)
+    return data_list
 
 #calculate distance
-dis_list = []
-for i in range(len(distance)):
-    if i == 0:
-        dis_list.append(0)
-    if i < len(distance) - 1:
-        dis = abs(distance[i]-distance[i+1])
-        dis_list.append(dis)
-#print(dis_list)
-
-#calculate time
-time_list = []
-for i in range(len(time)):
-    if i == 0:
-        time_list.append(0)
-    if i < len(time) - 1:
-        tim = abs(time[i]-time[i+1])
-        time_list.append(tim)
-#print(time_list)
+dis_list = calculate(distance)
+time_list = calculate(time)
 
 #calculate speed
 import pandas as pd
