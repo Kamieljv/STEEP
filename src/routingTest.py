@@ -87,7 +87,7 @@ for i in range(len(time)):
 import pandas as pd
 df_dis = pd.DataFrame(dis_list)
 df_time = pd.DataFrame(time_list)
-df_speed = df_dis/df_time
+df_speed = (df_dis /df_time) * 3.6
 
 # Store as geodataframe
 import geopandas as gpd
@@ -97,7 +97,7 @@ df_point = pd.DataFrame(seg_points)
 #df.columns = my_columns
 print(df_point.head)
 
-
+# didnt finish
 geometry = [Point(xy) for xy in zip(df['lon'], df['lat'])]
 routingGDF = gpd.GeoDataFrame(df, geometry=geometry)
 routingGDF.crs = {'init': 'epsg:28992'}
