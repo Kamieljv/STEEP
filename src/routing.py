@@ -56,8 +56,7 @@ def tomtomAPI(apiURL, startLat, startLon, destLat, destLon, apiKEY):
 
 data = tomtomAPI(apiURL, startLat, startLon, destLat, destLon, apiKEY)
 
-## Extract data from API response
-# Function to find key in a dictionary
+# Extract data from API response
 def find(key, dictionary):
     for k, v in dictionary.items():
         if k == key:
@@ -75,7 +74,7 @@ def find(key, dictionary):
 string = str(data)
 routing = literal_eval(string)
 
-# Extract points stored in legs (long route, instructions, distance and time)
+# Extract points stored in legs (long route, instructions, distance and time) using find function
 lr_points = list(find('points', routing))
 long_route = lr_points[0]
 seg_points = list(find('point', routing))
@@ -106,6 +105,10 @@ seg_gpd = geodataframe(seg_points)
 
 ## Matching points
 def matchingPoints(points_seg):
+    """
+    Returns a geodataframe with the points of the
+    segments converted to lines
+    """
     line = points_seg.groupby(['ID', 'speed'])['geometry'].apply(lambda x: LineString(x.tolist()))
     gpd_line = gpd.GeoDataFrame(line, geometry=geometry)
     return gpd_line
@@ -113,6 +116,9 @@ def matchingPoints(points_seg):
 
 ## Calculations (distance, time, speed)
 def calculate(data):
+    """
+    Returns a list of the object to calculate
+    """
     data_list = []
     for i in range(len(data)):
         if i < len(data) - 1:
@@ -126,6 +132,9 @@ time_list = calculate(time)
 
 # Speed function
 def speed(dis_list, time_list, geo_dataframe):
+    """
+    Returns the speed in a geodataframe
+    """
     df_dis = pd.DataFrame(dis_list)
     df_time = pd.DataFrame(time_list)
     speed_calc = (df_dis /df_time) * 3.6
