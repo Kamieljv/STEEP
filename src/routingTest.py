@@ -58,7 +58,7 @@ def find(key, dictionary):
                     for result in find(key, d):
                         yield result
 
-seg_points = list(find('point', routing))
+
 distance = list(find('routeOffsetInMeters', routing))
 all_time = list(find('travelTimeInSeconds', routing))
 time = all_time[2:] #can be improverd later
@@ -72,28 +72,53 @@ def calculate(data):
             data_list.append(data_sub)
     return data_list
 
-#calculate distance
 dis_list = calculate(distance)
 time_list = calculate(time)
 
-#calculate speed
+# calculate speed
 import pandas as pd
+
 df_dis = pd.DataFrame(dis_list)
 df_time = pd.DataFrame(time_list)
 df_speed = (df_dis /df_time) * 3.6
-df_speed = df_speed.fillna(0)
+df_speed.rename(columns={0:'speed'})
 
-# Store as geodataframe
-import geopandas as gpd
-from shapely.geometry import Point
-df_point = pd.DataFrame(seg_points)
-print(df_point.head)
-df_point['speed_km/h'] = df_speed
+# long route points
+seg_points = list(find('point', routing))
+long_points = list(find('points', routing))
+long_points = long_points[0]
+df_seg = pd.DataFrame(seg_points)
+df_long = pd.DataFrame(long_points)
+
+# split
+
+idlist=[]
+for i in range(df_seg.shape[0]) :
+    searcher=df_seg.iloc[i]
+    id =df_long[(df_long['latitude'] == searcher['latitude']) & (df_long['longitude'] == searcher['longitude'])].index.values[0]
+    idlist.append(id)
+
+# matching with speed
+init=0
+df_long["speed"]=''
+for t,i in enumerate(idlist):
+    for j in range(init,i):
+        df_long.loc[i,"speed"]=df_speed.iloc[t-1].values[0]
+    init=i
+print(df_long)
 
 # geodataframe with speed
-geometry = [Point(xy) for xy in zip(df_point['latitude'], df_point['longitude'])]
-routingGDF = gpd.GeoDataFrame(df_point, geometry=geometry)
-routingGDF.crs = {'init': 'epsg:28992'}
-routingGDF.plot(marker='.', color='green', markersize=50)
-print(type(routingGDF), len(routingGDF))
+import geopandas as gpd
+from shapely.geometry import Point
+geometry = [Point(xy) for xy in zip(df_seg['latitude'], df_seg['longitude'])]
+seg_routeGDF = gpd.GeoDataFrame(df_seg, geometry=geometry)
+seg_routeGDF.crs = {'init': 'epsg:28992'}
+seg_routeGDF.plot(marker='.', color='green', markersize=50)
 
+geometry = [Point(xy) for xy in zip(df_long['latitude'], df_long['longitude'])]
+long_routeGDF = gpd.GeoDataFrame(df_long, geometry=geometry)
+long_routeGDF.crs = {'init': 'epsg:28992'}
+long_routeGDF.plot(marker='.', color='green', markersize=50)
+
+#df_point['speed_km/h'] = df_speed
+#df_speed = df_speed.fillna(0)
