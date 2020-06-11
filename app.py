@@ -26,7 +26,7 @@ def index():
     segments = ['Mini', 'Small', 'Medium', 'Large-SUV-Executive', '2-Stroke']
     standards = ['Conventional', 'ECE 15/00-01', 'ECE 15/02', 'ECE 15/03', 'ECE 15/04', 'Euro 1', 'Euro 2', 'Euro 3', 'Euro 4',\
                 'Euro 5', 'Euro 6', 'Euro 6 2017-2019', 'Euro 6 2020+', 'Euro 6 up to 2016', 'Improved Conventional', 'Open Loop', 'PRE ECE']
-    return render_template('home.html', fuels=fuels, segments=segments, standards=standards)
+    return render_template('home.html', fuels=fuels, segments=segments, standards=standards, title="Home")
 
 
 @app.route('/calculate_route', methods=['POST'])
@@ -55,11 +55,11 @@ def add_header(response):
 
 @app.route('/about', methods=['GET'])
 def about():
-    return render_template('about.html')
+    return render_template('about.html', title="About")
 
 @app.route('/help', methods=['GET'])
 def help():
-    return render_template('help.html')
+    return render_template('help.html', title="Help")
 
 
 if __name__ == '__main__':

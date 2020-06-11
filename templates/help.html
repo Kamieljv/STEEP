@@ -2,7 +2,111 @@
 <div class="container my-5">
     <div class="row">
         <div class="col-12">
-            <h1>Welcome!</h1>
+            <h1>Help</h1>
+            <br>
+            <p>On this page you'll find information to help you get started with STEEP to estimate the footprint of your commute.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne"
+                               aria-expanded="true" aria-controls="collapseOne">
+                                How do I run STEEP?
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel"
+                         aria-labelledby="headingOne">
+                        <div class="panel-body">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque lacinia lacinia mauris, at
+                            ultricies leo ornare nec. Vivamus eu est vel felis dignissim tempor. Nulla facilisi. Duis
+                            molestie tortor ac tempor volutpat. Phasellus nec mi aliquet, sollicitudin neque eget,
+                            consectetur libero. Vestibulum sollicitudin sapien libero, egestas tempus eros scelerisque
+                            eu. <a
+                                href="http://bootstraptema.ru/stuff/snippets_bootstrap/elements/stilnyj_bootstrap_accordion/33-1-0-1885"
+                                target="_blank">BootstrapTema</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingTwo">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                               href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                How do I interpret STEEP's results?
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                        <div class="panel-body">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque lacinia lacinia mauris, at
+                            ultricies leo ornare nec. Vivamus eu est vel felis dignissim tempor. Nulla facilisi. Duis
+                            molestie tortor ac tempor volutpat. Phasellus nec mi aliquet, sollicitudin neque eget,
+                            consectetur libero. Vestibulum sollicitudin sapien libero, egestas tempus eros scelerisque
+                            eu. <a
+                                href="http://bootstraptema.ru/stuff/snippets_bootstrap/elements/stilnyj_bootstrap_accordion/33-1-0-1885"
+                                target="_blank">BootstrapTema</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingThree">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                               href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                What do the vehicle parameters mean?
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseThree" class="panel-collapse collapse" role="tabpanel"
+                         aria-labelledby="headingThree">
+                        <div class="panel-body">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque lacinia lacinia mauris, at
+                            ultricies leo ornare nec. Vivamus eu est vel felis dignissim tempor. Nulla facilisi. Duis
+                            molestie tortor ac tempor volutpat. Phasellus nec mi aliquet, sollicitudin neque eget,
+                            consectetur libero. Vestibulum sollicitudin sapien libero, egestas tempus eros scelerisque
+                            eu. <a
+                                href="http://bootstraptema.ru/stuff/snippets_bootstrap/elements/stilnyj_bootstrap_accordion/33-1-0-1885"
+                                target="_blank">BootstrapTema</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingFour">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                               href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                How can I make a commuting scenario?
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseFour" class="panel-collapse collapse" role="tabpanel"
+                         aria-labelledby="headingFour">
+                        <div class="panel-body">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque lacinia lacinia mauris, at
+                            ultricies leo ornare nec. Vivamus eu est vel felis dignissim tempor. Nulla facilisi. Duis
+                            molestie tortor ac tempor volutpat. Phasellus nec mi aliquet, sollicitudin neque eget,
+                            consectetur libero. Vestibulum sollicitudin sapien libero, egestas tempus eros scelerisque
+                            eu. <a
+                                href="http://bootstraptema.ru/stuff/snippets_bootstrap/elements/stilnyj_bootstrap_accordion/33-1-0-1885"
+                                target="_blank">BootstrapTema</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /.panel-group -->
+
+        </div><!-- /.col-md-offset-3 col-md-6 -->
+    </div><!-- /.row -->
+
+    <div class="row mt-5">
+        <div class="col-12 d-flex justify-content-end">
+            <a href="{{ url_for('index') }}" class="btn btn-primary">Take me to STEEP <i class="fas fa-arrow-right"></i></a>
         </div>
     </div>
 </div>
