@@ -17,7 +17,8 @@ $(document).ready(function (e) {
     var container = $('#map')
 
     function resizeIFrame(object) {
-        object.height(window.innerHeight);
+        // the navigation bar takes up 56 px
+        object.height(window.innerHeight - 56);
     };
     resizeIFrame(container);
 
@@ -26,7 +27,10 @@ $(document).ready(function (e) {
     });
 
     // define Leaflet Map
-    map = L.map('map').setView([51.9745, 5.664], 14);
+    map = L.map('map', {zoomControl: false}).setView([51.9745, 5.664], 14);
+    L.control.zoom({
+        position: 'topright'
+    }).addTo(map);
 
     // Add tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
