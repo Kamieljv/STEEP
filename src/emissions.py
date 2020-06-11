@@ -1,20 +1,10 @@
 import pandas as pd
 import os
 
-
-# create a sample dataFrame with speeds per segment
-
-#speedPerSegmentDict = {'segment': [0, 1, 2, 3, 4],
-                       #'Speed': [9, 70, 55, 80, 70]}
-
-#speedPerSegmentDF = pd.DataFrame(speedPerSegmentDict)
-#speedPerSegmentDF.to_csv('data/b_SpeedFlow_sample.csv')
-
 # this function derive values for further emission factors calculation
-def derive_values_for_calc(path_input_emis_calc, category, fuel, segment, fuel_st, technology, pollutant):
+def derive_values_for_calc(path_input_emis_calc, fuel, segment, fuel_st, technology, pollutant):
     values_for_emis_calc = pd.read_csv(path_input_emis_calc)
-    df_values = values_for_emis_calc[(values_for_emis_calc['Category'] == category) &
-                                     (values_for_emis_calc['Fuel'] == fuel) &
+    df_values = values_for_emis_calc[(values_for_emis_calc['Fuel'] == fuel) &
                                      (values_for_emis_calc['Segment'] == segment) &
                                      (values_for_emis_calc['Euro Standard'] == fuel_st) &
                                      (values_for_emis_calc['Technology'] == technology) &
@@ -29,9 +19,13 @@ def formula_emission_factor(a, b, g, d, e, z, h, speed):
 
 
 # Unite two previous functions into one, where output is the dataframe with emission factor per segment
-def calculate_emission_factor(path_input_emis_calc, category, fuel, segment, fuel_st, technology, pollutant,
-                              path_speeds_per_seg):
-    a, b, g, d, e, z, h = derive_values_for_calc(path_input_emis_calc, category, fuel, segment, fuel_st, technology,
+def calculate_emission_factor(path_input_emis_calc, path_speeds_per_seg,
+                              fuel="Petrol",
+                              segment="Medium",
+                              fuel_st="Euro 6",
+                              technology="GDI",
+                              pollutant="EC"):
+    a, b, g, d, e, z, h = derive_values_for_calc(path_input_emis_calc, fuel, segment, fuel_st, technology,
                                                  pollutant)
     speed_per_seg = pd.read_csv(path_speeds_per_seg, index_col='segment')
     speed_per_seg.drop(columns=['Unnamed: 0'])
@@ -47,13 +41,15 @@ def calculate_emission_factor(path_input_emis_calc, category, fuel, segment, fue
         emis_f = formula_emission_factor(a, b, g, d, e, z, h, speed)
         emis_fs += [emis_f]
     emis_per_seg = pd.DataFrame(emis_fs)
-    if os.path.exists('../data/c02_emisFactor_perSeg_perCar.csv'):
-        return emis_per_seg
-    else:
-        emis_per_seg.to_csv('../data/c02_emisFactor_perSeg_perCar.csv')
+
+    # if os.path.exists('../data/c02_emisFactor_perSeg_perCar.csv'):
+    #     return emis_per_seg
+    # else:
+    #     emis_per_seg.to_csv('../data/c02_emisFactor_perSeg_perCar.csv')
+
     return emis_per_seg
 
 
 # input to check the result
-result = calculate_emission_factor('../data/Ps_STEEP_a_emis.csv', 'Passenger Cars', 'Petrol', 'Mini', 'Euro 4', 'GDI', 'EC', '../data/b_SpeedFlow_sample.csv')
-print(result)
+# result = calculate_emission_factor('../data/Ps_STEEP_a_emis.csv', '../data/b_SpeedFlow_sample.csv', 'Petrol', 'Mini', 'Euro 4', 'GDI', 'EC')
+# print(result)
