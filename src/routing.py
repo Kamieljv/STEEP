@@ -124,7 +124,7 @@ def tomtomAPI(startLat, startLon, destLat, destLon):
     long_routeGDF = gpd.GeoDataFrame(df_long, geometry=geom)
 
     # Matching points
-    gpd_line = long_routeGDF.groupby(['speed_km/h'])['geometry'].apply(
+    gpd_line = long_routeGDF.groupby(['speed_km/h', 'ID'])['geometry'].apply(
         lambda x: LineString(x.tolist()) if x.size > 1 else x.tolist())
 
     # Geodataframe
@@ -132,12 +132,3 @@ def tomtomAPI(startLat, startLon, destLat, destLon):
 
     return gpd_line
 
-
-# test
-# Coordinates
-startLat = 52.514426
-startLon = 13.315560
-destLat = 52.510458
-destLon = 13.286269
-
-test = tomtomAPI(startLat, startLon, destLat, destLon)
