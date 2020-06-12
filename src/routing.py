@@ -66,7 +66,7 @@ class Routing:
             sectionType='traffic',
             routeRepresentation='polyline',
             report='effectiveSettings',
-            routeType='eco',
+            routeType='fastest',
             traffic='true',
             avoid='unpavedRoads',
             travelMode='car',
@@ -127,6 +127,6 @@ class Routing:
         gdf_segments.columns = ['index', 'geometry']
 
         # Add speed (km/h) and distance (m) column
-        gdf_segments = gdf_segments.assign(speed=df_speed, distance=df_dis)
+        gdf_segments = gdf_segments.assign(speed=df_speed, distance=df_dis, time=df_time)
 
         return gdf_segments

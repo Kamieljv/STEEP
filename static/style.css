@@ -19,6 +19,10 @@ nav {
     z-index: 99;
 }
 
+#report p {
+  margin-bottom: 0;
+}
+
 .nav-link {
     color: #fff !important;
 }

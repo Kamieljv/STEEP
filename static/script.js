@@ -15,7 +15,7 @@ function send_form(form, url, type, formData) {
             success: function(response) {
                 route = JSON.parse(response.route);
                 addRoute(map, route);
-                console.log("Emissions: " + response.emissions);
+                showReport(response.emissions, response.distance, response.time, response.departure);
             },
             error: function(error) {
                 console.log(error);
@@ -43,6 +43,9 @@ function isFormDataEmpty(formData) {
 $('#calculate-btn').click(function(event){
     // Prevent redirection with AJAX for contact form
     event.preventDefault();
+
+    // hide Report
+    $('#report').hide()
 
     var form = $(this).parents('form')[0];
     var url = form.action;

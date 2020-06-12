@@ -155,5 +155,28 @@ function addRoute(map, route) {
     multiline.addTo(map);
     // pan to multiline object
     map.fitBounds(multiline.getBounds());
+}
 
+function showReport(emissions, distance, time, departure) {
+    var em = Math.round(emissions * 100) / 100 // round to 2 decimals
+    $('#report').empty();
+    $('#report').append('<h4>Calculation Results</h4>');
+    $('#report').append('<p><b>Route Emissions:</b> ' + em + ' grams CO2');
+    $('#report').append('<p><b>Distance:</b> ' + distance / 1000 + ' km');
+    $('#report').append('<p><b>Trip time:</b> ' + secondsToHms(time));
+    $('#report').append('<p><b>Departure time:</b> ' + departure);
+
+    $('#report').show();
+}
+
+function secondsToHms(d) {
+    d = Number(d);
+    var h = Math.floor(d / 3600);
+    var m = Math.floor(d % 3600 / 60);
+    var s = Math.floor(d % 3600 % 60);
+
+    var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
+    var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";
+    var sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+    return hDisplay + mDisplay + sDisplay;
 }

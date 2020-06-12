@@ -64,9 +64,9 @@ class EmissionCalculator:
 
         return route
 
-    def calculate_emissions(self):
+    def calculate_stats(self):
         """ Calculates the route emissions (gCO2) based on the emission factors and segment lengths """
 
         self.route['emissions'] = self.route.apply(lambda row: (row.distance / 1000) * row.em_fac, axis=1)
 
-        return self.route['emissions'].sum()
+        return self.route['emissions'].sum(), int(self.route['distance'].sum()), int(self.route['time'].sum())
