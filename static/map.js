@@ -2,6 +2,7 @@
 var map = null;
 var startMarker = null;
 var destMarker = null;
+var multiline = null;
 var greenIcon = L.icon({
     iconUrl: '/static/marker-green.png',
     iconSize: [40, 40],
@@ -125,6 +126,9 @@ function addRoute(map, route) {
     route: GeoJSON object
     */
 
+    // remove old line from
+    if (multiline != null) { map.removeLayer(multiline); }
+
     // Define plot styles
     var red = {
         "color": "#f55142",
@@ -142,7 +146,7 @@ function addRoute(map, route) {
         "opacity": 0.8
     }
     // define multiline object with specific styling
-    var multiline = L.geoJSON(route, {
+    multiline = L.geoJSON(route, {
         style: function (feature) {
             var em_fac = feature.properties.em_fac;
             switch (true) {
