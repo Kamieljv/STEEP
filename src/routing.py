@@ -86,7 +86,7 @@ class Routing:
         self.departure = departure
 
         response = self.api_call()
-        if response['error']:
+        if 'error' in response:
             raise Exception(response['error']['description'])
 
         # Extract points stored in legs (long route, instructions, distance and time) using find function
