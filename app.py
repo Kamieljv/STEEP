@@ -2,6 +2,8 @@
 
     Required packages:
     - flask
+    - pandas
+    - os
 
 
     Usage:
@@ -15,36 +17,43 @@
 """
 
 from flask import Flask, render_template, request, json
-import src.vehicle_config
+import geopandas as gpd
+
+from src.vehicle_config import VehicleConfig
+from src.emission_calculator import EmissionCalculator
+from src.routing import Routing
+
 
 # Load vehicle configuration class
-VehicleConfig = src.vehicle_config.VehicleConfig()
-
-
+v_config = VehicleConfig()
 app = Flask(__name__)
-
 
 @app.route('/', methods=['GET'])
 def index():
     """Sets vehicle parameter options and renders home-page."""
-    fuels = VehicleConfig.fuels
-    segments = VehicleConfig.segments
-    standards = VehicleConfig.standards
+    fuels = v_config.fuels
+    segments = v_config.segments
+    standards = v_config.standards
     return render_template('home.html', fuels=fuels, segments=segments, standards=standards, title="Home")
 
 
 @app.route('/calculate_route', methods=['POST'])
 def calculate_route():
     """Gets route configuration; calculates route; returns route to view as JSON."""
-    start = request.form['start']
-    dest = request.form['dest']
-    departure = request.form['departure']
-    startCoords = request.form['start-coords']
-    destCoords = request.form['dest-coords']
-    fuel = request.form['fuel']
-    segment = request.form['segment']
-    standard = request.form['standard']
-    return json.dumps({'start':start, 'startCoords':startCoords, 'destCoords':destCoords, 'dest':dest, 'departure':departure, 'fuel':fuel, 'segment':segment, 'standard':standard})
+    # Calculate route
+    # departure = request.form['departure']
+    startLat, startLon = request.form['start-coords'].split(", ")
+    destLat, destLon = request.form['dest-coords'].split(", ")
+    router = Routing()
+    route = router.get_route(float(startLat), float(startLon), float(destLat), float(destLon))
+
+    # # Calculate emissions
+    # fuel = request.form['fuel']
+    # segment = request.form['segment']
+    # standard = request.form['standard']
+    # calculator = EmissionCalculator('data/Ps_STEEP_a_emis.csv', fuel=fuel, segment=segment, standard=standard)
+
+    return route.to_json()
 
 @app.route('/about', methods=['GET'])
 def about():

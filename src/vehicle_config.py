@@ -4,7 +4,7 @@
 
 """
 
-class VehicleConfig():
+class VehicleConfig:
     """Defines vehicle parameter options for the COPERT+ Model"""
 
     def __init__(self):

@@ -146,7 +146,7 @@ function addRoute(map, route) {
         style: function (feature) {
             var speed = feature.properties.speed;
             switch (true) {
-                case (speed <= 50): return slow;
+                case (speed <= 20): return slow;
                 case (speed <= 80): return moderate;
                 case (speed > 80): return fast;
             }

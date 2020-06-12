@@ -14,7 +14,7 @@ function send_form(form, url, type, formData) {
             contentType: false,
             success: function(response) {
                 data = JSON.parse(response);
-                console.log(data);
+                addRoute(map, data);
             },
             error: function(error) {
                 console.log(error);

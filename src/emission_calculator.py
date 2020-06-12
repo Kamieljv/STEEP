@@ -9,6 +9,8 @@
 
 """
 
+import pandas as pd
+
 class EmissionCalculator:
     """Derives values for further emission factors calculation"""
 
