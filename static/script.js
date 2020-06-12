@@ -82,6 +82,7 @@ $(document).on('keyup', '#start, #dest', function(e) {
 // initialize date-time picker
 $('#departure').flatpickr({
     'enableTime': true,
+    'minDate': new Date(),
     'dateFormat': "Y-m-d H:i",
     'time_24hr': true
     });

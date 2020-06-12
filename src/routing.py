@@ -60,9 +60,9 @@ class Routing:
         }
 
         params = dict(
+            departAt=self.departure,
             instructionsType='text',
             language='en-GB',
-            # maxAlternatives='3',
             sectionType='traffic',
             routeRepresentation='polyline',
             report='effectiveSettings',
@@ -76,15 +76,18 @@ class Routing:
         # Make request
         return requests.get(tomtomURL, params=params, headers=headers).json()
 
-    def get_route(self, startLat, startLon, destLat, destLon):
+    def get_route(self, startLat, startLon, destLat, destLon, departure):
         """ Returns a Geodataframe containing segments and speed """
 
         self.startLat = startLat
         self.startLon = startLon
         self.destLat = destLat
         self.destLon = destLon
+        self.departure = departure
 
         response = self.api_call()
+        if response['error']:
+            raise Exception(response['error']['description'])
 
         # Extract points stored in legs (long route, instructions, distance and time) using find function
         long_route = list(self.find('points', response))[0]

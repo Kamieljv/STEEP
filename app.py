@@ -4,6 +4,8 @@
     - flask
     - pandas
     - os
+    - pytz
+    - re
 
 
     Usage:
@@ -17,7 +19,8 @@
 """
 
 from flask import Flask, render_template, request, jsonify
-import geopandas as gpd
+import pytz, re
+from datetime import datetime
 
 from src.vehicle_config import VehicleConfig
 from src.emission_calculator import EmissionCalculator
@@ -40,12 +43,19 @@ def index():
 @app.route('/calculate_route', methods=['POST'])
 def calculate_route():
     """Gets route configuration; calculates route; returns route to view as JSON."""
+
+    # Define and format the departure time variable
+    tz = pytz.timezone('Europe/Amsterdam') # set time zone
+    fmt = '%Y-%m-%dT%H:%M:%S%z' # set
+    t = [int(x) for x in re.split(' |-|:', request.form['departure'])] # convert to integers
+    departure = tz.localize(datetime(t[0], t[1], t[2], t[3], t[4], 0)).strftime(fmt)
+    departure = departure[:-2] + ':' + departure[-2:]
+
     # Calculate route
-    # departure = request.form['departure']
     startLat, startLon = request.form['start-coords'].split(", ")
     destLat, destLon = request.form['dest-coords'].split(", ")
     router = Routing()
-    route = router.get_route(float(startLat), float(startLon), float(destLat), float(destLon))
+    route = router.get_route(float(startLat), float(startLon), float(destLat), float(destLon), departure)
 
     # Calculate emissions
     fuel = request.form['fuel']
