@@ -123,7 +123,7 @@ class Routing:
         gdf_segments = gpd.GeoDataFrame(list(range(len(segments))), geometry=segments)
         gdf_segments.columns = ['index', 'geometry']
 
-        # Add speed column
-        gdf_segments_speeds = gdf_segments.assign(speed=df_speed)
+        # Add speed (km/h) and distance (m) column
+        gdf_segments = gdf_segments.assign(speed=df_speed, distance=df_dis)
 
-        return gdf_segments_speeds
+        return gdf_segments

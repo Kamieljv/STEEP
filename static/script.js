@@ -13,8 +13,9 @@ function send_form(form, url, type, formData) {
             processData: false,
             contentType: false,
             success: function(response) {
-                data = JSON.parse(response);
-                addRoute(map, data);
+                route = JSON.parse(response.route);
+                addRoute(map, route);
+                console.log("Emissions: " + response.emissions);
             },
             error: function(error) {
                 console.log(error);

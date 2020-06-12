@@ -16,7 +16,7 @@
 
 """
 
-from flask import Flask, render_template, request, json
+from flask import Flask, render_template, request, jsonify
 import geopandas as gpd
 
 from src.vehicle_config import VehicleConfig
@@ -47,13 +47,15 @@ def calculate_route():
     router = Routing()
     route = router.get_route(float(startLat), float(startLon), float(destLat), float(destLon))
 
-    # # Calculate emissions
-    # fuel = request.form['fuel']
-    # segment = request.form['segment']
-    # standard = request.form['standard']
-    # calculator = EmissionCalculator('data/Ps_STEEP_a_emis.csv', fuel=fuel, segment=segment, standard=standard)
+    # Calculate emissions
+    fuel = request.form['fuel']
+    segment = request.form['segment']
+    standard = request.form['standard']
+    calculator = EmissionCalculator('data/Ps_STEEP_a_emis.csv', fuel=fuel, segment=segment, standard=standard)
+    emfac_route = calculator.calculate_emission_factor(route)
+    emissions = calculator.calculate_emissions()
 
-    return route.to_json()
+    return  jsonify({'route': emfac_route.to_json(), 'emissions': emissions})
 
 @app.route('/about', methods=['GET'])
 def about():

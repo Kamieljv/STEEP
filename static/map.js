@@ -126,17 +126,17 @@ function addRoute(map, route) {
     */
 
     // Define plot styles
-    var slow = {
+    var red = {
         "color": "#f55142",
         "weight": 5,
         "opacity": 0.8
     };
-    var moderate = {
+    var orange = {
         "color": "#fcbd00",
         "weight": 10,
         "opacity": 0.8
     };
-    var fast = {
+    var green = {
         "color": "#74f533",
         "weight": 15,
         "opacity": 0.8
@@ -144,11 +144,11 @@ function addRoute(map, route) {
     // define multiline object with specific styling
     var multiline = L.geoJSON(route, {
         style: function (feature) {
-            var speed = feature.properties.speed;
+            var em_fac = feature.properties.em_fac;
             switch (true) {
-                case (speed <= 20): return slow;
-                case (speed <= 80): return moderate;
-                case (speed > 80): return fast;
+                case (em_fac <= 1.5): return green;
+                case (em_fac <= 2): return orange;
+                case (em_fac > 2): return red;
             }
         }
     });
