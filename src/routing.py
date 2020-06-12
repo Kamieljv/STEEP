@@ -15,7 +15,8 @@ import requests
 from ast import literal_eval
 import pandas as pd
 import geopandas as gpd
-from shapely.geometry import Point, LineString
+from shapely.geometry import Point, LineString, MultiPoint
+from shapely.ops import split, snap
 
 class Routing:
     """ Calculates a route between two points at a given time/date, based on the TomTom Route API. """
@@ -23,7 +24,9 @@ class Routing:
     def __init__(self):
         # Tomtom url and key
         self.apiURL = "https://api.tomtom.com/routing/1/calculateRoute/"
-        self.apiKEY = os.environ.get("TOMTOM_API_KEY")
+        self.apiKEY = "x7b42zLGbh4VoCVGHgrDNjC2FKo2hZDo" #os.environ.get("TOMTOM_API_KEY")
+        if not self.apiKEY:
+            raise Exception("'TOMTOM_API_KEY' not found in environment.")
 
     def find(self, key, dictionary):
         """ Function to extract data from JSON API response """
@@ -48,11 +51,10 @@ class Routing:
                 data_list.append(data_sub)
         return data_list
 
-    # Routing function
-    def tomtomAPI(self, startLat, startLon, destLat, destLon):
-        """ Returns a Geodataframe containing segments and speed """
+    def api_call(self):
+        """ Makes the TomTom API call """
 
-        tomtomURL = "%s/%s,%s:%s,%s/json?key=%s" % (self.apiURL, startLat, startLon, destLat, destLon, self.apiKEY)
+        tomtomURL = "%s/%f,%f:%f,%f/json?key=%s" % (self.apiURL, self.startLat, self.startLon, self.destLat, self.destLon, self.apiKEY)
         headers = {
             'accept': '*/*',
         }
@@ -71,21 +73,24 @@ class Routing:
             vehicleCommercial='false',
             vehicleEngineType='combustion',
         )
-        # Request and response
-        resp = requests.get(tomtomURL, params=params, headers=headers)
-        data = resp.json()
+        # Make request
+        return requests.get(tomtomURL, params=params, headers=headers).json()
 
-        # Transform data object to string
-        string = str(data)
-        routing = literal_eval(string)
+    def get_route(self, startLat, startLon, destLat, destLon):
+        """ Returns a Geodataframe containing segments and speed """
+
+        self.startLat = startLat
+        self.startLon = startLon
+        self.destLat = destLat
+        self.destLon = destLon
+
+        response = self.api_call()
 
         # Extract points stored in legs (long route, instructions, distance and time) using find function
-        lr_points = list(self.find('points', routing))
-        long_route = lr_points[0]
-        seg_points = list(self.find('point', routing))
-        distance = list(self.find('routeOffsetInMeters', routing))
-        all_time = list(self.find('travelTimeInSeconds', routing))
-        time = all_time[2:]
+        long_route = list(self.find('points', response))[0]
+        seg_points = list(self.find('point', response))
+        distance = list(self.find('routeOffsetInMeters', response))
+        time = list(self.find('travelTimeInSeconds', response))[2:]
 
         # Dataframe for the long route and the segment points
         df_long = pd.DataFrame(long_route)
@@ -100,36 +105,25 @@ class Routing:
         df_time = pd.DataFrame(time_list)
         df_speed = (df_dis / df_time) * 3.6
 
-        # Segments
-        idlist = []
-        for i in range(df_seg.shape[0]):
-            searcher = df_seg.iloc[i]
-            id = df_long[(df_long['latitude'] == searcher['latitude']) & (
-                        df_long['longitude'] == searcher['longitude'])].index.values[0]
-            idlist.append(id)
+        # Zip the route coordinates into a point list and convert to LineString
+        routePoints = [Point(x, y) for x, y in zip(df_long.longitude, df_long.latitude)]
+        routeLine = LineString(routePoints)
 
-        # Match with speed
-        init = 0
-        df_long["speed_km/h"] = ''
-        for t, i in enumerate(idlist):
-            for j in range(init, i):
-                df_long.loc[j] = df_speed.iloc[t - 1].values[0]
-            init = i
-        df_long.loc[i] = df_speed.iloc[t - 1].values[0]
+        # Convert segment coordinates to MultiPoint object
+        segmentPoints = MultiPoint([Point(x, y) for x, y in zip(df_seg.longitude, df_seg.latitude)])
 
-        # Create ID column
-        df_long['ID'] = (df_long['speed_km/h']).astype('category').cat.codes
+        # Define a tolerance of roughly 1m
+        tolerance = 0.000005
 
-        # Zip the coordinates into a point object and convert to a GeoDataFrame
-        geom = [Point(xy) for xy in zip(df_long.longitude, df_long.latitude)]
-        long_routeGDF = gpd.GeoDataFrame(df_long, geometry=geom)
+        # snap and split segment points on route line
+        split_line = split(routeLine, snap(segmentPoints, routeLine, tolerance))
 
-        # Matching points
-        gpd_line = long_routeGDF.groupby(['speed_km/h', 'ID'])['geometry'].apply(
-            lambda x: LineString(x.tolist()) if x.size > 1 else x.tolist())
+        # transform resulting Geometry Collection to GeoDataFrame
+        segments = [feature for feature in split_line]
+        gdf_segments = gpd.GeoDataFrame(list(range(len(segments))), geometry=segments)
+        gdf_segments.columns = ['index', 'geometry']
 
-        # Geodataframe
-        gpd_line = gpd.GeoDataFrame(gpd_line)
+        # Add speed column
+        gdf_segments_speeds = gdf_segments.assign(speed=df_speed)
 
-        return gpd_line
-
+        return gdf_segments_speeds
