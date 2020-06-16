@@ -86,6 +86,7 @@ $(document).on('keyup', '#start, #dest', function(e) {
     if (e.keyCode === 13) {
         e.preventDefault();
         $('#' + this.id + '-btn').click();
+        $(this).parent().parent().next().find('input').focus();
     }
 });
 
