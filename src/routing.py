@@ -67,7 +67,7 @@ class Routing:
             routeRepresentation='polyline',
             report='effectiveSettings',
             routeType=self.routetype,
-            traffic='true',
+            traffic=str(self.traffic).lower(),
             avoid='unpavedRoads',
             travelMode='car',
             vehicleCommercial='false',
@@ -76,7 +76,7 @@ class Routing:
         # Make request
         return requests.get(tomtomURL, params=params, headers=headers).json()
 
-    def get_route(self, startLat, startLon, destLat, destLon, departure, routetype):
+    def get_route(self, startLat, startLon, destLat, destLon, departure, routetype, traffic):
         """ Returns a Geodataframe containing segments and speed """
 
         self.startLat = startLat
@@ -85,6 +85,7 @@ class Routing:
         self.destLon = destLon
         self.departure = departure
         self.routetype = routetype
+        self.traffic = traffic
 
         response = self.api_call()
         if 'error' in response:

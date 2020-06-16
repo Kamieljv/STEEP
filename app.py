@@ -65,8 +65,9 @@ def calculate_route():
     # Calculate route
     startLat, startLon = request.form['start-coords'].split(", ")
     destLat, destLon = request.form['dest-coords'].split(", ")
+    traffic = 'traffic' in request.form
     router = Routing()
-    route = router.get_route(float(startLat), float(startLon), float(destLat), float(destLon), departure, request.form['route-type'])
+    route = router.get_route(float(startLat), float(startLon), float(destLat), float(destLon), departure, request.form['route-type'], traffic)
 
     # Calculate emissions
     fuel = request.form['fuel']

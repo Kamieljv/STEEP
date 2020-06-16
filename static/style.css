@@ -40,6 +40,10 @@ nav {
     font-size: 22px;
 }
 
+.traffic {
+    margin-top: 2.5em;
+}
+
 /* HELP PAGE ACCORDION */
 /* Form Style */
 a:hover,a:focus{
