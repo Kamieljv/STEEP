@@ -2,7 +2,7 @@
 function send_form(form, url, type, formData) {
     // form validation and sending of form items
 
-    if (!isFormDataEmpty(formData)) { // checks if form is empty
+    if (!isFormDataEmpty(form, formData)) { // checks if form is empty
         event.preventDefault();
 
         // make AJAX call
@@ -25,7 +25,7 @@ function send_form(form, url, type, formData) {
     }
 }
 
-function isFormDataEmpty(formData) {
+function isFormDataEmpty(form, formData) {
     // checks for all values in formData object if they are empty
     var status = false;
     for (var [key, value] of formData.entries()) {
@@ -35,6 +35,13 @@ function isFormDataEmpty(formData) {
                 $('#'+id).toggleClass('is-invalid', true).toggleClass('is-valid', false);
                 status = true;
             }
+        }
+    }
+    // also explicitly check select inputs
+    for (field of $(form).find('select')) {
+        if (!$(field).val()) {
+            $(field).toggleClass('is-invalid', true).toggleClass('is-valid', false);
+            status = true;
         }
     }
     return status;

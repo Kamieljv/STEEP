@@ -1,4 +1,7 @@
 /* This file contains the styles for the web app */
+body, html {
+    overflow: hidden;
+}
 
 .container {
     max-width: 900px !important;
@@ -9,6 +12,9 @@ nav {
 }
 
 #controls {
+    height: calc(100vh - 56px);
+    overflow: hidden;
+    overflow-y: scroll;
     z-index: 999;
     -webkit-box-shadow: 1px 0px 12px 1px rgba(50, 50, 50, 0.75);
     -moz-box-shadow: 1px 0px 12px 1px rgba(50, 50, 50, 0.75);
