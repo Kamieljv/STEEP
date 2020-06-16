@@ -33,6 +33,16 @@
                                  <button id="today-btn" title="Today" class="btn btn-primary btn-icon" type="button"><i class="fas fa-calendar-day"></i></button>
                             </div>
                         </div>
+                        <div class="row mb-3">
+                            <div class="col-6 pr-0">
+                                <label for="route-type">Route type</label>
+                                <select id="route-type" name="route-type" class="form-control">
+                                    {% for routetype in routetypes %}
+                                        <option value="{{routetype|lower}}">{{routetype}}</option>"
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
                         <hr/>
                         <h4>Vehicle Parameters</h4>
                         <div class="row mb-3">

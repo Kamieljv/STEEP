@@ -32,7 +32,12 @@ def index():
     """Sets vehicle parameter options and renders home-page."""
     calculator = EmissionCalculator('data/Ps_STEEP_a_emis.csv')
     options = calculator.get_options({'fuel':"", 'segment':"", 'standard': ""})
-    return render_template('home.html', fuels=options['fuel'], segments=options['segment'], standards=options['standard'], title="Home")
+    return render_template('home.html',
+                           fuels=options['fuel'],
+                           segments=options['segment'],
+                           standards=options['standard'],
+                           routetypes=['Eco', 'Fastest'],
+                           title="Home")
 
 @app.route('/getoptions', methods=['POST', 'GET'])
 def getoptions():
@@ -61,7 +66,7 @@ def calculate_route():
     startLat, startLon = request.form['start-coords'].split(", ")
     destLat, destLon = request.form['dest-coords'].split(", ")
     router = Routing()
-    route = router.get_route(float(startLat), float(startLon), float(destLat), float(destLon), departure)
+    route = router.get_route(float(startLat), float(startLon), float(destLat), float(destLon), departure, request.form['route-type'])
 
     # Calculate emissions
     fuel = request.form['fuel']
