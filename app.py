@@ -20,7 +20,7 @@
 
 from flask import Flask, render_template, request, jsonify
 import pytz, re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from src.emission_calculator import EmissionCalculator
 from src.routing import Routing
@@ -44,11 +44,16 @@ def getoptions():
 @app.route('/calculate_route', methods=['POST'])
 def calculate_route():
     """Gets route configuration; calculates route; returns route to view as JSON."""
+    # Check if time is not in past, otherwise change to present
+    departure = datetime.strptime(request.form['departure'], '%Y-%m-%d %H:%M')
+    if departure < datetime.now():
+        departure = datetime.now() + timedelta(minutes = 1)
+    departure = datetime.strftime(departure, '%Y-%m-%d %H:%M')
 
     # Define and format the departure time variable
     tz = pytz.timezone('Europe/Amsterdam') # set time zone
     fmt = '%Y-%m-%dT%H:%M:%S%z' # set date format
-    t = [int(x) for x in re.split(' |-|:', request.form['departure'])] # convert to integers
+    t = [int(x) for x in re.split(' |-|:', departure)] # convert to integers
     departure = tz.localize(datetime(t[0], t[1], t[2], t[3], t[4], 0)).strftime(fmt)
     departure = departure[:-2] + ':' + departure[-2:]
 
