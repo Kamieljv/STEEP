@@ -36,8 +36,10 @@ class EmissionCalculator:
         df_values = values_for_emis_calc[(values_for_emis_calc['Fuel'] == self.fuel) &
                                          (values_for_emis_calc['Segment'] == self.segment) &
                                          (values_for_emis_calc['Euro Standard'] == self.standard) &
-                                         (values_for_emis_calc['Technology'] == self.technology) &
+                                         # (values_for_emis_calc['Technology'] == self.technology) &
                                          (values_for_emis_calc['Pollutant'] == self.pollutant)]
+        # Take the first row if multiple exist
+        df_values = df_values.iloc[0]
         return df_values['Alpha'], df_values['Beta'], df_values['Gamma'], df_values['Delta'], df_values['Epsilon'], df_values['Zita'], df_values['Hta']
 
     def get_options(self, choice):
