@@ -108,3 +108,43 @@ $('#today-btn').click(function(e) {
     var dateTime = date+' '+time;
     $('#departure')[0].value = dateTime;
 });
+
+$(document).on('change', '#fuel, #segment, #standard', function (e) {
+    event.preventDefault();
+
+    var getUrl = window.location;
+    var url = getUrl.protocol + "//" + getUrl.host + '/getoptions';
+    var data = {'fuel': $('#fuel').val()};
+    var currID = this.id;
+    // include segment if not changing fuel selector
+    data['segment'] = (currID != 'fuel')? $('#segment').val() : "";
+    if (currID == 'fuel') {
+        $('.v-param:not(#fuel)').prop('disabled', true); // disable next fields
+    }
+
+    // make AJAX call
+    $.ajax({
+        url: url,
+        data: data,
+        type: 'POST',
+        success: function(response) {
+            for (obj of $('.v-param:not(#'+ currID +')')) {
+                if (obj.dataset.idx > $('#'+currID)[0].dataset.idx) {
+                    $(obj).empty();
+                    $(obj).append('<option value="" disabled selected>Select a ' + obj.id + '</option>');
+                    for (opt of response[obj.id]) {
+                        var option = $('<option></option>').attr("value", opt).text(opt);
+                        $(obj).append(option);
+                    }
+                    if (obj.dataset.idx - $('#'+currID)[0].dataset.idx === 1) {
+                        $(obj).prop('disabled', false);
+                    }
+                }
+            }
+
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    });
+});

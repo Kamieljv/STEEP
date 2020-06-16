@@ -22,7 +22,6 @@ class EmissionCalculator:
             - standard [string]*
             - technology [string]*
             - pollutant [string]*
-            (* Options for this variable are specified in src/vehicle_config.py.)
         """
         self.modelpath = modelpath
         self.fuel = fuel
@@ -40,6 +39,31 @@ class EmissionCalculator:
                                          (values_for_emis_calc['Technology'] == self.technology) &
                                          (values_for_emis_calc['Pollutant'] == self.pollutant)]
         return df_values['Alpha'], df_values['Beta'], df_values['Gamma'], df_values['Delta'], df_values['Epsilon'], df_values['Zita'], df_values['Hta']
+
+    def get_options(self, choice):
+        """ Retrieves the vehicle parameter options based on a user's initial choice.
+            - choice [dict]: contains a vehicle parameter choice if set by user
+        """
+        # List the dict keys for later use
+        inputs = [k for k, v in choice.items()]
+        # Filter out keys with empty values
+        choice = {k: v for k, v in choice.items() if v}
+        # Get all options from COPERT model sheet
+        options = pd.read_csv(self.modelpath)
+
+        # Translate dict keys to csv columns
+        col = {'fuel':'Fuel', 'segment':'Segment', 'standard':'Euro Standard'}
+
+        # Filter options based on choices
+        for k, v in choice.items():
+            options = options[options[col[k]] == v]
+
+        options_dict = dict()
+        for var in inputs:
+            options_dict[var] = list(options[col[var]].unique())
+
+        return options_dict
+
 
     def emission_formula(self, speed):
         """ Computes the emission factor based on model input parameters. """

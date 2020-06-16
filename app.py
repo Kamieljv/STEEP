@@ -22,23 +22,24 @@ from flask import Flask, render_template, request, jsonify
 import pytz, re
 from datetime import datetime
 
-from src.vehicle_config import VehicleConfig
 from src.emission_calculator import EmissionCalculator
 from src.routing import Routing
 
-
-# Load vehicle configuration class
-v_config = VehicleConfig()
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def index():
     """Sets vehicle parameter options and renders home-page."""
-    fuels = v_config.fuels
-    segments = v_config.segments
-    standards = v_config.standards
-    return render_template('home.html', fuels=fuels, segments=segments, standards=standards, title="Home")
+    calculator = EmissionCalculator('data/Ps_STEEP_a_emis.csv')
+    options = calculator.get_options({'fuel':"", 'segment':"", 'standard': ""})
+    return render_template('home.html', fuels=options['fuel'], segments=options['segment'], standards=options['standard'], title="Home")
 
+@app.route('/getoptions', methods=['POST', 'GET'])
+def getoptions():
+    """Updates vehicle parameter options based on user's choice."""
+    calculator = EmissionCalculator('data/Ps_STEEP_a_emis.csv')
+    options = calculator.get_options({'fuel':request.form['fuel'], 'segment':request.form['segment'], 'standard':""})
+    return jsonify(options)
 
 @app.route('/calculate_route', methods=['POST'])
 def calculate_route():
@@ -46,7 +47,7 @@ def calculate_route():
 
     # Define and format the departure time variable
     tz = pytz.timezone('Europe/Amsterdam') # set time zone
-    fmt = '%Y-%m-%dT%H:%M:%S%z' # set
+    fmt = '%Y-%m-%dT%H:%M:%S%z' # set date format
     t = [int(x) for x in re.split(' |-|:', request.form['departure'])] # convert to integers
     departure = tz.localize(datetime(t[0], t[1], t[2], t[3], t[4], 0)).strftime(fmt)
     departure = departure[:-2] + ':' + departure[-2:]
@@ -65,7 +66,7 @@ def calculate_route():
     emfac_route = calculator.calculate_emission_factor(route)
     emissions, distance, time = calculator.calculate_stats()
 
-    return  jsonify({'route': emfac_route.to_json(), 'emissions': emissions, 'distance': distance, 'time': time, 'departure': request.form['departure'] })
+    return jsonify({'route': emfac_route.to_json(), 'emissions': emissions, 'distance': distance, 'time': time, 'departure': request.form['departure'] })
 
 @app.route('/about', methods=['GET'])
 def about():
