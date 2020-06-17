@@ -44,6 +44,11 @@ nav {
     margin-top: 2.5em;
 }
 
+#swap-btn {
+    height: 34px;
+    margin-top: 23px;
+}
+
 /* HELP PAGE ACCORDION */
 /* Form Style */
 a:hover,a:focus{

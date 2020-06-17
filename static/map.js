@@ -88,26 +88,31 @@ function locationSearch(locationName, field, coordField) {
             coordField.value = lat + ", " + lon;
 
             // place a marker on the leaflet map
-            var location = new L.LatLng(lat, lon);
-            var bounds = new L.LatLngBounds();
-
-            if (field.name == 'start') {
-                if (startMarker) {map.removeLayer(startMarker);}
-                startMarker = L.marker(location, {icon: greenIcon}).addTo(map);
-                bounds.extend(startMarker.getLatLng());
-                if (destMarker) {bounds.extend(destMarker.getLatLng());}
-            } else {
-                if (destMarker) {map.removeLayer(destMarker);}
-                destMarker = L.marker(location, {icon: redIcon}).addTo(map);
-                bounds.extend(destMarker.getLatLng());
-                if (startMarker) {bounds.extend(startMarker.getLatLng());}
-            }
-
-            // pan/zoom to have all current features on screen
-            map.fitBounds(bounds);
+            placeMarker(lat, lon, field.name)
         }
     });
 }
+
+function placeMarker(lat, lon, type) {
+    var location = new L.LatLng(lat, lon);
+    var bounds = new L.LatLngBounds();
+
+    if (type == 'start') {
+        if (startMarker) {map.removeLayer(startMarker);}
+        startMarker = L.marker(location, {icon: greenIcon}).addTo(map);
+        bounds.extend(startMarker.getLatLng());
+        if (destMarker) {bounds.extend(destMarker.getLatLng());}
+    } else {
+        if (destMarker) {map.removeLayer(destMarker);}
+        destMarker = L.marker(location, {icon: redIcon}).addTo(map);
+        bounds.extend(destMarker.getLatLng());
+        if (startMarker) {bounds.extend(startMarker.getLatLng());}
+    }
+
+    // pan/zoom to have all current features on screen
+    map.fitBounds(bounds, {padding: [30, 30]});
+}
+
 function zoomToFeature(lat, lng, type) {
   var location = new L.LatLng(lat, lng);
   map.panTo(location);
