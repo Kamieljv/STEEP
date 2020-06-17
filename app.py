@@ -65,7 +65,20 @@ def calculate_route():
     emfac_route = calculator.calculate_emission_factor(route)
     emissions, distance, time = calculator.calculate_stats()
 
-    return  jsonify({'route': emfac_route.to_json(), 'emissions': emissions, 'distance': distance, 'time': time, 'departure': request.form['departure'] })
+    return jsonify({'route': emfac_route.to_json(), 'emissions': emissions, 'distance': distance, 'time': time, 'departure': request.form['departure'] })
+
+@app.route('/time_window', methods=['POST'])
+def time_window():
+    """Gets departure time; calculates time window (5 options with a 5 minute interval)"""
+
+    # Get departure time
+    router = Routing()
+    departure = router.find('departure', router)
+
+    # Calculate time window
+
+
+    return None
 
 @app.route('/about', methods=['GET'])
 def about():
