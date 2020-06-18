@@ -74,11 +74,17 @@ def time_window():
 
     # Get departure time
     router = calculate_route()
-    dep = router.find('departure', router)
-    fmt = datetime.strptime(dep, "%Y-%m-%d %H:%M")
-    departure = str(fmt + timedelta(minutes=5))
-    # not ready yet
-    return departure
+    default = router.find('departure', router)
+    departure = datetime.strptime(default, "%Y-%m-%d %H:%M")
+    initial = departure
+
+    # Adding the other 4 options
+    departures = [initial]
+    for i in range(5):
+        departure += timedelta(minutes=5)
+        departures.append(departure)
+
+    return
 
 @app.route('/about', methods=['GET'])
 def about():
