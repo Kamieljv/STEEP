@@ -124,6 +124,23 @@ function zoomToFeature(lat, lng, type) {
   }
 }
 
+var colorFunctions = {
+		'Green to Red': new L.HSLHueFunction(new L.Point(1,120), new L.Point(55,0)),
+		'White to Red': new L.HSLLuminosityFunction(new L.Point(1,1), new L.Point(55,0.5)),
+		'White to Yellow to Red': new L.PiecewiseFunction([new L.HSLLuminosityFunction([1,1], [20,0.5], {outputHue: 60}), new L.HSLHueFunction([20,60], [55, 0])]),
+		'Grey to Red': new L.HSLSaturationFunction(new L.Point(1,0), new L.Point(55,1)),
+		'Blue to Red (HSL)': new L.HSLHueFunction(new L.Point(1, 240), new L.Point(55, 0)),
+		'Blue to Red (Blend)': new L.RGBColorBlendFunction(1, 55, [0, 0, 255], [255, 0, 0])
+	};
+
+for (var key in L.ColorBrewer.Sequential) {
+        var choices = L.ColorBrewer.Sequential[key];
+        var keys = Object.keys(choices);
+
+        colorFunctions[key] = new L.CustomColorFunction(1, 55, choices[keys[keys.length - 1]], {
+                interpolate: true
+        });
+}
 function addRoute(map, route) {
     /*
     Function that adds a route to the Leaflet map
@@ -136,7 +153,8 @@ function addRoute(map, route) {
 
     // Define plot styles
     var red = {
-        "color": "#f55142",
+        //"color": "#f55142",
+        "color": colorFunctions[key],
         "weight": 5,
         "opacity": 0.8
     };
