@@ -42,14 +42,16 @@ class EmissionCalculator:
         df_values = df_values.iloc[0]
         return df_values['Alpha'], df_values['Beta'], df_values['Gamma'], df_values['Delta'], df_values['Epsilon'], df_values['Zita'], df_values['Hta']
 
-    def get_options(self, choice):
+    def get_options(self, choice=None):
         """ Retrieves the vehicle parameter options based on a user's initial choice.
             - choice [dict]: contains a vehicle parameter choice if set by user
         """
-        # List the dict keys for later use
-        inputs = [k for k, v in choice.items()]
-        # Filter out keys with empty values
-        choice = {k: v for k, v in choice.items() if v}
+        if choice != None:
+            # List the dict keys for later use
+            inputs = [k for k, v in choice.items()]
+            # Filter out keys with empty values
+            choice = {k: v for k, v in choice.items() if v}
+
         # Get all options from COPERT model sheet
         options = pd.read_csv(self.modelpath)
 
@@ -57,8 +59,11 @@ class EmissionCalculator:
         col = {'fuel':'Fuel', 'segment':'Segment', 'standard':'Euro Standard'}
 
         # Filter options based on choices
-        for k, v in choice.items():
-            options = options[options[col[k]] == v]
+        if choice != None:
+            for k, v in choice.items():
+                options = options[options[col[k]] == v]
+        else:
+            inputs = [k for k, v in col.items()]
 
         options_dict = dict()
         for var in inputs:
@@ -74,7 +79,7 @@ class EmissionCalculator:
 
     def calculate_emission_factor(self, route, minspeed=10, maxspeed=130):
         """ Calculates the emission factors for a set of roads
-            - route [GeoPandas GeoDataFrame]: the route with speed column
+            - route [pandas/Geopandas dataframe]: the route with 'speed' column
             - minspeed [int]: the minimum speed to calculate emissions for, all speeds below are set to this value
             - maxspeed [int]: the maximum speed to calculate emissions for, all speeds above are set to this value
          """
