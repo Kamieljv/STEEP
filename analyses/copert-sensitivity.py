@@ -26,6 +26,10 @@ def plotEmFacProfile(ax, parameter='fuel', min_speed=10, max_speed=130):
     options = EmissionCalculator('../data/Ps_STEEP_a_emis.csv').get_options(defaults)
 
     for var in options[parameter]:
+        # do not plot 'LPG Bifuel ~ Petrol' or 'CNG Bifuel ~ Petrol' because they are identical to 'Petrol'
+        if var in ['LPG Bifuel ~ Petrol', 'CNG Bifuel ~ Petrol']:
+            continue
+
         defaults[parameter] = var
 
         # Initialize calculator with COPERT model file
