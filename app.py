@@ -21,6 +21,7 @@
 from flask import Flask, render_template, request, jsonify
 import pytz, re
 from datetime import datetime
+from datetime import timedelta
 
 from src.vehicle_config import VehicleConfig
 from src.emission_calculator import EmissionCalculator
@@ -72,13 +73,12 @@ def time_window():
     """Gets departure time; calculates time window (5 options with a 5 minute interval)"""
 
     # Get departure time
-    router = Routing()
-    departure = router.find('departure', router)
-
-    # Calculate time window
-
-
-    return None
+    router = calculate_route()
+    dep = router.find('departure', router)
+    fmt = datetime.strptime(dep, "%Y-%m-%d %H:%M")
+    departure = str(fmt + timedelta(minutes=5))
+    # not ready yet
+    return departure
 
 @app.route('/about', methods=['GET'])
 def about():
