@@ -15,21 +15,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 from src.emission_calculator import EmissionCalculator
 
-# Configuration from COPERT
-min_speed = 10
-max_speed = 130
 
-options = EmissionCalculator('../data/Ps_STEEP_a_emis.csv').get_options()
+def plotEmFacProfile(ax, parameter='fuel', min_speed=10, max_speed=130):
 
-def plotFuelOptions():
-    fig = plt.figure()
-    for fuel in options['fuel']:
+    # Set defaults; clear value for chosen parameter
+    defaults = {'fuel':"Petrol", 'segment':"Small", 'standard':"Euro 5"}
+    defaults[parameter] = ""
+
+    # Get the possible options
+    options = EmissionCalculator('../data/Ps_STEEP_a_emis.csv').get_options(defaults)
+
+    for var in options[parameter]:
+        defaults[parameter] = var
+
         # Initialize calculator with COPERT model file
         calculator = EmissionCalculator('../data/Ps_STEEP_a_emis.csv',
-                                        fuel=fuel,
-                                        segment="Small",
-                                        standard="Euro 5",
-                                        pollutant="EC")
+                                        fuel=defaults['fuel'],
+                                        segment=defaults['segment'],
+                                        standard=defaults['standard'])
 
 
 
@@ -37,16 +40,22 @@ def plotFuelOptions():
 
         df_emfac = calculator.calculate_emission_factor(df_speed)
 
-        plt.plot('speed', 'em_fac', data=df_emfac, label=fuel)
+        ax.plot('speed', 'em_fac', data=df_emfac, label=var)
 
-    plt.legend()
-    plt.title('Emission factors per speeds of different fuel types')
-    plt.xlabel('Emission factor (gCO2/km)')
-    plt.ylabel('Speed (km/hr)')
+    ax.legend()
+    ax.set_title(parameter.capitalize() + 's')
+    ax.set(xlabel='Speed (km/h)', ylabel='Emission factor (gCO2/km)')
+
+def plotMultipleProfiles():
+    fig, axs = plt.subplots(1, 3)
+
+    for i, param in enumerate(['fuel', 'segment', 'standard']):
+        plotEmFacProfile(axs[i], param)
+
     plt.show()
 
 
 
 if __name__ == '__main__':
-    plotFuelOptions()
+    plotMultipleProfiles()
 
