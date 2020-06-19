@@ -124,23 +124,56 @@ function zoomToFeature(lat, lng, type) {
   }
 }
 
-var colorFunctions = {
-		'Green to Red': new L.HSLHueFunction(new L.Point(1,120), new L.Point(55,0)),
-		'White to Red': new L.HSLLuminosityFunction(new L.Point(1,1), new L.Point(55,0.5)),
-		'White to Yellow to Red': new L.PiecewiseFunction([new L.HSLLuminosityFunction([1,1], [20,0.5], {outputHue: 60}), new L.HSLHueFunction([20,60], [55, 0])]),
-		'Grey to Red': new L.HSLSaturationFunction(new L.Point(1,0), new L.Point(55,1)),
-		'Blue to Red (HSL)': new L.HSLHueFunction(new L.Point(1, 240), new L.Point(55, 0)),
-		'Blue to Red (Blend)': new L.RGBColorBlendFunction(1, 55, [0, 0, 255], [255, 0, 0])
-	};
+var colorProgression = ['green', 'yellow', 'red']
+var maxEmissionFactor = 6;
+var previousColor = null;
 
-for (var key in L.ColorBrewer.Sequential) {
-        var choices = L.ColorBrewer.Sequential[key];
-        var keys = Object.keys(choices);
+var getColorForEmission = function(emissionFactor) {
+    let step = maxEmissionFactor / colorProgression.length;
 
-        colorFunctions[key] = new L.CustomColorFunction(1, 55, choices[keys[keys.length - 1]], {
-                interpolate: true
-        });
+    let index = Math.floor(emissionFactor / step);
+
+    if (index > colorProgression.length) {
+        index = colorProgression.length - 1;
+    }
+
+    return colorProgression[index];
 }
+
+var stops2gradient = function (emissionFactor) {
+    console.log("Emission factor: " + emissionFactor)
+
+    let currentColor = getColorForEmission(emissionFactor);
+
+    if (previousColor === null) {
+        previousColor = colorProgression[0]
+    }
+
+    var gradient = {
+        vector: [
+            ['0%', '50%'],
+            ['100%', '50%']
+        ],
+        stops: [{
+            'offset': '0%',
+                'style': {
+                'color': currentColor,
+                    'opacity': 1
+            }
+        }, {
+            'offset': '100%',
+                'style': {
+                'color': previousColor,
+                    'opacity': 1
+            }
+        }]
+    };
+
+    previousColor = currentColor;
+
+    return gradient;
+};
+
 function addRoute(map, route) {
     /*
     Function that adds a route to the Leaflet map
@@ -158,14 +191,16 @@ function addRoute(map, route) {
             color: "#000000",
             fillOpacity: 0.7,
             opacity: 1,
-            weight: 5
+            weight: 5,
         },
+        showLegendTooltips: false,
         displayOptions: {
             'properties.em_fac': {
-                displayName: 'hello',
+                gradient: stops2gradient
             }
         }
     });
+
     map.addLayer(routeLayer);
     map.fitBounds(routeLayer.getBounds());
 }
