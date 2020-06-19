@@ -2,7 +2,7 @@
 var map = null;
 var startMarker = null;
 var destMarker = null;
-var multiline = null;
+var routeLayer = null;
 var greenIcon = L.icon({
     iconUrl: '/static/marker-green.png',
     iconSize: [40, 40],
@@ -149,39 +149,25 @@ function addRoute(map, route) {
     */
 
     // remove old line from
-    if (multiline != null) { map.removeLayer(multiline); }
+    if (routeLayer != null) { map.removeLayer(routeLayer); }
 
-    // Define plot styles
-    var red = {
-        //"color": "#f55142",
-        "color": colorFunctions[key],
-        "weight": 5,
-        "opacity": 0.8
-    };
-    var orange = {
-        "color": "#fcbd00",
-        "weight": 10,
-        "opacity": 0.8
-    };
-    var green = {
-        "color": "#74f533",
-        "weight": 15,
-        "opacity": 0.8
-    }
-    // define multiline object with specific styling
-    multiline = L.geoJSON(route, {
-        style: function (feature) {
-            var em_fac = feature.properties.em_fac;
-            switch (true) {
-                case (em_fac <= 1.5): return green;
-                case (em_fac <= 2): return orange;
-                case (em_fac > 2): return red;
+    routeLayer = new L.ChoroplethDataLayer(route, {
+        recordsField: 'features',
+        locationMode: L.LocationModes.GEOJSON,
+        layerOptions: {
+            color: "#000000",
+            fillOpacity: 0.7,
+            opacity: 1,
+            weight: 5
+        },
+        displayOptions: {
+            'properties.em_fac': {
+                displayName: 'hello',
             }
         }
     });
-    multiline.addTo(map);
-    // pan to multiline object
-    map.fitBounds(multiline.getBounds());
+    map.addLayer(routeLayer);
+    map.fitBounds(routeLayer.getBounds());
 }
 
 function showReport(emissions, distance, time, departure) {
