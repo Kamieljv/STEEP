@@ -1,5 +1,11 @@
 ﻿Fuel,CO2 EF kg/MJ
-Petrol ,0.072
-Diesel,0.0743
-LPG,0.0667
-CNG,0.0631
+Petrol ,0.073
+Petrol Hybrid,0.073
+Diesel,0.0725
+Biodiesel,0.768
+LPG,0.0556
+LPG ~ Bifuel LPG,0.0556
+LPG ~ Bifuel Petrol,0.0556
+CNG,0.0566
+CNG ~ Bifuel CNG,0.0566
+CNG ~ Bifuel Petrol,0.0566
