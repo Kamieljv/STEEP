@@ -14,9 +14,10 @@ import pandas as pd
 class EmissionCalculator:
     """Derives values for further emission factors calculation"""
 
-    def __init__(self, modelpath, fuel="Petrol", segment="Medium", standard="Euro 6 2017-2019", technology="GDI", pollutant="EC"):
+    def __init__(self, modelpath, conversionpath, fuel="Petrol", segment="Medium", standard="Euro 6 2017-2019", technology="GDI", pollutant="EC"):
         """ Initializes the class
             - modelpath [string]: absolute/relative path to the emission model sheet (as .csv)
+            - conversionpath [string]: absolute/relative path to the conversion factors sheet (as .csv)
             - fuel [string]*
             - segment [string]*
             - standard [string]*
@@ -24,6 +25,7 @@ class EmissionCalculator:
             - pollutant [string]*
         """
         self.modelpath = modelpath
+        self.conversionpath = conversionpath
         self.fuel = fuel
         self.segment = segment
         self.standard = standard
