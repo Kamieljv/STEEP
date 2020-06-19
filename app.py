@@ -74,7 +74,7 @@ def calculate_route():
     segment = request.form['segment']
     standard = request.form['standard']
     calculator = EmissionCalculator('data/Ps_STEEP_a_emis.csv', fuel=fuel, segment=segment, standard=standard)
-    emfac_route = calculator.calculate_emission_factor(route)
+    emfac_route = calculator.calculate_ec_factor(route)
     emissions, distance, time = calculator.calculate_stats()
 
     return jsonify({'route': emfac_route.to_json(), 'emissions': emissions, 'distance': distance, 'time': time, 'departure': request.form['departure'] })

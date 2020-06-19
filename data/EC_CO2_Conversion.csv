@@ -4,8 +4,8 @@ Petrol Hybrid,0.073
 Diesel,0.0725
 Biodiesel,0.768
 LPG,0.0556
-LPG ~ Bifuel LPG,0.0556
-LPG ~ Bifuel Petrol,0.0556
+LPG Bifuel ~ LPG,0.0556
+LPG Bifuel ~ Petrol,0.0556
 CNG,0.0566
-CNG ~ Bifuel CNG,0.0566
-CNG ~ Bifuel Petrol,0.0566
+CNG Bifuel ~ CNG,0.0566
+CNG Bifuel ~ Petrol,0.0566
