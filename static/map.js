@@ -124,7 +124,9 @@ function zoomToFeature(lat, lng, type) {
   }
 }
 
-var colorProgression = ['green', 'yellow', 'red']
+var colorFunction = new L.HSLHueFunction(new L.Point(1, 120), new L.Point(55, 0), {outputSaturation: '100%', outputLuminosity: '25%'});
+
+var colorProgression = colorFunction
 var maxEmissionFactor = 6;
 var previousColor = null;
 
@@ -140,7 +142,23 @@ var getColorForEmission = function(emissionFactor) {
     return colorProgression[index];
 }
 
-var stops2gradient = function (emissionFactor) {
+/*
+var colorFunction = {
+    'Green to Red': new L.HSLHueFunction(new L.Point(1, 120), new L.Point(55, 0))
+};
+
+// Add ColorBrewer sequential colors as choices
+for (var key in L.ColorBrewer.Sequential) {
+    var choices = L.ColorBrewer.Sequential[key];
+    var keys = Object.keys(choices);
+
+    colorFunction[key] = new L.CustomColorFunction(1, 55, choices[keys[keys.length - 1]], {
+        interpolate: true
+    });
+}
+*/
+
+/*var stops2gradient = function (emissionFactor) {
     console.log("Emission factor: " + emissionFactor)
 
     let currentColor = getColorForEmission(emissionFactor);
@@ -171,8 +189,12 @@ var stops2gradient = function (emissionFactor) {
 
     previousColor = currentColor;
 
-    return gradient;
-};
+    return color;
+};*/
+
+
+
+
 
 function addRoute(map, route) {
     /*
@@ -180,7 +202,6 @@ function addRoute(map, route) {
     map: a Leaflet object
     route: GeoJSON object
     */
-
     // remove old line from
     if (routeLayer != null) { map.removeLayer(routeLayer); }
 
@@ -196,7 +217,7 @@ function addRoute(map, route) {
         showLegendTooltips: false,
         displayOptions: {
             'properties.em_fac': {
-                gradient: stops2gradient
+                color: getColorForEmission()
             }
         }
     });
@@ -204,6 +225,37 @@ function addRoute(map, route) {
     map.addLayer(routeLayer);
     map.fitBounds(routeLayer.getBounds());
 }
+
+//var legendControl = new L.Control.Legend();
+//console.log(legendControl)
+//legendControl.addTo(map);
+
+/*function getColor(d) {
+        return d === 'Low emission'  ? "#de2d26" :
+               d === 'Moderate emission'  ? "#377eb8" :
+               d === 'High emission' ? "#4daf4a": '#FFEDA0';
+    }
+
+var legend = L.control({position: 'bottomright'});
+    legend.onAdd = function (map) {
+
+    var div = L.DomUtil.create('div', 'info legend');
+    labels = ['<strong>Categories</strong>'],
+    categories = ['Low emission','Moderate emission','High emission'];
+
+    for (var i = 0; i < categories.length; i++) {
+
+            div.innerHTML +=
+            labels.push(
+                '<i class="circle" style="background:' + getColor(categories[i]) + '"></i> ' +
+            (categories[i] ? categories[i] : '+'));
+
+        }
+        div.innerHTML = labels.join('<br>');
+    return div;
+    };
+    legend.addTo(map);*/
+
 
 function showReport(emissions, distance, time, departure) {
     var em = Math.round(emissions * 100) / 100 // round to 2 decimals
