@@ -14,7 +14,7 @@ import pandas as pd
 class EmissionCalculator:
     """Derives values for further emission factors calculation"""
 
-    def __init__(self, modelpath, conversionpath, fuel="Petrol", segment="Medium", standard="Euro 6 2017-2019", technology="GDI", pollutant="EC"):
+    def __init__(self, modelpath, conversionpath, fuel="Petrol", segment="Medium", standard="Euro 6 2017-2019", technology="GDI", pollutant="EC", CO2conv=0.073):
         """ Initializes the class
             - modelpath [string]: absolute/relative path to the emission model sheet (as .csv)
             - conversionpath [string]: absolute/relative path to the conversion factors sheet (as .csv)
@@ -31,6 +31,7 @@ class EmissionCalculator:
         self.standard = standard
         self.technology = technology
         self.pollutant = pollutant
+        self.CO2conv = CO2conv
 
     def get_parameters(self):
         """ Retrieves the parameters from the emission model file based on vehicle characteristics."""
@@ -43,6 +44,12 @@ class EmissionCalculator:
         # Take the first row if multiple exist
         df_values = df_values.iloc[0]
         return df_values['Alpha'], df_values['Beta'], df_values['Gamma'], df_values['Delta'], df_values['Epsilon'], df_values['Zita'], df_values['Hta']
+
+    def get_coverstion(self):
+        """ Retrieves the conversion factor based on fuel type of vehicle."""
+        values_for_conversion = pd.read_csv(self.conversionpath)
+        conv_values = values_for_conversion[(values_for_conversion['Fuel'] == self.fuel) &
+                                            (values_for_conversion['CO2 EF kg/MJ'] == self.CO2conv)]
 
     def get_options(self, choice):
         """ Retrieves the vehicle parameter options based on a user's initial choice.
@@ -87,7 +94,8 @@ class EmissionCalculator:
         route.loc[route['speed'] < minspeed, 'speed'] = minspeed
         route.loc[route['speed'] > maxspeed, 'speed'] = maxspeed
 
-        route['em_fac'] = route.apply(lambda row: self.emission_formula(row.speed), axis=1)
+        route['ec_fac'] = route.apply(lambda row: self.emission_formula(row.speed), axis=1)
+        # route['co2_fac'] = route.apply(lambda row: )
         self.route = route
 
         return route
