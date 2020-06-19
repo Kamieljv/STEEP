@@ -100,4 +100,4 @@ class EmissionCalculator:
 
         self.route['emissions'] = self.route.apply(lambda row: (row.distance / 1000) * row.em_fac, axis=1)
 
-        return self.route['emissions'].sum(), int(self.route['distance'].sum()), int(self.route['time'].sum())
+        return round(self.route['emissions'].sum(),3), int(self.route['distance'].sum()), int(self.route['time'].sum())
