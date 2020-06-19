@@ -32,7 +32,12 @@ class EmissionCalculator:
         self.standard = standard
         self.technology = technology
         self.pollutant = pollutant
-        self.CO2conv = self.CO2_conversion() #in kg/MJ
+        self.CO2conv = self.get_conv_factor() #in kg/MJ
+
+    def get_conv_factor(self):
+        """ Retrieves the conversion factor based on fuel type of vehicle."""
+        conv_value = self.df_conversion[(self.df_conversion['Fuel'] == self.fuel)]
+        return (conv_value["CO2 EF kg/MJ"])
 
     def get_parameters(self):
         """ Retrieves the parameters from the emission model file based on vehicle characteristics."""
@@ -76,11 +81,6 @@ class EmissionCalculator:
         return (self.a * speed ** 2 + self.b * speed + self.g + (self.d / speed)) / \
                (self.e * speed ** 2 + self.z * speed + self.h)
 
-    def CO2_conversion(self):
-        """ Retrieves the conversion factor based on fuel type of vehicle."""
-        conv_value = self.df_conversion[(self.df_conversion['Fuel'] == self.fuel)]
-        return (conv_value["CO2 EF kg/MJ"])
-
 
     def calculate_ec_factor(self, route, minspeed=10, maxspeed=130):
         """ Calculates the EC emission factors for a set of roads
@@ -96,7 +96,8 @@ class EmissionCalculator:
         route.loc[route['speed'] > maxspeed, 'speed'] = maxspeed
 
         route['ec_fac'] = route.apply(lambda row: self.ec_formula(row.speed), axis=1)
-        route['co2_fac'] = route.apply(lambda row: self.CO2conv * row["ec_fac"])
+        route['co2_fac'] = route.apply(lambda row: self.CO2conv * row.ec_fac, axis=1)
+
         self.route = route
 
         return route
@@ -104,6 +105,6 @@ class EmissionCalculator:
     def calculate_stats(self):
         """ Calculates the route emissions (kgCO2) based on the emission factors and segment lengths """
 
-        self.route['emissions'] = self.route.apply(lambda row: (row.distance / 1000) * row.em_fac, axis=1)
+        self.route['emissions'] = self.route.apply(lambda row: (row.distance / 1000) * row.co2_fac, axis=1)
 
         return self.route['emissions'].sum(), int(self.route['distance'].sum()), int(self.route['time'].sum())
