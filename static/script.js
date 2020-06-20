@@ -4,7 +4,6 @@ function send_form(form, url, type, formData) {
 
     if (!isFormDataEmpty(formData)) { // checks if form is empty
         event.preventDefault();
-
         // make AJAX call
         $.ajax({
             url: url,

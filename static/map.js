@@ -162,17 +162,58 @@ function addRoute(map, route) {
 }
 
 function showReport(emissions, distance, time, departure) {
-    var em = Math.round(emissions * 100) / 100 // round to 2 decimals
+    const list = [
+        { emissions, distance, time, departure },
+        { emissions: 174.38, distance: 100, time, departure },
+        { emissions: 161.52, distance: 120, time, departure }
+    ]
      $('#report').empty();
     $('#report').append('<h4>Calculation Results</h4>');
-    $('#report').append('<p><b>Route Emissions:</b> ' + em + ' grams CO2');
-    $('#report').append('<p><b>Distance:</b> ' + distance / 1000 + ' km');
-    $('#report').append('<p><b>Trip time:</b> ' + secondsToHms(time));
-    $('#report').append('<p><b>Departure time:</b> ' + departure);
+    let firstEmissions = 0;
+    list.forEach((item, index) => {
+        if (index === 0) {
+            firstEmissions = emissions;
+            item.rightWidth = 0;
+            item.leftWidth = 0;
+        } else {
+            let width = Number(item.emissions - firstEmissions).toFixed(2);
+            width = Number(width);
+            if (width > 0) {
+                item.leftWidth = width;
+            } else {
+                item.rightWidth = width * -1;
+            }
+        }
+        let resultHtml = getItemHtml(item);
+        console.log(resultHtml, 'resultHtml');
+        $('#report').append(resultHtml)
+    });
     $('#report').show();
 }
 
-
+function getItemHtml(itemInfo) {
+    let { emissions, distance, time, departure, leftWidth, rightWidth } = itemInfo;
+    let em = Math.round(emissions * 100) / 100 // round to 2 decimals
+    distance = distance / 1000;
+    time = secondsToHms(time);
+    let resultHtml = `<div class="result_card">`
+         + `<div class="card_info">`
+         +      `<div class="card_info_text padding_bottom">Route Emissions: ${em} grams CO2</div>`
+         +      `<div class="card_info_text padding_bottom">Distance: ${distance} km</div>`
+         +      `<div class="card_info_text padding_bottom">Trip time: ${time}</div>`
+         +      `<div class="card_info_text">Departure time: ${departure}</div>`
+         + `</div>`
+         + '<div class="card_div">'
+         +  '<div class="card_img">'
+         +      `<div class="img_left" style="width: ${leftWidth ? leftWidth : 0}px"></div>`
+         +      `<div class="img_center"></div>`
+         +      `<div class="img_right" style="width: ${rightWidth ? rightWidth : 0}px"></div>`
+         +  '</div>'
+         +  `<div class="bottom_text">${leftWidth ? '+' : rightWidth ? '-' : ''}${leftWidth || rightWidth || em}</div>`
+         + '</div>'
+         +'</div>';
+    return resultHtml;
+}
 
 
 function secondsToHms(d) {

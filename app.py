@@ -68,25 +68,7 @@ def calculate_route():
 
     return jsonify({'route': emfac_route.to_json(), 'emissions': emissions, 'distance': distance, 'time': time, 'departure': request.form['departure'] })
 
-@app.route('/time_window', methods=['POST'])
-def time_window():
-    """Gets departure time; calculates time window (5 options with a 5 minute interval)"""
 
-    # Get departure time
-    router = calculate_route()
-    default = router.find('departure', router)
-    departure = datetime.strptime(default, "%Y-%m-%d %H:%M")
-    initial = departure
-
-    # Adding the other 4 options
-    departures = [initial]
-    for i in range(5):
-        departure += timedelta(minutes=5)
-        departures.append(departure)
-
-    # not done yet
-
-    return
 
 @app.route('/about', methods=['GET'])
 def about():
