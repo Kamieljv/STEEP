@@ -124,77 +124,11 @@ function zoomToFeature(lat, lng, type) {
   }
 }
 
-var colorFunction = new L.HSLHueFunction(new L.Point(1, 120), new L.Point(55, 0), {outputSaturation: '100%', outputLuminosity: '25%'});
+// add min and max possible values for emission factor
+var minEmission = 0;
+var maxEmission = 8;
 
-var colorProgression = colorFunction
-var maxEmissionFactor = 6;
-var previousColor = null;
-
-var getColorForEmission = function(emissionFactor) {
-    let step = maxEmissionFactor / colorProgression.length;
-
-    let index = Math.floor(emissionFactor / step);
-
-    if (index > colorProgression.length) {
-        index = colorProgression.length - 1;
-    }
-
-    return colorProgression[index];
-}
-
-/*
-var colorFunction = {
-    'Green to Red': new L.HSLHueFunction(new L.Point(1, 120), new L.Point(55, 0))
-};
-
-// Add ColorBrewer sequential colors as choices
-for (var key in L.ColorBrewer.Sequential) {
-    var choices = L.ColorBrewer.Sequential[key];
-    var keys = Object.keys(choices);
-
-    colorFunction[key] = new L.CustomColorFunction(1, 55, choices[keys[keys.length - 1]], {
-        interpolate: true
-    });
-}
-*/
-
-/*var stops2gradient = function (emissionFactor) {
-    console.log("Emission factor: " + emissionFactor)
-
-    let currentColor = getColorForEmission(emissionFactor);
-
-    if (previousColor === null) {
-        previousColor = colorProgression[0]
-    }
-
-    var gradient = {
-        vector: [
-            ['0%', '50%'],
-            ['100%', '50%']
-        ],
-        stops: [{
-            'offset': '0%',
-                'style': {
-                'color': currentColor,
-                    'opacity': 1
-            }
-        }, {
-            'offset': '100%',
-                'style': {
-                'color': previousColor,
-                    'opacity': 1
-            }
-        }]
-    };
-
-    previousColor = currentColor;
-
-    return color;
-};*/
-
-
-
-
+var colorFunction = new L.HSLHueFunction(new L.Point(minEmission, 120), new L.Point(maxEmission, 20), { outputSaturation: '100%', outputLuminosity: '45%'});
 
 function addRoute(map, route) {
     /*
@@ -205,6 +139,11 @@ function addRoute(map, route) {
     // remove old line from
     if (routeLayer != null) { map.removeLayer(routeLayer); }
 
+    // route.features[2].properties['em_fac'] = 8;
+    // route.features[3].properties['em_fac'] = 3;
+
+    console.log(route);
+
     routeLayer = new L.ChoroplethDataLayer(route, {
         recordsField: 'features',
         locationMode: L.LocationModes.GEOJSON,
@@ -214,10 +153,11 @@ function addRoute(map, route) {
             opacity: 1,
             weight: 5,
         },
-        showLegendTooltips: false,
+        //showLegendTooltips: false,
         displayOptions: {
             'properties.em_fac': {
-                color: getColorForEmission()
+                // displayName: 'Emission factors',
+                color: colorFunction
             }
         }
     });
