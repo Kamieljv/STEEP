@@ -40,11 +40,8 @@ def index():
     standards = v_config.standards
     return render_template('home.html', fuels=fuels, segments=segments, standards=standards, title="Home")
 
-
-@app.route('/calculate_route', methods=['POST'])
-def calculate_route():
-    """Gets route configuration; calculates route; returns route to view as JSON."""
-
+def departure():
+    """Gets departure"""
     # Define and format the departure time variable
     tz = pytz.timezone('Europe/Amsterdam') # set time zone
     fmt = '%Y-%m-%dT%H:%M:%S%z' # set
@@ -52,39 +49,40 @@ def calculate_route():
     departure = tz.localize(datetime(t[0], t[1], t[2], t[3], t[4], 0)).strftime(fmt)
     departure = departure[:-2] + ':' + departure[-2:]
 
-    # Calculate route
-    startLat, startLon = request.form['start-coords'].split(", ")
-    destLat, destLon = request.form['dest-coords'].split(", ")
-    router = Routing()
-    route = router.get_route(float(startLat), float(startLon), float(destLat), float(destLon), departure)
+    return departure
 
-    # Calculate emissions
-    fuel = request.form['fuel']
-    segment = request.form['segment']
-    standard = request.form['standard']
-    calculator = EmissionCalculator('data/Ps_STEEP_a_emis.csv', fuel=fuel, segment=segment, standard=standard)
-    emfac_route = calculator.calculate_emission_factor(route)
-    emissions, distance, time = calculator.calculate_stats()
+@app.route('/calculate_route', methods=['POST'])
+def calculate_route():
+    """Adds time window, gets route configuration; calculates route; returns route to view as JSON."""
 
-    return jsonify({'route': emfac_route.to_json(), 'emissions': emissions, 'distance': distance, 'time': time, 'departure': request.form['departure'] })
+    departure = departure()
 
-@app.route('/time_window', methods=['POST'])
-def time_window():
-    """Gets departure time; calculates time window (5 options with a 5 minute interval)"""
-
-    # Get departure time
-    router = calculate_route()
-    default = router.find('departure', router)
-    departure = datetime.strptime(default, "%Y-%m-%d %H:%M")
-    initial = departure
-
-    # Adding the other 4 options
-    departures = [initial]
-    for i in range(5):
+    # Adding 4 more departure times
+    departures = [departure]
+    for i in range(4):
         departure += timedelta(minutes=5)
         departures.append(departure)
 
-    return
+    window = []
+    for dep in departures:
+        # Calculate route
+        startLat, startLon = request.form['start-coords'].split(", ")
+        destLat, destLon = request.form['dest-coords'].split(", ")
+        router = Routing()
+        route = router.get_route(float(startLat), float(startLon), float(destLat), float(destLon), dep)
+
+        # Calculate emissions
+        fuel = request.form['fuel']
+        segment = request.form['segment']
+        standard = request.form['standard']
+        calculator = EmissionCalculator('data/Ps_STEEP_a_emis.csv', fuel=fuel, segment=segment, standard=standard)
+        emfac_route = calculator.calculate_emission_factor(route)
+        emissions, distance, time = calculator.calculate_stats()
+
+        window.append(jsonify({'route': emfac_route.to_json(), 'emissions': emissions, 'distance': distance, 'time': time,
+                 'departure': request.form['departure']}))
+
+    return window
 
 @app.route('/about', methods=['GET'])
 def about():
