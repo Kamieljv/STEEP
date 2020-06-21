@@ -1,31 +1,21 @@
 # STEEP (by Team Inselberg)
-STEEP: A SpatioTemporal Emission Estimator for Passenger vehicles
+> STEEP: A SpatioTemporal Emission Estimator for Passenger vehicles
+
+STEEP is a model that estimates the CO2 emissions of passenger cars on a specific route, at a specific time of departure.
+The model combines a time-dependent routing algorithm ([TomTom's Routing API](https://developer.tomtom.com/routing-api/routing-api-documentation)) 
+with a vehicle emission model ([COPERT+](https://www.emisia.com/utilities/copert/)). 
+
+This repository contains the main model code, wrapped in a web-based user interface based on Python. 
 
 ## Installation
-To run the application, a set of Python packages need to be installed. We recommend using [Conda](https://docs.conda.io/en/latest/) as a package manager.
+To run the application, a set of Python and geo packages need to be installed. We recommend using [Conda](https://docs.conda.io/en/latest/) as a package manager.
+With Conda, create a virtual environment using the `environment.yml` provided. 
 
-## Using GraphHopper in Python
-Graphhopper is a routing API, which can be sent requests for certain route conditions and returns the computed route. 
-The route calculation is thus done externally. 
+Create the Conda environment using: `conda env create -f environment.yml`.
 
-In order to send requests to this API in a convenient way, an "API client" is needed, which is a library with a set of 
-functions that make request and response handling easier. 
-The GraphHopper provides this package in [this GitHub repository](https://github.com/graphhopper/directions-api-clients-route-optimization/tree/master/python).
+In case packages are not available in the specified channels, they can be searched for on https://anaconda.org/ and manually installed. 
 
-This API client is included in this code repository under `swagger_client/`. 
+## Usage
 
-
-## Recommended skills
-- General: 
-    - Knowledge on APIs (POST, GET, request, response, JSON, XML)
-- Git:
-    - Add/commit/push/pull
-    - Git branches
-        - new branch: `git checkout -b [BRANCH_NAME]`
-        - push branch: `git push origin [BRANCH_NAME]`
-        - pull from branch (not master): `git pull origin [BRANCH_NAME]`
-        - proposed branch names: `app`, `emissions`, `routing`
-- Visualization:
-- Routing: 
-- Working with files:
-
+To run STEEP, open a terminal and head to this repository, or open the repository in your favourite text editor. 
+Then run the app (terminal: `python app.py`).
