@@ -63,7 +63,7 @@ def calculate_route():
         departure += timedelta(minutes=5)
         departures.append(departure)
 
-    window = []
+    routes = []
     for dep in departures:
         # Calculate route
         startLat, startLon = request.form['start-coords'].split(", ")
@@ -79,10 +79,10 @@ def calculate_route():
         emfac_route = calculator.calculate_emission_factor(route)
         emissions, distance, time = calculator.calculate_stats()
 
-        window.append(jsonify({'route': emfac_route.to_json(), 'emissions': emissions, 'distance': distance, 'time': time,
+        routes.append(jsonify({'route': emfac_route.to_json(), 'emissions': emissions, 'distance': distance, 'time': time,
                  'departure': request.form['departure']}))
 
-    return window
+    return routes
 
 @app.route('/about', methods=['GET'])
 def about():
