@@ -17,5 +17,10 @@ In case packages are not available in the specified channels, they can be search
 
 ## Usage
 
+### Set your TomTom API Key
+If you do not have an active TomTom API key, you can get it [here](https://developer.tomtom.com/user/register).
+Fill in the API key in `src/routing.py` on line 27.
+
+### Running STEEP
 To run STEEP, open a terminal and head to this repository, or open the repository in your favourite text editor. 
 Then run the app (terminal: `python app.py`).
