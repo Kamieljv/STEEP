@@ -19,25 +19,32 @@
 """
 
 from flask import Flask, render_template, request, jsonify
-from datetime import timedelta
 import pytz, re
-from datetime import datetime
-from src.vehicle_config import VehicleConfig
+from datetime import datetime, timedelta
+
 from src.emission_calculator import EmissionCalculator
 from src.routing import Routing
 
-
-# Load vehicle configuration class
-v_config = VehicleConfig()
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def index():
     """Sets vehicle parameter options and renders home-page."""
-    fuels = v_config.fuels
-    segments = v_config.segments
-    standards = v_config.standards
-    return render_template('home.html', fuels=fuels, segments=segments, standards=standards, title="Home")
+    calculator = EmissionCalculator()
+    options = calculator.get_options({'fuel':"", 'segment':"", 'standard': ""})
+    return render_template('home.html',
+                           fuels=options['fuel'],
+                           segments=options['segment'],
+                           standards=options['standard'],
+                           routetypes=['Eco', 'Fastest'],
+                           title="Home")
+
+@app.route('/getoptions', methods=['POST', 'GET'])
+def getoptions():
+    """Updates vehicle parameter options based on user's choice."""
+    calculator = EmissionCalculator()
+    options = calculator.get_options({'fuel':request.form['fuel'], 'segment':request.form['segment'], 'standard':""})
+    return jsonify(options)
 
 @app.route('/calculate_route', methods=['POST'])
 def calculate_route():

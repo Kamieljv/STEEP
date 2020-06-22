@@ -29,36 +29,53 @@
                             <div class="col-10 pr-0">
                                 <input id="departure" type="text" class="form-control" name="departure" placeholder="Departure date/time" required>
                             </div>
-<!--                            <div class="col-2 pl-2">-->
-<!--                                 <button id="today-btn" title="Today" class="btn btn-primary btn-icon" type="button"><i class="fas fa-calendar-day"></i></button>-->
-<!--                            </div>-->
+                            <div class="col-2 pl-2">
+                                 <button id="today-btn" title="Today" class="btn btn-primary btn-icon" type="button"><i class="fas fa-calendar-day"></i></button>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6 pr-0">
+                                <label for="route-type">Route type</label>
+                                <select id="route-type" name="route-type" class="form-control">
+                                    {% for routetype in routetypes %}
+                                        <option value="{{routetype|lower}}">{{routetype}}</option>"
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-5 offset-1 traffic">
+                                <input type="checkbox" class="form-check-input" name="traffic" id="traffic">
+                                <label class="form-check-label" for="traffic">Include traffic</label>
+                            </div>
                         </div>
                         <hr/>
                         <h4>Vehicle Parameters</h4>
                         <div class="row mb-3">
-                            <div class="col-7 pr-0">
+                            <div class="col-6 pr-0">
                                 <label for="fuel">Fuel</label>
-                                <select id="fuel" name="fuel" class="form-control">
+                                <select id="fuel" name="fuel" class="form-control v-param" data-idx="0">
+                                    <option value="" disabled selected>Select a fuel type</option>
                                     {% for fuel in fuels %}
-                                        <option value="{{fuel}}" SELECTED>{{fuel}}</option>"
+                                        <option value="{{fuel}}">{{fuel}}</option>"
                                     {% endfor %}
                                 </select>
                             </div>
-                            <div class="col-5">
+                            <div class="col-6">
                                 <label for="segment">Segment</label>
-                                <select id="segment" name="segment" class="form-control">
+                                <select id="segment" name="segment" class="form-control v-param" data-idx="1" disabled>
+                                        <option value="" disabled selected>Select a segment</option>
                                     {% for segment in segments %}
-                                        <option value="{{segment}}" SELECTED>{{segment}}</option>"
+                                        <option value="{{segment}}">{{segment}}</option>"
                                     {% endfor %}
                                 </select>
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <div class="col-7 pr-0">
+                            <div class="col-6 pr-0">
                                 <label for="standard">Standard</label>
-                                <select id="standard" name="standard" class="form-control">
+                                <select id="standard" name="standard" class="form-control v-param" data-idx="2" disabled>
+                                    <option value="" disabled selected>Select a standard</option>
                                     {% for standard in standards %}
-                                        <option value="{{standard}}" SELECTED>{{standard}}</option>"
+                                        <option value="{{standard}}">{{standard}}</option>"
                                     {% endfor %}
                                 </select>
                             </div>

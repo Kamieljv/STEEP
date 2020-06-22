@@ -27,9 +27,9 @@ class Routing:
     def __init__(self):
         # Tomtom url and key
         self.apiURL = "https://api.tomtom.com/routing/1/calculateRoute/"
-        self.apiKEY = "x7b42zLGbh4VoCVGHgrDNjC2FKo2hZDo" #os.environ.get("TOMTOM_API_KEY")
-        if not self.apiKEY:
-            raise Exception("'TOMTOM_API_KEY' not found in environment.")
+        self.apiKEY = "x7b42zLGbh4VoCVGHgrDNjC2FKo2hZDo"
+        if not self.apiKEY or self.apiKEY == "":
+            raise Exception("'TOMTOM_API_KEY' not specified.")
 
     def find(self, key, dictionary):
         """ Function to extract data from JSON API response """
@@ -69,8 +69,8 @@ class Routing:
             sectionType='traffic',
             routeRepresentation='polyline',
             report='effectiveSettings',
-            routeType='fastest',
-            traffic='true',
+            routeType=self.routetype,
+            traffic=str(self.traffic).lower(),
             avoid='unpavedRoads',
             travelMode='car',
             vehicleCommercial='false',
@@ -79,7 +79,7 @@ class Routing:
         # Make request
         return requests.get(tomtomURL, params=params, headers=headers).json()
 
-    def get_route(self, startLat, startLon, destLat, destLon, departure):
+    def get_route(self, startLat, startLon, destLat, destLon, departure, routetype, traffic):
         """ Returns a Geodataframe containing segments and speed """
 
         self.startLat = startLat
@@ -87,6 +87,8 @@ class Routing:
         self.destLat = destLat
         self.destLon = destLon
         self.departure = departure
+        self.routetype = routetype
+        self.traffic = traffic
 
         response = self.api_call()
         if 'error' in response:
