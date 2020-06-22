@@ -125,10 +125,10 @@ function zoomToFeature(lat, lng, type) {
 }
 
 // add min and max possible values for emission factor
-var minEmission = 0;
-var maxEmission = 8;
+var minEmissionFactor = 0;
+var maxEmissionFactor = 200;
 
-var colorFunction = new L.HSLHueFunction(new L.Point(minEmission, 120), new L.Point(maxEmission, 20), { outputSaturation: '100%', outputLuminosity: '45%'});
+var colorFunction = new L.HSLHueFunction(new L.Point(minEmissionFactor, 120), new L.Point(maxEmissionFactor, 20), { outputSaturation: '100%', outputLuminosity: '45%'});
 
 function addRoute(map, route) {
     /*
@@ -139,9 +139,7 @@ function addRoute(map, route) {
     // remove old line from
     if (routeLayer != null) { map.removeLayer(routeLayer); }
 
-    // route.features[2].properties['em_fac'] = 8;
-    // route.features[3].properties['em_fac'] = 3;
-
+    //route.features[3].properties['emissions'] = 200;
     console.log(route);
 
     routeLayer = new L.ChoroplethDataLayer(route, {
@@ -153,22 +151,32 @@ function addRoute(map, route) {
             opacity: 1,
             weight: 5,
         },
-        //showLegendTooltips: false,
         displayOptions: {
-            'properties.em_fac': {
-                // displayName: 'Emission factors',
+            'properties.co2_fac': {
+                displayName: 'Emission factor CO2',
                 color: colorFunction
             }
+        },
+        //showLegendTooltips: false,
+        tooltipOptions: {
+            iconSize: new L.Point(80, 55),
+            iconAnchor: new L.Point(-10, 80)
         }
     });
-
+    var legendControl = new L.Control.Legend();
+    legendControl.addTo(map);
     map.addLayer(routeLayer);
     map.fitBounds(routeLayer.getBounds());
+
+    /*$('#legend').append(routeLayer.getLegend({
+	        numSegments: 20,
+	        width: 80,
+	        className: 'well'
+    }));
+    map.addLayer(routeLayer);*/
 }
 
-//var legendControl = new L.Control.Legend();
-//console.log(legendControl)
-//legendControl.addTo(map);
+
 
 /*function getColor(d) {
         return d === 'Low emission'  ? "#de2d26" :
