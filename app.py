@@ -88,7 +88,7 @@ def calculate_route():
         emissions, distance, time = calculator.calculate_stats()
 
         routes['route'+ str(i)] = {'route': emfac_route.to_json(), 'emissions': emissions,
-                             'distance': distance, 'time': time, 'departure': depa }
+                                   'distance': distance, 'time': time, 'departure': depa }
 
     return routes
 
