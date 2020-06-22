@@ -75,6 +75,11 @@ nav {
     border-bottom: 2px solid var(--success);
 }
 
+.weekdays-list .weekdays-day {
+    width: 60px;
+    text-align: center;
+}
+
 
 /* HELP PAGE ACCORDION */
 /* Form Style */

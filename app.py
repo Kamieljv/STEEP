@@ -93,7 +93,7 @@ def scenario():
 
 @app.route('/calculate_scenario', methods=['POST'])
 def calculate_scenario():
-    pass
+    print(request.form)
 
 @app.route('/about', methods=['GET'])
 def about():

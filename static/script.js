@@ -1,8 +1,9 @@
+var error = "";
 
 function send_form(form, url, type, formData) {
     // form validation and sending of form items
 
-    if (!isFormDataEmpty(form, formData)) { // checks if form is empty
+    if (!isFormDataEmpty(form, formData) && checkTimes(form)) { // checks if form is empty
         event.preventDefault();
 
         // make AJAX call
@@ -22,6 +23,11 @@ function send_form(form, url, type, formData) {
             }
         });
 
+    } else {
+        if (error.length != 0) {
+            $('#form_error').html(error).show();
+            error = "";
+        }
     }
 }
 
@@ -44,7 +50,25 @@ function isFormDataEmpty(form, formData) {
             status = true;
         }
     }
+    if (status) {
+        error = "Please fill in all required fields.";
+    }
+
     return status;
+}
+
+function checkTimes(form) {
+    // check if the #return-time element exists in the form
+    if ($(form).find('#return-time').length != 0) {
+        if ($('#departure-time').val() >= $('#return-time').val()) {
+            error = "The departure time has to be before the return time."
+            $('#departure-time').toggleClass('is-invalid', true).toggleClass('is-valid', false);
+            $('#return-time').toggleClass('is-invalid', true).toggleClass('is-valid', false);
+            return false;
+        }
+    }
+
+    return true;
 }
 
 $('#calculate-btn').click(function(event){
@@ -52,12 +76,19 @@ $('#calculate-btn').click(function(event){
     event.preventDefault();
 
     // hide Report
-    $('#report').hide()
+    $('#report').hide();
+    // clear form error
+    $('#form_error').empty().hide();
 
     var form = $(this).parents('form')[0];
     var url = form.action;
     var type = form.method;
     var formData = new FormData(form);
+
+    // clear all invalids
+    for (var input of $(form).find('input, select')) {
+        $(input).toggleClass('is-invalid', false).toggleClass('is-valid', false);
+    }
 
     send_form(form, url, type, formData);
 });
@@ -75,7 +106,7 @@ $('form button.btn-loc').click(function(event){
 $(document).on('keyup', 'input', function(e) {
     $(this).toggleClass('is-invalid', false).toggleClass('is-valid', false);
 });
-$(document).on('click', '#departure', function(e) {
+$(document).on('click', 'input, select', function(e) {
     $(this).toggleClass('is-invalid', false).toggleClass('is-valid', false);
 });
 
