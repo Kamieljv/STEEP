@@ -126,7 +126,7 @@ function zoomToFeature(lat, lng, type) {
 
 // add min and max possible values for emission factor
 var minEmissionFactor = 0;
-var maxEmissionFactor = 200;
+var maxEmissionFactor = 0.200;
 
 var colorFunction = new L.HSLHueFunction(new L.Point(minEmissionFactor, 120), new L.Point(maxEmissionFactor, 20), { outputSaturation: '100%', outputLuminosity: '45%'});
 
