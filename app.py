@@ -79,6 +79,22 @@ def calculate_route():
 
     return jsonify({'route': emfac_route.to_json(), 'emissions': emissions, 'distance': distance, 'time': time, 'departure': request.form['departure'] })
 
+@app.route('/scenario', methods=['GET'])
+def scenario():
+    """Renders scenario-making page."""
+    calculator = EmissionCalculator()
+    options = calculator.get_options({'fuel':"", 'segment':"", 'standard': ""})
+    return render_template('scenario.html',
+                           title="Scenario Builder",
+                           fuels=options['fuel'],
+                           segments=options['segment'],
+                           standards=options['standard'],
+                           routetypes=['Eco', 'Fastest'])
+
+@app.route('/calculate_scenario', methods=['POST'])
+def calculate_scenario():
+    pass
+
 @app.route('/about', methods=['GET'])
 def about():
     """Renders about-page."""

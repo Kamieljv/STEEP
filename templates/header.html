@@ -13,6 +13,8 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link href="{{ url_for('static', filename='jquery-weekdays.css') }}" rel="stylesheet" type="text/css">
+    <script src="{{ url_for('static', filename='jquery-weekdays.js') }}"></script>
 </head>
 <body>
     <nav class="navbar navbar-expand-md navbar-dark bg-primary">
@@ -27,6 +29,9 @@
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item active">
                     <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('scenario') }}">Scenario Builder</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('about') }}">About</a>

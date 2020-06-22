@@ -1,0 +1,92 @@
+{% include "header.html" %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <h1>STEEP Scenario Builder</h1>
+            <br>
+            <p>With the Scenario Builder, you can perform bulk calculations of a series of trips. These calculations can
+            be done for your complete organization. For detailed entry of home-work addresses, vehicle parameters and departure time,
+            we recommend using the option to load the trip settings from an Excel-file.</p>
+
+            <div class="row my-5" id="entry-choice">
+                <div class="col-4 offset-2">
+                    <button class="btn btn-primary btn-manual-entry w-100">Manual Entry</button>
+                </div>
+                <div class="col-4">
+                    <button class="btn btn-success btn-excel-entry w-100">Excel Entry</button>
+                </div>
+            </div>
+
+            <div class="row my-5" id="manual-container" style="display:none;">
+                <div class="col-12">
+                    <h4>Route Settings</h4>
+                    <div class="row my-3">
+                        <div class="col-3 pr-0">
+                            <input id="start" type="text" class="form-control" name="start" placeholder="Start" required>
+                            <input id="start-coords" type="hidden" name="start-coords" required>
+                        </div>
+                        <div class="col-3 pr-0">
+                            <input id="dest" type="text" class="form-control" name="dest" placeholder="Destination" required>
+                            <input id="dest-coords" type="hidden" name="dest-coords" required>
+                        </div>
+                        <div class="col-3 pr-0">
+                            <select id="route-type" name="route-type" class="form-control">
+                                <option value="" disabled selected>Route type</option>
+                                {% for routetype in routetypes %}
+                                    <option value="{{routetype|lower}}">{{routetype}}</option>"
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-2 offset-1 mt-2">
+                            <input type="checkbox" class="form-check-input" name="traffic" id="traffic">
+                            <label class="form-check-label" for="traffic">Include traffic</label>
+                        </div>
+                    </div>
+                    <h4>Vehicle Settings</h4>
+                    <div class="row my-3">
+                        <div class="col-4">
+                            <select id="fuel" name="fuel" class="form-control v-param" data-idx="0">
+                                <option value="" disabled selected>Select a fuel type</option>
+                                {% for fuel in fuels %}
+                                    <option value="{{fuel}}">{{fuel}}</option>"
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <select id="segment" name="segment" class="form-control v-param" data-idx="1" disabled>
+                                    <option value="" disabled selected>Select a segment</option>
+                                {% for segment in segments %}
+                                    <option value="{{segment}}">{{segment}}</option>"
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <select id="standard" name="standard" class="form-control v-param" data-idx="2" disabled>
+                                <option value="" disabled selected>Select a standard</option>
+                                {% for standard in standards %}
+                                    <option value="{{standard}}">{{standard}}</option>"
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <h4>Commute Settings</h4>
+                    <div class="row my-3">
+                        <div class="col-4">
+                            <input id="date-range" class="form-control" type="text" placeholder="Define a date range..." readonly="readonly">
+                        </div>
+                        <div class="col-4">
+                            <div id="weekdays"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row my-5" id="excel-container" style="display:none;">
+                Excel container
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% include "footer.html" %}

@@ -16,6 +16,10 @@ var redIcon = L.icon({
 
 $(document).ready(function (e) {
     var container = $('#map')
+    if (container.length === 0) {
+        console.log('No map on page');
+        return
+    }
 
     function resizeIFrame(object) {
         // the navigation bar takes up 56 px

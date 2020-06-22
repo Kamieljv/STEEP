@@ -65,12 +65,10 @@ $('#calculate-btn').click(function(event){
 $('form button.btn-loc').click(function(event){
     // Prevent redirection with AJAX for contact form
     event.preventDefault();
-    // Define parameters
+
     var objID = $(this).attr('for');
-    var field = $('#' + objID)[0];
-    var coordField = $(field).next()[0];
     // Geocode the input with Nomatim
-    locationSearch(field.value, field, coordField);
+    locationSearch($('#' + objID)[0].value, $('#' + objID)[0], $(field).next()[0]);
 });
 
 // Clear validation class on keyup/click
@@ -85,9 +83,13 @@ $(document).on('click', '#departure', function(e) {
 $(document).on('keyup', '#start, #dest', function(e) {
     if (e.keyCode === 13) {
         e.preventDefault();
-        $('#' + this.id + '-btn').click();
         $(this).parent().parent().next().find('input').focus();
     }
+});
+// Search location on unfocus
+$(document).on('focusout', '#start, #dest', function(e) {
+    e.preventDefault();
+    locationSearch(this.value, this, $(this).next()[0]);
 });
 
 // initialize date-time picker
@@ -148,4 +150,23 @@ $(document).on('change', '#fuel, #segment, #standard', function (e) {
             console.log(error);
         }
     });
+});
+
+$('.btn-manual-entry').click(function(e) {
+    $(this).addClass('active');
+    $('.btn-excel-entry').removeClass('active');
+    $('#excel-container').hide();
+    $('#manual-container').show();
+    $('html, body').animate({
+                    scrollTop: $("#manual-container").offset().top
+    }, 500);
+});
+$('.btn-excel-entry').click(function(e) {
+    $(this).addClass('active');
+    $('.btn-manual-entry').removeClass('active');
+    $('#manual-container').hide();
+    $('#excel-container').show();
+    $('html, body').animate({
+                    scrollTop: $("#excel-container").offset().top
+    }, 500);
 });
