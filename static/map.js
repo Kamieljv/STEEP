@@ -201,7 +201,7 @@ function showReport(emissions, distance, time, departure) {
     var em = Math.round(emissions * 100) / 100 // round to 2 decimals
     $('#report').empty();
     $('#report').append('<h4>Calculation Results</h4>');
-    $('#report').append('<p><b>Route Emissions:</b> ' + em + ' grams CO2');
+    $('#report').append('<p><b>Route Emissions:</b> ' + em + ' kg CO2');
     $('#report').append('<p><b>Distance:</b> ' + distance / 1000 + ' km');
     $('#report').append('<p><b>Trip time:</b> ' + secondsToHms(time));
     $('#report').append('<p><b>Departure time:</b> ' + departure);

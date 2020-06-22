@@ -30,7 +30,7 @@ app = Flask(__name__)
 @app.route('/', methods=['GET'])
 def index():
     """Sets vehicle parameter options and renders home-page."""
-    calculator = EmissionCalculator('data/Ps_STEEP_a_emis.csv')
+    calculator = EmissionCalculator()
     options = calculator.get_options({'fuel':"", 'segment':"", 'standard': ""})
     return render_template('home.html',
                            fuels=options['fuel'],
@@ -42,7 +42,7 @@ def index():
 @app.route('/getoptions', methods=['POST', 'GET'])
 def getoptions():
     """Updates vehicle parameter options based on user's choice."""
-    calculator = EmissionCalculator('data/Ps_STEEP_a_emis.csv')
+    calculator = EmissionCalculator()
     options = calculator.get_options({'fuel':request.form['fuel'], 'segment':request.form['segment'], 'standard':""})
     return jsonify(options)
 
@@ -73,8 +73,8 @@ def calculate_route():
     fuel = request.form['fuel']
     segment = request.form['segment']
     standard = request.form['standard']
-    calculator = EmissionCalculator('data/Ps_STEEP_a_emis.csv', fuel=fuel, segment=segment, standard=standard)
-    emfac_route = calculator.calculate_emission_factor(route)
+    calculator = EmissionCalculator(fuel=fuel, segment=segment, standard=standard)
+    emfac_route = calculator.calculate_ec_factor(route)
     emissions, distance, time = calculator.calculate_stats()
 
     return jsonify({'route': emfac_route.to_json(), 'emissions': emissions, 'distance': distance, 'time': time, 'departure': request.form['departure'] })
