@@ -55,10 +55,21 @@ def calculate_route():
         departure = datetime.now() + timedelta(minutes=1)
 
     # Adding 4 more departure times
-    departures = [datetime.strftime(departure, '%Y-%m-%d %H:%M')]
-    for i in range(4):
-        departure += timedelta(minutes=5)
-        departures.append(datetime.strftime(departure, '%Y-%m-%d %H:%M'))
+    departures = []
+    initial = departure
+    if departure - timedelta(minutes=11) >= datetime.now():
+        departure = departure - timedelta(minutes=10)
+        departures.append(departure)
+
+        for i in range(4):
+            departure = departure + timedelta(minutes=5)
+            departures.append(datetime.strftime(departure, '%Y-%m-%d %H:%M'))
+    else:
+        for i in range(4):
+            departure += timedelta(minutes=5)
+            departures.append(datetime.strftime(departure, '%Y-%m-%d %H:%M'))
+        departures.append(datetime.strftime(initial, '%Y-%m-%d %H:%M'))
+        departures.sort()
 
     dep_fmt = []
     for dep in departures:
