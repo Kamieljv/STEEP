@@ -70,6 +70,10 @@ border-radius: 5px;
     <!--margin-bottom: 12px;-->
 }
 
+.data-layer-legend {
+    margin-bottom: 10px;
+}
+
 .min-value {
     float: left;
     margin-right: 5px;
@@ -81,11 +85,11 @@ border-radius: 5px;
 }
 
 .legend .min {
-float: left;
-padding-bottom: 5px;
+    float: left;
+    padding-bottom: 5px;
 }
 .legend .max {
-float: right;
+    float: right;
 }
 
 /* HELP PAGE ACCORDION */

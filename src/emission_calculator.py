@@ -95,8 +95,8 @@ class EmissionCalculator:
         route.loc[route['speed'] < minspeed, 'speed'] = minspeed
         route.loc[route['speed'] > maxspeed, 'speed'] = maxspeed
 
-        route['ec_fac'] = route.apply(lambda row: self.ec_formula(row.speed), axis=1)
-        route['co2_fac'] = route.apply(lambda row: self.CO2conv * row.ec_fac, axis=1)
+        route['ec_fac'] = route.apply(lambda row: round(self.ec_formula(row.speed), 3), axis=1)
+        route['co2_fac'] = route.apply(lambda row: round(self.CO2conv * row.ec_fac, 3), axis=1)
 
         self.route = route
 
@@ -105,6 +105,6 @@ class EmissionCalculator:
     def calculate_stats(self):
         """ Calculates the route emissions (kgCO2) based on the emission factors and segment lengths """
 
-        self.route['emissions'] = self.route.apply(lambda row: (row.distance / 1000) * row.co2_fac, axis=1)
+        self.route['emissions'] = self.route.apply(lambda row: round((row.distance / 1000) * row.co2_fac, 3), axis=1)
 
         return self.route['emissions'].sum(), int(self.route['distance'].sum()), int(self.route['time'].sum())

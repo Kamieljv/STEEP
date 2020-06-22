@@ -141,9 +141,6 @@ function addRoute(map, route) {
         map.removeLayer(routeLayer);
     }
 
-    //route.features[3].properties['emissions'] = 200;
-    console.log(route);
-
     routeLayer = new L.ChoroplethDataLayer(route, {
         recordsField: 'features',
         locationMode: L.LocationModes.GEOJSON,
@@ -159,12 +156,18 @@ function addRoute(map, route) {
                 color: colorFunction
             },
             'properties.emissions': {
-                displayName: 'Emission'
+                displayName: 'Emission',
+                excludeFromLegend: true,
             }
         },
         tooltipOptions: {
             iconSize: new L.Point(80, 55),
             iconAnchor: new L.Point(-10, 80)
+        },
+        showLegendTooltips: false,
+        onEachRecord: function(layer, record) {
+            layer.bindTooltip('<b>kg CO2/km:</b> ' + record.properties.co2_fac + '<br/>'
+                            + '<b>kg CO2:</b> ' + record.properties.emissions);
         }
     });
     var legendControl = new L.Control.Legend();
