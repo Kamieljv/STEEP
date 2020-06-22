@@ -126,7 +126,7 @@ function zoomToFeature(lat, lng, type) {
 
 // add min and max possible values for emission factor
 var minEmissionFactor = 0;
-var maxEmissionFactor = 0.200;
+var maxEmissionFactor = 0.3;
 
 var colorFunction = new L.HSLHueFunction(new L.Point(minEmissionFactor, 120), new L.Point(maxEmissionFactor, 20), { outputSaturation: '100%', outputLuminosity: '45%'});
 
@@ -137,7 +137,9 @@ function addRoute(map, route) {
     route: GeoJSON object
     */
     // remove old line from
-    if (routeLayer != null) { map.removeLayer(routeLayer); }
+    if (routeLayer != null) {
+        map.removeLayer(routeLayer);
+    }
 
     //route.features[3].properties['emissions'] = 200;
     console.log(route);
@@ -155,9 +157,11 @@ function addRoute(map, route) {
             'properties.co2_fac': {
                 displayName: 'Emission factor CO2',
                 color: colorFunction
+            },
+            'properties.emissions': {
+                displayName: 'Emission'
             }
         },
-        //showLegendTooltips: false,
         tooltipOptions: {
             iconSize: new L.Point(80, 55),
             iconAnchor: new L.Point(-10, 80)
@@ -167,43 +171,7 @@ function addRoute(map, route) {
     legendControl.addTo(map);
     map.addLayer(routeLayer);
     map.fitBounds(routeLayer.getBounds());
-
-    /*$('#legend').append(routeLayer.getLegend({
-	        numSegments: 20,
-	        width: 80,
-	        className: 'well'
-    }));
-    map.addLayer(routeLayer);*/
 }
-
-
-
-/*function getColor(d) {
-        return d === 'Low emission'  ? "#de2d26" :
-               d === 'Moderate emission'  ? "#377eb8" :
-               d === 'High emission' ? "#4daf4a": '#FFEDA0';
-    }
-
-var legend = L.control({position: 'bottomright'});
-    legend.onAdd = function (map) {
-
-    var div = L.DomUtil.create('div', 'info legend');
-    labels = ['<strong>Categories</strong>'],
-    categories = ['Low emission','Moderate emission','High emission'];
-
-    for (var i = 0; i < categories.length; i++) {
-
-            div.innerHTML +=
-            labels.push(
-                '<i class="circle" style="background:' + getColor(categories[i]) + '"></i> ' +
-            (categories[i] ? categories[i] : '+'));
-
-        }
-        div.innerHTML = labels.join('<br>');
-    return div;
-    };
-    legend.addTo(map);*/
-
 
 function showReport(emissions, distance, time, departure) {
     var em = Math.round(emissions * 100) / 100 // round to 2 decimals
