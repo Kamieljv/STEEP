@@ -52,7 +52,7 @@ def calculate_route():
     # Adding 4 more departure times
     departures = [initial]
     for i in range(4):
-        departure += timedelta(minutes=5)
+        departure += datetime.timedelta(minutes=5)
         departures.append(departure)
 
     dep_fmt = []
@@ -66,13 +66,13 @@ def calculate_route():
         dep_fmt.append(departure)
 
     routes = {}
-    for i in dep_fmt:
+    for depa in dep_fmt:
         # Calculate route
         startLat, startLon = request.form['start-coords'].split(", ")
         destLat, destLon = request.form['dest-coords'].split(", ")
         traffic = 'traffic' in request.form
         router = Routing()
-        route = router.get_route(float(startLat), float(startLon), float(destLat), float(destLon), i, request.form['route-type'], traffic)
+        route = router.get_route(float(startLat), float(startLon), float(destLat), float(destLon), depa)
 
         # Calculate emissions
         fuel = request.form['fuel']
@@ -82,7 +82,7 @@ def calculate_route():
         emfac_route = calculator.calculate_ec_factor(route)
         emissions, distance, time = calculator.calculate_stats()
 
-        routes['route'+ i] = {'route': emfac_route.to_json(), 'emissions': emissions,
+        routes['route'+ depa] = {'route': emfac_route.to_json(), 'emissions': emissions,
                              'distance': distance, 'time': time, 'departure': request.form['departure'] }
 
     return routes
