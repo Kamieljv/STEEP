@@ -2,6 +2,8 @@
 
     Required packages:
     - pandas
+    - pytz
+
 
     The class(es) in this document are loaded by 'app.py'.
     This class performs the necessary operations to build and run a scenario and report the statistics to the user.
@@ -9,7 +11,7 @@
 from src.emission_calculator import EmissionCalculator
 from src.routing import Routing
 import pandas as pd
-import pytz
+import pytz, random
 from datetime import datetime
 
 class Scenario:
@@ -18,7 +20,7 @@ class Scenario:
     def __init__(self, callLimit=20, **kwargs):
         """ Initializes the class"""
         self.callLimit = callLimit
-        self.expected = ['start-coords', 'dest-coords', 'route-type', 'fuel', 'segment', 'standard', \
+        self.expected = ['start', 'start-coords', 'dest', 'dest-coords', 'route-type', 'fuel', 'segment', 'standard', \
                          'date-range', 'weekdays', 'departure-time', 'return-time', 'commuters']
 
         for key, value in kwargs.items():
@@ -54,12 +56,22 @@ class Scenario:
         return self.departures
 
     def run(self):
-        """ Run the scenario from the list of departures. """
+        """ Run the scenario from the list of departures.
+            - Returns:
+                * padndas dataframe with scenario results;
+                * path string to point to a csv save of that dataframe
+        """
         # Check if we are not making too many API calls
         self.listDepartures()
         if len(self.departures) > self.callLimit:
             return {'error': 'Number of API calls exceeds limit (' + str(self.callLimit) + ').'}
 
+        # Define dataframe to store results
+        cols = ['departure', 'emissions', 'distance', 'time', 'routetype', 'fuel', 'segment', 'standard',
+                'start', 'startLat', 'startLon', 'dest', 'destLat', 'destLon']
+        df_results = pd.DataFrame(columns=cols)
+
+        # Run the routing algorithm
         router = Routing() # Initialize router class
         for departure in self.departures:
             route = router.get_route(self.startLat, self.startLon, self.destLat, self.destLon, departure,
@@ -68,8 +80,19 @@ class Scenario:
             # Calculate emissions
             calculator = EmissionCalculator(fuel=self.fuel, segment=self.segment, standard=self.standard)
             calculator.calculate_ec_factor(route)
-            emissions, distance, time = calculator.calculate_stats()
-            print("Route calculated: {} kg CO2, {} km, {} s".format(emissions, distance / 1000, time))
+            stats = calculator.calculate_stats()
+            df_row = pd.DataFrame([[departure] + list(stats) + [self.routetype, self.fuel, self.segment, self.standard, \
+                                                                self.start, self.startLat, self.startLon, \
+                                                                self.dest, self.destLat, self.destLon]], columns=cols)
+            df_results = df_results.append(df_row)
+
+        # Create and write to file, with datestamp and hash in name, for security
+        fpath = 'output/scenario-results_' + datetime.strftime(datetime.now(), '%Y%m%dT%H%M') + '_%016x.csv' % random.getrandbits(64)
+        df_results.to_csv(fpath, index=False)
+        return df_results, fpath
+
+    def summarize(self):
+        """ Summarizes the scenario run(s) by calculating total distance, total emissions, """
 
 input = {'start': 'Wijchen, Gelderland, Netherlands, The Netherlands', 'start-coords': '51.8099983, 5.7362233',\
          'dest': 'Nijmegen, Gelderland, Netherlands, The Netherlands', 'dest-coords': '51.842574850000005, 5.838960628748229',\
