@@ -36,6 +36,7 @@ def plotEmFacProfile(ax, parameter='fuel', min_speed=10, max_speed=130):
 
         # Initialize calculator with COPERT model file
         calculator = EmissionCalculator('../data/Ps_STEEP_a_emis.csv',
+                                        conversionpath = '../data/EC_CO2_Conversion.csv',
                                         fuel=defaults['fuel'],
                                         segment=defaults['segment'],
                                         standard=defaults['standard'])
@@ -44,9 +45,9 @@ def plotEmFacProfile(ax, parameter='fuel', min_speed=10, max_speed=130):
 
         df_speed = pd.DataFrame({'speed': np.linspace(min_speed, max_speed, 100)})
 
-        df_emfac = calculator.calculate_emission_factor(df_speed)
+        df_co2fac = calculator.calculate_ec_factor(df_speed)
 
-        ax.plot('speed', 'em_fac', data=df_emfac, label=var)
+        ax.plot('speed', 'co2_fac', data=df_co2fac, label=var)
 
     ax.legend()
     ax.set_title(parameter.capitalize() + 's')
