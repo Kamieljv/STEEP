@@ -27,7 +27,9 @@ def plotEmFacProfile(ax, parameter='fuel', min_speed=10, max_speed=130):
 
     for var in options[parameter]:
         # do not plot 'LPG Bifuel ~ Petrol' or 'CNG Bifuel ~ Petrol' because they are identical to 'Petrol'
-        if var in ['LPG Bifuel ~ Petrol', 'CNG Bifuel ~ Petrol']:
+        if parameter == 'fuel' and var in ['LPG Bifuel ~ Petrol', 'CNG Bifuel ~ Petrol']:
+            continue
+        if parameter == 'standard' and var not in ['Euro 4', 'Euro 5', 'Euro 6 up to 2016', 'Euro 6 2017-2019', 'Euro 6 2020+']:
             continue
 
         defaults[parameter] = var
