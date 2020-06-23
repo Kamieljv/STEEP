@@ -24,9 +24,9 @@ class Routing:
     def __init__(self):
         # Tomtom url and key
         self.apiURL = "https://api.tomtom.com/routing/1/calculateRoute/"
-        self.apiKEY = "x7b42zLGbh4VoCVGHgrDNjC2FKo2hZDo" #os.environ.get("TOMTOM_API_KEY")
-        if not self.apiKEY:
-            raise Exception("'TOMTOM_API_KEY' not found in environment.")
+        self.apiKEY = "x7b42zLGbh4VoCVGHgrDNjC2FKo2hZDo"
+        if not self.apiKEY or self.apiKEY == "":
+            raise Exception("'TOMTOM_API_KEY' not specified.")
 
     def find(self, key, dictionary):
         """ Function to extract data from JSON API response """
