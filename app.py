@@ -53,6 +53,7 @@ def calculate_route():
     departure = datetime.strptime(request.form['departure'], '%Y-%m-%d %H:%M')
     if departure < datetime.now():
         departure = datetime.now() + timedelta(minutes=1)
+    initial = departure
 
     # Adding 4 more departure times
     departures = []
@@ -60,7 +61,8 @@ def calculate_route():
         departure -= timedelta(minutes=10)
 
     # Create time window
-    for i in range(5):
+    departures.append(initial)
+    for i in range(4):
         departure += timedelta(minutes=(5*i))
         departures.append(datetime.strftime(departure, '%Y-%m-%d %H:%M'))
 
