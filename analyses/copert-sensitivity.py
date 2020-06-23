@@ -19,7 +19,7 @@ from src.emission_calculator import EmissionCalculator
 def plotEmFacProfile(ax, parameter='fuel', min_speed=10, max_speed=130):
 
     # Set defaults; clear value for chosen parameter
-    defaults = {'fuel':"Petrol", 'segment':"Small", 'standard':"Euro 5"}
+    defaults = {'fuel':"Petrol", 'segment':"Small", 'standard':"Euro 6 2017-2019"}
     defaults[parameter] = ""
 
     # Get the possible options
@@ -48,7 +48,7 @@ def plotEmFacProfile(ax, parameter='fuel', min_speed=10, max_speed=130):
 
     ax.legend()
     ax.set_title(parameter.capitalize() + 's')
-    ax.set(xlabel='Speed (km/h)', ylabel='Emission factor (gCO2/km)')
+    ax.set(xlabel='Speed (km/h)', ylabel='Emission factor (kgCO2/km)')
 
 def plotMultipleProfiles():
     fig, axs = plt.subplots(1, 3)
