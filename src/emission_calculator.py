@@ -15,7 +15,7 @@ import pandas as pd
 class EmissionCalculator:
     """Derives values for further emission factors calculation"""
 
-    def __init__(self, modelpath='data/Ps_STEEP_a_emis.csv', conversionpath='data/EC_CO2_Conversion.csv', fuel="Petrol", segment="Medium", standard="Euro 6 2017-2019", technology="GDI", pollutant="EC"):
+    def __init__(self, modelpath='data/Ps_STEEP_a_emis.csv', conversionpath='data/EC_CO2_Conversion.csv', fuel="Petrol", segment="Medium", standard="Euro 6 2017-2019", technology="GDI", pollutant="EC", root=""):
         """ Initializes the class
             - modelpath [string]: absolute/relative path to the emission model sheet (as .csv)
             - conversionpath [string]: absolute/relative path to the conversion factors sheet (as .csv)
@@ -24,9 +24,11 @@ class EmissionCalculator:
             - standard [string]*
             - technology [string]*
             - pollutant [string]*
+            - root [string]: specify file root of the project
         """
+        self.root = root
         self.modelpath = modelpath
-        self.df_conversion = pd.read_csv(conversionpath)
+        self.df_conversion = pd.read_csv(self.root + conversionpath)
         self.fuel = fuel
         self.segment = segment
         self.standard = standard
@@ -41,7 +43,7 @@ class EmissionCalculator:
 
     def get_parameters(self):
         """ Retrieves the parameters from the emission model file based on vehicle characteristics."""
-        values_for_emis_calc = pd.read_csv(self.modelpath)
+        values_for_emis_calc = pd.read_csv(self.root + self.modelpath)
         df_values = values_for_emis_calc[(values_for_emis_calc['Fuel'] == self.fuel) &
                                          (values_for_emis_calc['Segment'] == self.segment) &
                                          (values_for_emis_calc['Euro Standard'] == self.standard) &
@@ -62,7 +64,7 @@ class EmissionCalculator:
             choice = {k: v for k, v in choice.items() if v}
 
         # Get all options from COPERT model sheet
-        options = pd.read_csv(self.modelpath)
+        options = pd.read_csv(self.root + self.modelpath)
 
         # Translate dict keys to csv columns
         col = {'fuel':'Fuel', 'segment':'Segment', 'standard':'Euro Standard'}
