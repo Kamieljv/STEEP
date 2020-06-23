@@ -1,10 +1,13 @@
+$(document).ajaxComplete(function(event, request, settings) {
+  $('.loader').hide();
+});
 
 function send_form(form, url, type, formData) {
     // form validation and sending of form items
 
     if (!isFormDataEmpty(form, formData)) { // checks if form is empty
         event.preventDefault();
-
+        $('.loader').show();
         // make AJAX call
         $.ajax({
             url: url,
