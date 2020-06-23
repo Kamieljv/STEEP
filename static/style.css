@@ -1,8 +1,4 @@
 /* This file contains the styles for the web app */
-body, html {
-    overflow: hidden;
-}
-
 .container {
     max-width: 900px !important;
 }
@@ -92,8 +88,11 @@ border-radius: 5px;
     float: right;
 }
 
-/* HELP PAGE ACCORDION */
-/* Form Style */
+/* HELP PAGE  */
+.standards-table {
+    min-width: 300px;
+}
+
 a:hover,a:focus{
  text-decoration: none;
  outline: none;

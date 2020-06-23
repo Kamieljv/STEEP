@@ -22,16 +22,21 @@
                     </div>
                     <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel"
                          aria-labelledby="headingOne">
+
                         <div class="panel-body">
-                            I
-                        </div>
-                        <div class="panel-body">Input your origin and departure destinations. Set the time of departure
-                            and indicate whether or not you would like to include traffic information in your search. By
-                            selecting the time window option you can see how various departure times affect your route
-                            and emissions. Additionally you can vary the car parameters to determine what effect
-                            different vehicles have on emissions. <a
-                                    href="http://bootstraptema.ru/stuff/snippets_bootstrap/elements/stilnyj_bootstrap_accordion/33-1-0-1885"
-                                    target="_blank">BootstrapTema</a>
+                            STEEP can be run in a couple of simple steps:
+
+                            <ol>
+                                <li>Input your origin and departure destinations</li>
+                                <li>Set the time of departure</li>
+                                <li>Indicate whether you want the 'eco' or the 'fastest' route</li>
+                                <li>Indicate whether you want to include traffic in the route calculation</li>
+                                <li>Specify your car parameters to make the emission calculation more accurate</li>
+                                <li>Click 'Calculate Emissions' and wait for the result to show on the map</li>
+                            </ol>
+
+                            <i>Tip: By selecting the time window option you can see how various departure times affect your route
+                            and emissions.</i>
                         </div>
                     </div>
                 </div>
@@ -45,23 +50,18 @@
                         </h4>
                     </div>
                     <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
-                        <div class="panel-body">
-                            The emi
-                        </div>
+
                         <div class="panel-body">
                             Emssions of the route are calculated based on the vehicle parameters that
                             the user applies and the speeds derived from the calculated route. The vehicle parameters
                             are passed on to a script which determines the CO2 emission factors (g/km) for the various
-                            speeds. The emission factors and equations are taken from EEA/EMEP Road Transport Handbook
-                            and Appendix 4 <a
+                            speeds. The emission factors and equations are taken from <a
                                 href="https://www.eea.europa.eu/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion"
-                                target="_blank">here</a>,
-                            in which they utilize the COPERT model by Emisia <a
+                                target="_blank">EEA/EMEP Road Transport Handbook
+                            and Appendix 4</a>,
+                            in which they utilize the <a
                                 href="https://www.emisia.com/utilities/copert/"
-                                target="_blank">here</a>.
-                            <a
-                                    href="http://bootstraptema.ru/stuff/snippets_bootstrap/elements/stilnyj_bootstrap_accordion/33-1-0-1885"
-                                    target="_blank">BootstrapTema</a>
+                                target="_blank">COPERT model by Emisia</a>.
                         </div>
                     </div>
                 </div>
@@ -76,14 +76,30 @@
                     </div>
                     <div id="collapseThree" class="panel-collapse collapse" role="tabpanel"
                          aria-labelledby="headingThree">
-                        <div class="panel-body">
-                            Vehicl
-                        </div>
-                        <div class="panel-body"> Vehicle parameters are the main factor which determine the CO2 emissions. The
-                            vehicle standard can be found in the registration papers or in some cars on the side of your
+
+                        <div class="panel-body"> Vehicle parameters are the main factor which determine the CO2 emissions.
+                            STEEP uses three different vehicle parameters: <strong>fuel type</strong>, <strong>segment</strong>
+                            and <strong>(emission) standard</strong>.
+
+                            <h5 class="mt-3">Fuel Type</h5>
+                            <p>Eli please add text here</p>
+
+                            <h5 class="mt-3">Segment</h5>
+                            <p>Eli please add text here</p>
+
+
+                            <h5 class="mt-3">(Emission) Standard</h5>
+
+                            <p>The vehicle emission standards are a set of maximum values for vehicle pollutants set by the
+                            European Comission to regulate pollution from transportation. More information can be found
+                            <a href="https://www.theaa.com/driving-advice/fuels-environment/euro-emissions-standards"
+                               target="_blank">here</a>.</p>
+
+                            <p>The emission standard can be found in the registration papers or in some cars on the side of your
                             vehicle door. If that information is not available you can guess based on the year of
-                            manufacture for your vehicle based on the following table.
-                            <table>
+                                manufacture for your vehicle based on the following table.</p>
+
+                            <table class="standards-table my-3">
                                 <tr>
                                     <th>Emission Standard</th>
                                     <th>Year of Manufacture</th>
@@ -109,15 +125,6 @@
                                     <td>2020+</td>
                                 </tr>
                             </table>
-
-                            The vehicle emission standards are a set of maximum values for vehicle pollutants set by the
-                            European Comission to regulate pollution from transportation. For more information click
-                            <a
-                                    href="https://www.theaa.com/driving-advice/fuels-environment/euro-emissions-standards"
-                                    target="_blank">here</a>.
-                            <a
-                                    href="http://bootstraptema.ru/stuff/snippets_bootstrap/elements/stilnyj_bootstrap_accordion/33-1-0-1885"
-                                    target="_blank">BootstrapTema</a>
                         </div>
                     </div>
                 </div>
