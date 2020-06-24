@@ -171,11 +171,13 @@ function showTimewindow(response) {
     $('#report').append('<h4>Calculation Results</h4>');
     //let defaultEmissions = 0;
     let defaultEmissions = response['route2']
+     response['route2'].rightWidth = 0;
+     response['route2'].leftWidth = 0;
     for (i = 0; i < Object.keys(response).length; i++) {
         var item = response['route'+i]
         if (i !== 2) {
-            let width = Number(item.emissions - defaultEmissions).toFixed(5) ;
-            width = Number(width) * 1000;
+            let width = Number(item.emissions - defaultEmissions).toFixed(5) * 1000 ;
+            //width = Number(width) ;
             if (width > 0) {
                 item.leftWidth = width;
             } else {
