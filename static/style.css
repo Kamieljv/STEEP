@@ -1,8 +1,4 @@
 /* This file contains the styles for the web app */
-body, html {
-    overflow: hidden;
-}
-
 .container {
     max-width: 900px !important;
 }

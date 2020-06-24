@@ -2,7 +2,7 @@
 var map = null;
 var startMarker = null;
 var destMarker = null;
-var multiline = null;
+var routeLayer = null;
 var greenIcon = L.icon({
     iconUrl: '/static/marker-green.png',
     iconSize: [40, 40],
@@ -88,26 +88,31 @@ function locationSearch(locationName, field, coordField) {
             coordField.value = lat + ", " + lon;
 
             // place a marker on the leaflet map
-            var location = new L.LatLng(lat, lon);
-            var bounds = new L.LatLngBounds();
-
-            if (field.name == 'start') {
-                if (startMarker) {map.removeLayer(startMarker);}
-                startMarker = L.marker(location, {icon: greenIcon}).addTo(map);
-                bounds.extend(startMarker.getLatLng());
-                if (destMarker) {bounds.extend(destMarker.getLatLng());}
-            } else {
-                if (destMarker) {map.removeLayer(destMarker);}
-                destMarker = L.marker(location, {icon: redIcon}).addTo(map);
-                bounds.extend(destMarker.getLatLng());
-                if (startMarker) {bounds.extend(startMarker.getLatLng());}
-            }
-
-            // pan/zoom to have all current features on screen
-            map.fitBounds(bounds);
+            placeMarker(lat, lon, field.name)
         }
     });
 }
+
+function placeMarker(lat, lon, type) {
+    var location = new L.LatLng(lat, lon);
+    var bounds = new L.LatLngBounds();
+
+    if (type == 'start') {
+        if (startMarker) {map.removeLayer(startMarker);}
+        startMarker = L.marker(location, {icon: greenIcon}).addTo(map);
+        bounds.extend(startMarker.getLatLng());
+        if (destMarker) {bounds.extend(destMarker.getLatLng());}
+    } else {
+        if (destMarker) {map.removeLayer(destMarker);}
+        destMarker = L.marker(location, {icon: redIcon}).addTo(map);
+        bounds.extend(destMarker.getLatLng());
+        if (startMarker) {bounds.extend(startMarker.getLatLng());}
+    }
+
+    // pan/zoom to have all current features on screen
+    map.fitBounds(bounds, {padding: [30, 30]});
+}
+
 function zoomToFeature(lat, lng, type) {
   var location = new L.LatLng(lat, lng);
   map.panTo(location);
@@ -119,46 +124,56 @@ function zoomToFeature(lat, lng, type) {
   }
 }
 
+// add min and max possible values for emission factor
+var minEmissionFactor = 0;
+var maxEmissionFactor = 0.3;
+
+var colorFunction = new L.HSLHueFunction(new L.Point(minEmissionFactor, 120), new L.Point(maxEmissionFactor, 20), { outputSaturation: '100%', outputLuminosity: '45%'});
+
 function addRoute(map, route) {
     /*
     Function that adds a route to the Leaflet map
     map: a Leaflet object
     route: GeoJSON object
     */
-
     // remove old line from
-    if (multiline != null) { map.removeLayer(multiline); }
-
-    // Define plot styles
-    var red = {
-        "color": "#f55142",
-        "weight": 5,
-        "opacity": 0.8
-    };
-    var orange = {
-        "color": "#fcbd00",
-        "weight": 10,
-        "opacity": 0.8
-    };
-    var green = {
-        "color": "#74f533",
-        "weight": 15,
-        "opacity": 0.8
+    if (routeLayer != null) {
+        map.removeLayer(routeLayer);
     }
-    // define multiline object with specific styling
-    multiline = L.geoJSON(route, {
-        style: function (feature) {
-            var em_fac = feature.properties.em_fac;
-            switch (true) {
-                case (em_fac <= 1.5): return green;
-                case (em_fac <= 2): return orange;
-                case (em_fac > 2): return red;
+
+    routeLayer = new L.ChoroplethDataLayer(route, {
+        recordsField: 'features',
+        locationMode: L.LocationModes.GEOJSON,
+        layerOptions: {
+            color: "#000000",
+            fillOpacity: 0.7,
+            opacity: 1,
+            weight: 5,
+        },
+        displayOptions: {
+            'properties.co2_fac': {
+                displayName: 'Emission factor CO2',
+                color: colorFunction
+            },
+            'properties.emissions': {
+                displayName: 'Emission',
+                excludeFromLegend: true,
             }
+        },
+        tooltipOptions: {
+            iconSize: new L.Point(80, 55),
+            iconAnchor: new L.Point(-10, 80)
+        },
+        showLegendTooltips: false,
+        onEachRecord: function(layer, record) {
+            layer.bindTooltip('<b>kg CO2/km:</b> ' + record.properties.co2_fac + '<br/>'
+                            + '<b>kg CO2:</b> ' + record.properties.emissions);
         }
     });
-    multiline.addTo(map);
-    // pan to multiline object
-    map.fitBounds(multiline.getBounds());
+    var legendControl = new L.Control.Legend();
+    legendControl.addTo(map);
+    map.addLayer(routeLayer);
+    map.fitBounds(routeLayer.getBounds());
 }
 
 function showReport(emissions, distance, time, departure) {

@@ -22,14 +22,21 @@
                     </div>
                     <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel"
                          aria-labelledby="headingOne">
+
                         <div class="panel-body">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque lacinia lacinia mauris, at
-                            ultricies leo ornare nec. Vivamus eu est vel felis dignissim tempor. Nulla facilisi. Duis
-                            molestie tortor ac tempor volutpat. Phasellus nec mi aliquet, sollicitudin neque eget,
-                            consectetur libero. Vestibulum sollicitudin sapien libero, egestas tempus eros scelerisque
-                            eu. <a
-                                href="http://bootstraptema.ru/stuff/snippets_bootstrap/elements/stilnyj_bootstrap_accordion/33-1-0-1885"
-                                target="_blank">BootstrapTema</a>
+                            STEEP can be run in a couple of simple steps:
+
+                            <ol>
+                                <li>Input your origin and departure destinations</li>
+                                <li>Set the time of departure</li>
+                                <li>Indicate whether you want the 'eco' or the 'fastest' route</li>
+                                <li>Indicate whether you want to include traffic in the route calculation</li>
+                                <li>Specify your car parameters to make the emission calculation more accurate</li>
+                                <li>Click 'Calculate Emissions' and wait for the result to show on the map</li>
+                            </ol>
+
+                            <i>Tip: By selecting the time window option you can see how various departure times affect your route
+                            and emissions.</i>
                         </div>
                     </div>
                 </div>
@@ -43,14 +50,18 @@
                         </h4>
                     </div>
                     <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+
                         <div class="panel-body">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque lacinia lacinia mauris, at
-                            ultricies leo ornare nec. Vivamus eu est vel felis dignissim tempor. Nulla facilisi. Duis
-                            molestie tortor ac tempor volutpat. Phasellus nec mi aliquet, sollicitudin neque eget,
-                            consectetur libero. Vestibulum sollicitudin sapien libero, egestas tempus eros scelerisque
-                            eu. <a
-                                href="http://bootstraptema.ru/stuff/snippets_bootstrap/elements/stilnyj_bootstrap_accordion/33-1-0-1885"
-                                target="_blank">BootstrapTema</a>
+                            Emissions of the route are calculated based on the vehicle parameters that
+                            the user applies and the speeds derived from the calculated route. The vehicle parameters
+                            are passed on to a script which determines the CO2 emission factors (g/km) for the various
+                            speeds. The emission factors and equations are taken from <a
+                                href="https://www.eea.europa.eu/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/1-a-combustion"
+                                target="_blank">EEA/EMEP Road Transport Handbook
+                            and Appendix 4</a>,
+                            in which they utilize the <a
+                                href="https://www.emisia.com/utilities/copert/"
+                                target="_blank">COPERT model by Emisia</a>.
                         </div>
                     </div>
                 </div>
@@ -65,12 +76,78 @@
                     </div>
                     <div id="collapseThree" class="panel-collapse collapse" role="tabpanel"
                          aria-labelledby="headingThree">
+
+                        <div class="panel-body"> Vehicle parameters are the main factor which determine the CO2 emissions.
+                            STEEP uses three different vehicle parameters: <strong>fuel type</strong>, <strong>segment</strong>
+                            and <strong>(emission) standard</strong>.
+
+                            <h5 class="mt-3">Fuel Type</h5>
+                            <p> When fuel is burned by a vehicle engine it produces different amounts of CO2 emissions depending on the Carbon (C)
+                                and Hydrogen (H) ratio of the fuel. Additionally not all the fuel is converted to CO2 as
+                                the engine is not 100% efficient, this results in CO and other pollutants. Generally biodiesel emits the most CO2, followed by petrol and then diesel</p>
+
+                            <h5 class="mt-3">Segment</h5>
+                            <p>The car segments influence CO2 emissions mainly through the weight of the vehicle. Heavier vehicles like SUV's require more energy and fuel to move and thus produce more CO2.</p>
+
+
+                            <h5 class="mt-3">(Emission) Standard</h5>
+
+                            <p>The vehicle emission standards are a set of maximum values for vehicle pollutants set by the
+                            European Comission to regulate pollution from transportation. More information can be found
+                            <a href="https://www.theaa.com/driving-advice/fuels-environment/euro-emissions-standards"
+                               target="_blank">here</a>.</p>
+
+                            <p>The emission standard can be found in the registration papers or in some cars on the side of your
+                            vehicle door. If that information is not available you can guess based on the year of
+                                manufacture for your vehicle based on the following table.</p>
+
+                            <table class="standards-table my-3">
+                                <tr>
+                                    <th>Emission Standard</th>
+                                    <th>Year of Manufacture</th>
+                                </tr>
+                                <tr>
+                                    <td>Euro 4</td>
+                                    <td>2005 -2008</td>
+                                </tr>
+                                <tr>
+                                    <td>Euro 5</td>
+                                    <td>2009 -2013</td>
+                                </tr>
+                                <tr>
+                                    <td>Euro 6 up to 2016</td>
+                                    <td>2014 - 2016</td>
+                                </tr>
+                                <tr>
+                                    <td>Euro 6 2017-2019</td>
+                                    <td>2017-2019</td>
+                                </tr>
+                                <tr>
+                                    <td>Euro 6 2020+</td>
+                                    <td>2020+</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingTwo">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                               href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                How is Traffic incorporated?
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+
                         <div class="panel-body">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque lacinia lacinia mauris, at
-                            ultricies leo ornare nec. Vivamus eu est vel felis dignissim tempor. Nulla facilisi. Duis
-                            molestie tortor ac tempor volutpat. Phasellus nec mi aliquet, sollicitudin neque eget,
-                            consectetur libero. Vestibulum sollicitudin sapien libero, egestas tempus eros scelerisque
-                            eu. <a
+                         The traffic information is provided through the TomTom API. TomTom's
+                            historical traffic database was built using a massive volume of archived data that has been
+                            collected since 2008. It makes use of anonymized GPS location data from TomTom global
+                            providers and community. This database provides traffic insights on speed, travel time and
+                            sample size on the road network.
+                            <a
                                 href="http://bootstraptema.ru/stuff/snippets_bootstrap/elements/stilnyj_bootstrap_accordion/33-1-0-1885"
                                 target="_blank">BootstrapTema</a>
                         </div>

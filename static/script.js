@@ -152,3 +152,12 @@ $(document).on('change', '#fuel, #segment, #standard', function (e) {
         }
     });
 });
+
+$('#swap-btn').click(function (e) {
+    var dest = $('#dest').val();
+    var destCoords = $('#dest-coords').val();
+    $('#dest').val($('#start').val());
+    $('#start').val(dest);
+    $('#start-btn').click();
+    $('#dest-btn').click();
+});
