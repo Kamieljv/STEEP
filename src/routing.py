@@ -10,16 +10,14 @@
 
 """
 
-import os
 import requests
-from ast import literal_eval
 import pandas as pd
 import geopandas as gpd
 from shapely.geometry import Point, LineString, MultiPoint
 from shapely.ops import split, snap
 from flask import request
 import pytz, re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class Routing:
     """ Calculates a route between two points at a given time/date, based on the TomTom Route API. """
@@ -135,3 +133,35 @@ class Routing:
         gdf_segments = gdf_segments.assign(speed=df_speed, distance=df_dis, time=df_time)
 
         return gdf_segments
+
+    def timewindow(self, departure, outFormat='%Y-%m-%dT%H:%M:%S%z'):
+        """ Gives a time window around the chosen departure time, returning a list of departure times.
+            - departure [datetime object]: datetime object of departure
+            - outFormat [string]: format of the outgoing departure data
+        """
+
+        # Check if time is not in past, otherwise change to present
+        if departure < datetime.now():
+            departure = datetime.now() + timedelta(minutes=1)
+
+        # Check if departure is far enough into the future to make two-sided time-window
+        if departure - timedelta(minutes=11) >= datetime.now():
+            departure -= timedelta(minutes=10)
+
+        # Create time window
+        departures = []
+        departures.append(datetime.strftime(departure, '%Y-%m-%d %H:%M'))
+        for i in range(4):
+            departure += timedelta(minutes=5)
+            departures.append(datetime.strftime(departure, '%Y-%m-%d %H:%M'))
+
+        dep_fmt = []
+        for dep in departures:
+            # Define and format the departure time variable
+            tz = pytz.timezone('Europe/Amsterdam')  # set time zone
+            t = [int(x) for x in re.split(' |-|:', dep)]  # convert to integers
+            departure = tz.localize(datetime(t[0], t[1], t[2], t[3], t[4], 0)).strftime(outFormat)
+            departure = departure[:-2] + ':' + departure[-2:]
+            dep_fmt.append(departure)
+
+        return dep_fmt
