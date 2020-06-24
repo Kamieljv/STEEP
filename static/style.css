@@ -256,7 +256,7 @@ a:hover,a:focus{
 }
 
 .img_left {
-    background: #EA0000;
+    background: #009100;
     height: 30px;
 }
 
@@ -268,7 +268,7 @@ a:hover,a:focus{
 }
 
 .img_right {
-    background: #009100;
+    background: #EA0000;
     height: 30px;
 }
 
