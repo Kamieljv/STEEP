@@ -162,17 +162,18 @@ function addRoute(map, route) {
 }
 
 function showReport(emissions, distance, time, departure) {
-    const list = [
-        { emissions, distance, time, departure },
-        { emissions: 174.38, distance: 100, time, departure },
-        { emissions: 161.52, distance: 120, time, departure }
-    ]
-     $('#report').empty();
+    console.log('Put old showReport function here.');
+}
+
+function showTimewindow(response) {
+
+    $('#report').empty();
     $('#report').append('<h4>Calculation Results</h4>');
     let firstEmissions = 0;
-    list.forEach((item, index) => {
-        if (index === 0) {
-            firstEmissions = emissions;
+    for (i = 0; i < Object.keys(response).length; i++) {
+        var item = response['route'+i]
+        if (i === 0) {
+            firstEmissions = item.emissions;
             item.rightWidth = 0;
             item.leftWidth = 0;
         } else {
@@ -187,29 +188,28 @@ function showReport(emissions, distance, time, departure) {
         let resultHtml = getItemHtml(item);
         console.log(resultHtml, 'resultHtml');
         $('#report').append(resultHtml)
-    });
+    };
     $('#report').show();
 }
 
 function getItemHtml(itemInfo) {
-    let { emissions, distance, time, departure, leftWidth, rightWidth } = itemInfo;
-    let em = Math.round(emissions * 100) / 100 // round to 2 decimals
-    distance = distance / 1000;
-    time = secondsToHms(time);
+    let em = Math.round(itemInfo.emissions * 100) / 100 // round to 2 decimals
+    let distance = itemInfo.distance / 1000;
+    let time = secondsToHms(itemInfo.time);
     let resultHtml = `<div class="result_card">`
          + `<div class="card_info">`
-         +      `<div class="card_info_text padding_bottom">Route Emissions: ${em} grams CO2</div>`
+         +      `<div class="card_info_text padding_bottom">Route Emissions: ${em} kg CO2</div>`
          +      `<div class="card_info_text padding_bottom">Distance: ${distance} km</div>`
          +      `<div class="card_info_text padding_bottom">Trip time: ${time}</div>`
-         +      `<div class="card_info_text">Departure time: ${departure}</div>`
+         +      `<div class="card_info_text">Departure time: ${itemInfo.departure}</div>`
          + `</div>`
          + '<div class="card_div">'
          +  '<div class="card_img">'
-         +      `<div class="img_left" style="width: ${leftWidth ? leftWidth : 0}px"></div>`
+         +      `<div class="img_left" style="width: ${itemInfo.leftWidth ? itemInfo.leftWidth : 0}px"></div>`
          +      `<div class="img_center"></div>`
-         +      `<div class="img_right" style="width: ${rightWidth ? rightWidth : 0}px"></div>`
+         +      `<div class="img_right" style="width: ${itemInfo.rightWidth ? itemInfo.rightWidth : 0}px"></div>`
          +  '</div>'
-         +  `<div class="bottom_text">${leftWidth ? '+' : rightWidth ? '-' : ''}${leftWidth || rightWidth || em}</div>`
+         +  `<div class="bottom_text">${itemInfo.leftWidth ? '+' : itemInfo.rightWidth ? '-' : ''}${itemInfo.leftWidth || itemInfo.rightWidth || em}</div>`
          + '</div>'
          +'</div>';
     return resultHtml;

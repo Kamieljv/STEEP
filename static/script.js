@@ -12,9 +12,15 @@ function send_form(form, url, type, formData) {
             processData: false,
             contentType: false,
             success: function(response) {
-                route = JSON.parse(response.route);
-                addRoute(map, route);
-                showReport(response.emissions, response.distance, response.time, response.departure);
+                if(response.hasOwnProperty('route')){
+                    route = JSON.parse(response.route);
+                    addRoute(map, route);
+                    showReport(response.emissions, response.distance, response.time, response.departure);
+                } else {
+                    //route = JSON.parse(response.route0.route);
+                    //addRoute(map, route);
+                    showTimewindow(response);
+                }
             },
             error: function(error) {
                 console.log(error);
