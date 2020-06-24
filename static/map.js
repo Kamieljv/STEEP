@@ -166,18 +166,34 @@ function showReport(emissions, distance, time, departure) {
 }
 
 function showTimewindow(response) {
-
+    console.log(response, 'response');
     $('#report').empty();
     $('#report').append('<h4>Calculation Results</h4>');
     //let defaultEmissions = 0;
-    let defaultEmissions = response['route2']
-     response['route2'].rightWidth = 0;
-     response['route2'].leftWidth = 0;
+    let defaultEmissions = response['route2'] ? response['route2'].emissions * 1000 : 0;
+    response['route2'].rightWidth = 0;
+    response['route2'].leftWidth = 0;
+//    for (let key of Object.keys(response)) {
+//        item = response[key];
+//        item.emissions = item.emissions * 1000;
+//        if (key !== 'def') {
+//            let width = Number(item.emissions - defaultEmissions).toFixed(2)
+//            width = Number(width);
+//            if (width > 0) {
+//                item.leftWidth = width;
+//            } else {
+//                item.rightWidth = width * -1;
+//            }
+//        }
+//        let resultHtml = getItemHtml(item);
+//        $('#report').append(resultHtml)
+//    }
     for (i = 0; i < Object.keys(response).length; i++) {
-        var item = response['route'+i]
+        var item = response['route'+i];
+        item.emissions = item.emissions * 1000;
         if (i !== 2) {
-            let width = Number(item.emissions - defaultEmissions).toFixed(5) * 1000 ;
-            //width = Number(width) ;
+            let width = Number(item.emissions - defaultEmissions).toFixed(2)
+            width = Number(width);
             if (width > 0) {
                 item.leftWidth = width;
             } else {
@@ -185,14 +201,13 @@ function showTimewindow(response) {
             }
         }
         let resultHtml = getItemHtml(item);
-        console.log(resultHtml, 'resultHtml');
         $('#report').append(resultHtml)
     };
     $('#report').show();
 }
 
 function getItemHtml(itemInfo) {
-    let em = itemInfo.emissions.toFixed(5) * 1000 //Math.round(itemInfo.emissions * 100) / 100  // round to 2 decimals
+    let em = Math.round(itemInfo.emissions * 100) / 100  // round to 2 decimals
     let distance = itemInfo.distance / 1000;
     let time = secondsToHms(itemInfo.time);
     let resultHtml = `<div class="result_card">`
