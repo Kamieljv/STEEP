@@ -99,11 +99,23 @@ class Scenario:
         """ Takes trip departure time and duration and spreads it out over multiple one-hour timeslots, with homogeneous emissions.
             - df_row [pandas dataframe]: single dataframe row with timestamp index and time and emission value.
         """
-        min = df_row.index[0].replace(minute=0) # round minimum time down to hour
-        max = (df_row.index[0] + timedelta(seconds=df_row.time.values[0])) # add duration to start time
-        max = max.replace(minute=0, second=0, hour=max.hour+1) # round maximum time up to hour
-        index = pd.date_range(min, max, freq='H')
-        tseries = pd.Series(, index=index[:-1], dtype=float)
+        start = df_row.index[0]
+        min = start.replace(minute=0) # round minimum time down to hour
+        end = start + timedelta(seconds=df_row.time.values[0]) # define the end of the trip
+        max = end.replace(minute=0, second=0) # round maximum time down to hour
+        slot_index = pd.date_range(min, max, freq='H')
+        slots = pd.Series(index=slot_index, dtype=float)
+
+        # define checkpoint to be either the end time (if that falls in the same hour as start) or the first hour-mark
+        check = end if len(slots) <= 1 else slots.index[1]
+
+        # assign emissions to the first slot (formula: time in slot / trip time * emissions)
+        slots.iloc[[0]] = (check - start).seconds / df_row.time.values[0] * df_row.emissions.values[0]
+
+        # loop over times in index that divide the trip emissions
+        for divider in enumerate(slots[1:-1]):
+            print(divider)
+
 
 
     def summarize(self):
