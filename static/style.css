@@ -81,6 +81,10 @@ nav {
     margin: 0 12px;
 }
 
+#scenario-table {
+    margin-bottom: 60px;
+}
+
 
 /* HELP PAGE ACCORDION */
 /* Form Style */
@@ -99,6 +103,9 @@ nav {
     height: 30px;
     animation: spin 0.8s linear infinite;
     margin: 17px 0 17px -10px;
+}
+.loader.loader-small {
+    margin: 5px 0 5px -10px!important;
 }
 
 @keyframes spin {

@@ -104,15 +104,15 @@ def calculate_scenario():
     data = request.form.to_dict()
 
     scenario = Scenario(**data)
-    # error = scenario.run()
-    # if error:
-    #     return jsonify(error)
-    scenario.read('output/scenario-results_20200624T1415_47957a4a254216a8.csv')
+    error = scenario.run()
+    if error:
+        return jsonify(error)
 
     tseries = scenario.timeseries()
     minDate, maxDate = datetime.strftime(tseries.index[0], "%Y-%m-%d"), datetime.strftime(tseries.index[-1], "%Y-%m-%d")
     tseries_lst = tseries.to_numpy()
     df_res = scenario.df_results
+    print(df_res.emissions)
 
     return jsonify({'emissions': df_res.emissions.sum(), 'distance': df_res.distance.sum(), 'time': df_res.time.sum(), \
                     'commuters': scenario.commuters, 'minDate': minDate, 'maxDate': maxDate, 'departures': scenario.departures, \

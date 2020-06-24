@@ -1,3 +1,22 @@
+$('.btn-manual-entry').click(function(e) {
+    $(this).addClass('active');
+    $('.btn-excel-entry').removeClass('active');
+    $('#excel-container').hide();
+    $('#manual-container').show();
+    $('html, body').animate({
+                    scrollTop: $("#manual-container").offset().top
+    }, 500);
+});
+$('.btn-excel-entry').click(function(e) {
+    $(this).addClass('active');
+    $('.btn-manual-entry').removeClass('active');
+    $('#manual-container').hide();
+    $('#excel-container').show();
+    $('html, body').animate({
+                    scrollTop: $("#excel-container").offset().top
+    }, 500);
+});
+
 // initialize date-range picker
 $('#date-range').flatpickr({
         mode: "range",
@@ -79,8 +98,14 @@ function showScenario(response) {
     var legend = chart.generateLegend();
     $('#chart-legend').html(legend);
 
+    // Remove table rows if any
+    $('#scenario-table').find('tbody').remove();
     // Add statistics to table
     statsTable(response)
+
+    $('html, body').animate({
+                    scrollTop: $("#scenario-report").offset().top
+    }, 500);
 
 }
 
