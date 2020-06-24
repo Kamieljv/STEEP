@@ -204,10 +204,10 @@ function showTimewindow(response) {
         if (i !== 2) {
             let width = Number(item.emissions - defaultEmissions).toFixed(2)
             width = Number(width);
-            if (width > 0) {
-                item.leftWidth = width;
+            if (width < 0) {
+                item.leftWidth = width * -1;
             } else {
-                item.rightWidth = width * -1;
+                item.rightWidth = width;
             }
         }
         let resultHtml = getItemHtml(item);
@@ -233,7 +233,7 @@ function getItemHtml(itemInfo) {
          +      `<div class="img_center"></div>`
          +      `<div class="img_right" style="width: ${itemInfo.rightWidth ? itemInfo.rightWidth : 0}px"></div>`
          +  '</div>'
-         +  `<div class="bottom_text">${itemInfo.leftWidth ? '+' : itemInfo.rightWidth ? '-' : ''}${itemInfo.leftWidth || itemInfo.rightWidth || em}</div>`
+         +  `<div class="bottom_text">${itemInfo.leftWidth ? '-' : itemInfo.rightWidth ? '+' : ''}${itemInfo.leftWidth || itemInfo.rightWidth || em}</div>`
          + '</div>'
          +'</div>';
     return resultHtml;
