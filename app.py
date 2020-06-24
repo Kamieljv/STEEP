@@ -49,35 +49,42 @@ def getoptions():
 @app.route('/calculate_route', methods=['POST'])
 def calculate_route():
     """Gets route configuration; calculates route; returns route to view as JSON."""
+
+
     # Check if time is not in past, otherwise change to present
     departure = datetime.strptime(request.form['departure'], '%Y-%m-%d %H:%M')
     if departure < datetime.now():
-        departure = datetime.now() + timedelta(minutes = 1)
-    departure = datetime.strftime(departure, '%Y-%m-%d %H:%M')
+        departure = datetime.now() + timedelta(minutes=1)
 
-    # Define and format the departure time variable
-    tz = pytz.timezone('Europe/Amsterdam') # set time zone
-    fmt = '%Y-%m-%dT%H:%M:%S%z' # set date format
-    t = [int(x) for x in re.split(' |-|:', departure)] # convert to integers
-    departure = tz.localize(datetime(t[0], t[1], t[2], t[3], t[4], 0)).strftime(fmt)
-    departure = departure[:-2] + ':' + departure[-2:]
-
-    # Calculate route
-    startLat, startLon = request.form['start-coords'].split(", ")
-    destLat, destLon = request.form['dest-coords'].split(", ")
-    traffic = 'traffic' in request.form
+    # Initialize routing object and build timewindow if required
     router = Routing()
-    route = router.get_route(float(startLat), float(startLon), float(destLat), float(destLon), departure, request.form['route-type'], traffic)
+    fmt = '%Y-%m-%dT%H:%M:%S%z'
+    dep_fmt = router.timewindow(departure, outFormat=fmt) if 'timewindow' in request.form else [datetime.strftime(departure, fmt)]
 
-    # Calculate emissions
-    fuel = request.form['fuel']
-    segment = request.form['segment']
-    standard = request.form['standard']
-    calculator = EmissionCalculator(fuel=fuel, segment=segment, standard=standard)
-    emfac_route = calculator.calculate_ec_factor(route)
-    emissions, distance, time = calculator.calculate_stats()
+    routes = {}
+    for i, depa in enumerate(dep_fmt):
+        # Calculate route
+        startLat, startLon = request.form['start-coords'].split(", ")
+        destLat, destLon = request.form['dest-coords'].split(", ")
+        traffic = 'traffic' in request.form
+        router = Routing()
+        route = router.get_route(float(startLat), float(startLon), float(destLat), float(destLon), depa, request.form["route-type"], traffic)
 
-    return jsonify({'route': emfac_route.to_json(), 'emissions': emissions, 'distance': distance, 'time': time, 'departure': request.form['departure'] })
+        # Calculate emissions
+        fuel = request.form['fuel']
+        segment = request.form['segment']
+        standard = request.form['standard']
+        calculator = EmissionCalculator(fuel=fuel, segment=segment, standard=standard)
+        emfac_route = calculator.calculate_ec_factor(route)
+        emissions, distance, time = calculator.calculate_stats()
+
+        routes['route' + str(i)] = {'route': emfac_route.to_json(), 'emissions': emissions,
+                                    'distance': distance, 'time': time, 'departure': depa }
+
+    if len(routes) > 1: # return all routes
+        return routes
+    else: # return a single route
+        return routes['route0']
 
 @app.route('/about', methods=['GET'])
 def about():
