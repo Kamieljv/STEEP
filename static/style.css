@@ -80,6 +80,11 @@ nav {
     text-align: center;
 }
 
+.heatmap-legend-box {
+    height: 100px;
+    margin: 0 12px;
+}
+
 
 /* HELP PAGE ACCORDION */
 /* Form Style */

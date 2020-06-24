@@ -37,14 +37,14 @@ class Scenario:
 
         self.startLat, self.startLon = [float(c) for c in self.startcoords.split(", ")]
         self.destLat, self.destLon = [float(c) for c in self.destcoords.split(", ")]
-        self.traffic = 'traffic' in input
+        self.traffic = 'traffic' in kwargs
         self.commuters = int(self.commuters)
+        self.fmt = '%Y-%m-%dT%H:%M:%S%z'  # set date format
+        self.tz = pytz.timezone('Europe/Amsterdam')  # set time zone
 
     def listDepartures(self):
         # Define a dictionary to convert weekday numbers to pandas weekday codes
         self.day_conv = {0: 'W-MON', 1: 'W-TUE', 2: 'W-WED', 3: 'W-THU', 4: 'W-FRI', 5: 'W-SAT', 6: 'W-SUN'}
-        self.tz = pytz.timezone('Europe/Amsterdam')  # set time zone
-        self.fmt = '%Y-%m-%dT%H:%M:%S%z' # set date format
         start, end = self.daterange.split(" to ")
         departures = []
 
@@ -56,7 +56,6 @@ class Scenario:
         self.departures += [d[:11] + self.returntime + d[16:] for d in self.departures]
 
         self.departures.sort()
-        return self.departures
 
     def run(self):
         """ Run the scenario from the list of departures.
@@ -67,7 +66,7 @@ class Scenario:
         # Check if we are not making too many API calls
         self.listDepartures()
         if len(self.departures) > self.callLimit:
-            return {'error': 'Number of API calls exceeds limit (' + str(self.callLimit) + ').'}
+            return {'error': 'Number of API calls ('+ str(len(self.departures)) +') exceeds limit (' + str(self.callLimit) + '). Please reduce the length of the Date range or number of Commute days.'}
 
         # Define dataframe to store results
         cols = ['departure', 'emissions', 'distance', 'time', 'emissions_tot', 'distance_tot', 'time_tot', 'routetype', 'fuel', 'segment', 'standard',
@@ -93,7 +92,12 @@ class Scenario:
         # Create and write to file, with datestamp and hash in name, for security
         self.fpath = 'output/scenario-results_' + datetime.strftime(datetime.now(), '%Y%m%dT%H%M') + '_%016x.csv' % random.getrandbits(64)
         self.df_results.to_csv(self.fpath, index=False)
-        return self.df_results, self.fpath
+
+    def read(self, path):
+        """ Read scenario from a logged file. """
+
+        self.listDepartures()
+        self.df_results = pd.read_csv(path)
 
     def durationOverSlots(self, df_row):
         """ Takes trip departure time and duration and spreads it out over multiple one-hour timeslots, with homogeneous emissions.
@@ -101,7 +105,7 @@ class Scenario:
         """
         start = df_row.index[0]
         min = start.replace(minute=0) # round minimum time down to hour
-        end = start + timedelta(seconds=df_row.time.values[0]) # define the end of the trip
+        end = start + timedelta(seconds=int(df_row.time.values[0])) # define the end of the trip
         max = end.replace(minute=0, second=0) # round maximum time down to hour
         slot_index = pd.date_range(min, max, freq='H')
         slots = pd.Series(index=slot_index, dtype=float)
@@ -113,14 +117,17 @@ class Scenario:
         slots.iloc[[0]] = (check - start).seconds / df_row.time.values[0] * df_row.emissions.values[0]
 
         # loop over times in index that divide the trip emissions
-        for divider in enumerate(slots[1:-1]):
-            print(divider)
+        if len(slots) > 1:
+            for i, divider in enumerate(slots[1:]):
+                if i == len(slots[1:]) - 1:
+                    slots.iloc[[-1]] = (end - max).seconds / df_row.time.values[0] * df_row.emissions.values[0]
+                else:
+                    slots.iloc[[i+1]] = (slot_index[i+1] - slot_index[i]).seconds / df_row.time.values[0] * df_row.emissions.values[0]
 
+        return slots
 
-
-    def summarize(self):
-        """ Summarizes the scenario run(s) by calculating total distance, total emissions, total time and
-        an accumulated emissions time-series. """
+    def timeseries(self):
+        """ Calculates an accumulated emissions time-series. """
         # Convert results dataframe to time-series
         df_res = self.df_results  # copy results dataframe
         df_res.index = pd.to_datetime(df_res['departure'], format=self.fmt)
@@ -128,23 +135,15 @@ class Scenario:
         # Convert distance and time columns to numeric
         df_res[['distance', 'time']] = df_res[['distance', 'time']].apply(pd.to_numeric)
 
-        # # Create pandas time series object from min and max date
-        # index = pd.date_range(df_res.index[0].date(), df_res.index[-1].date() + timedelta(days=1), freq='H')
-        # tseries = pd.Series(index=index[:-1], dtype=float)
-        #
-        #
-        #
-        # # Resample time series to hour-frequency
-        # df_time = df_time.resample('H').sum()
-        #
-        # index = pd.date_range(df_f.index[0], df_f.index[0] + timedelta(minutes=minutes - 1), periods=minutes)
-        # series = pd.Series([df_f.emissions.values[0] / minutes] * minutes, index=index)
+        # Create pandas time series object from min and max date
+        index = pd.date_range(df_res.index[0].date(), df_res.index[-1].date() + timedelta(days=1), freq='H', tz=self.tz)
+        tseries = pd.Series(index=index[:-1], dtype=float)
 
-input = {'start': 'Wijchen, Gelderland, Netherlands, The Netherlands', 'start-coords': '51.8099983, 5.7362233',\
-         'dest': 'Nijmegen, Gelderland, Netherlands, The Netherlands', 'dest-coords': '51.842574850000005, 5.838960628748229',\
-         'route-type': 'fastest', 'traffic': 'on', 'fuel': 'Petrol', 'segment': 'Mini', 'standard': 'Euro 4',\
-         'date-range':'2020-06-24 to 2020-06-28', 'weekdays': '0,1,2,3,4', 'departure-time': '12:12', 'return-time': '16:52', \
-         'commuters': '2'}
+        for i in range(len(df_res)):
+            slots = self.durationOverSlots(df_res.iloc[[i]])
+            tseries[slots.index] = slots.values
 
-scenario = Scenario(**input)
-scenario.run()
+        # Fill NaN values with zeros
+        tseries = tseries.fillna(0.0)
+
+        return tseries

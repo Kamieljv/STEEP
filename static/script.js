@@ -14,13 +14,20 @@ function send_form(form, url, type, formData) {
             processData: false,
             contentType: false,
             success: function(response) {
-                route = JSON.parse(response.route);
-                addRoute(map, route);
-                showReport(response.emissions, response.distance, response.time, response.departure);
+                if(response.hasOwnProperty('route')){
+                    route = JSON.parse(response.route);
+                    addRoute(map, route);
+                    showReport(response.emissions, response.distance, response.time, response.departure);
+                } else {
+                    if (response.hasOwnProperty('error')) {
+                        $('#form_error').html(response.error).show();
+                    }
+                    showScenario(response);
+                }
             },
-            error: function(error) {
-                console.log(error);
-            }
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(thrownError);
+              }
         });
 
     } else {
@@ -79,6 +86,8 @@ $('#calculate-btn').click(function(event){
     $('#report').hide();
     // clear form error
     $('#form_error').empty().hide();
+    // hide scenario report
+    $('#scenario-report').hide();
 
     var form = $(this).parents('form')[0];
     var url = form.action;
