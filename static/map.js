@@ -156,7 +156,7 @@ function addRoute(map, route) {
         },
         displayOptions: {
             'properties.co2_fac': {
-                displayName: 'Emission factor CO2',
+                displayName: 'Emission factor (kgCO2/km)',
                 color: colorFunction
             },
             'properties.emissions': {
@@ -186,7 +186,7 @@ function showReport(emissions, distance, time, departure) {
     $('#report').empty();
      $('#report').empty();
     $('#report').append('<h4>Calculation Results</h4>');
-    $('#report').append('<p><b>Route Emissions:</b> ' + em + ' grams CO2');
+    $('#report').append('<p><b>Route Emissions:</b> ' + em * 1000 + ' g CO2');
     $('#report').append('<p><b>Distance:</b> ' + distance / 1000 + ' km');
     $('#report').append('<p><b>Trip time:</b> ' + secondsToHms(time));
     $('#report').append('<p><b>Departure time:</b> ' + departure);
