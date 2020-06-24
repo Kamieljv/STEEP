@@ -117,7 +117,7 @@ $('form button.btn-loc').click(function(event){
 
     var objID = $(this).attr('for');
     // Geocode the input with Nomatim
-    locationSearch($('#' + objID)[0].value, $('#' + objID)[0], $(field).next()[0]);
+    locationSearch($('#' + objID)[0].value, $('#' + objID)[0], $('#'+objID+'-coords')[0]);
 });
 
 // Clear validation class on keyup/click
@@ -138,7 +138,7 @@ $(document).on('keyup', '#start, #dest', function(e) {
 // Search location on unfocus
 $(document).on('focusout', '#start, #dest', function(e) {
     e.preventDefault();
-    locationSearch(this.value, this, $(this).next()[0]);
+    locationSearch(this.value, this, $('#'+this.id+'-coords')[0]);
 });
 
 // initialize date-time picker
