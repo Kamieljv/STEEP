@@ -1,8 +1,7 @@
-""" emissions.py
+""" emission_calculator.py
 
     Required packages:
     - pandas
-    - os
 
     The class(es) in this document are loaded by 'app.py'.
     This emission calculator is based on the COPERT+ model (https://www.emisia.com/utilities/copert/)

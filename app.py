@@ -24,6 +24,7 @@ from datetime import datetime, timedelta
 
 from src.emission_calculator import EmissionCalculator
 from src.routing import Routing
+from src.scenario_builder import Scenario
 
 app = Flask(__name__)
 
@@ -85,6 +86,37 @@ def calculate_route():
         return routes
     else: # return a single route
         return routes['route0']
+
+@app.route('/scenario', methods=['GET'])
+def scenario():
+    """Renders scenario-making page."""
+    calculator = EmissionCalculator()
+    options = calculator.get_options({'fuel':"", 'segment':"", 'standard': ""})
+    return render_template('scenario.html',
+                           title="Scenario Builder",
+                           fuels=options['fuel'],
+                           segments=options['segment'],
+                           standards=options['standard'],
+                           routetypes=['Eco', 'Fastest'])
+
+@app.route('/calculate_scenario', methods=['POST'])
+def calculate_scenario():
+    data = request.form.to_dict()
+
+    scenario = Scenario(**data)
+    # error = scenario.run()
+    # if error:
+    #     return jsonify(error)
+    scenario.read('output/scenario-results_20200624T1415_47957a4a254216a8.csv')
+
+    tseries = scenario.timeseries()
+    minDate, maxDate = datetime.strftime(tseries.index[0], "%Y-%m-%d"), datetime.strftime(tseries.index[-1], "%Y-%m-%d")
+    tseries_lst = tseries.to_numpy()
+    df_res = scenario.df_results
+
+    return jsonify({'emissions': df_res.emissions.sum(), 'distance': df_res.distance.sum(), 'time': df_res.time.sum(), \
+                    'commuters': scenario.commuters, 'minDate': minDate, 'maxDate': maxDate, 'departures': scenario.departures, \
+                    'tseries': list(tseries_lst)})
 
 @app.route('/about', methods=['GET'])
 def about():

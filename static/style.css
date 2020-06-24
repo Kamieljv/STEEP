@@ -40,6 +40,50 @@ nav {
     margin-top: 2.5em;
 }
 
+/* Scenario Builder */
+
+.btn-manual-entry, .btn-excel-entry {
+    height: 50px;
+    font-size: 19px !important;
+    border-radius: 0 !important;
+}
+
+.btn-manual-entry:focus, .btn-excel-entry:focus {
+    box-shadow: none !important;
+}
+
+.btn-manual-entry.active::before, .btn-excel-entry.active::before {
+    content: '';
+    padding: 0 10px;
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    right: 0;
+    margin-left: 15px;
+    width: calc(100% - 30px);
+    transition: 0.3s;
+}
+
+.btn-manual-entry.active:before {
+    border-bottom: 2px solid #0062cc;
+}
+.btn-excel-entry.active:before {
+    border-bottom: 2px solid var(--success);
+}
+
+.weekdays-list .weekdays-day {
+    width: 60px;
+    text-align: center;
+}
+
+.heatmap-legend-box {
+    height: 100px;
+    margin: 0 12px;
+}
+
+
+/* HELP PAGE ACCORDION */
+/* Form Style */
 #swap-btn {
     height: 34px;
     margin-top: 23px;
