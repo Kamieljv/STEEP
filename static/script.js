@@ -17,8 +17,8 @@ function send_form(form, url, type, formData) {
                     addRoute(map, route);
                     showReport(response.emissions, response.distance, response.time, response.departure);
                 } else {
-                    //route = JSON.parse(response.route0.route);
-                    //addRoute(map, route);
+                    route = JSON.parse(response.route2.route);
+                    addRoute(map, route);
                     showTimewindow(response);
                 }
             },

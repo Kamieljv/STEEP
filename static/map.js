@@ -169,16 +169,13 @@ function showTimewindow(response) {
 
     $('#report').empty();
     $('#report').append('<h4>Calculation Results</h4>');
-    let firstEmissions = 0;
+    //let defaultEmissions = 0;
+    let defaultEmissions = response['route2']
     for (i = 0; i < Object.keys(response).length; i++) {
         var item = response['route'+i]
-        if (i === 0) {
-            firstEmissions = item.emissions;
-            item.rightWidth = 0;
-            item.leftWidth = 0;
-        } else {
-            let width = Number(item.emissions - firstEmissions).toFixed(2);
-            width = Number(width);
+        if (i !== 2) {
+            let width = Number(item.emissions - defaultEmissions).toFixed(5) ;
+            width = Number(width) * 1000;
             if (width > 0) {
                 item.leftWidth = width;
             } else {
@@ -193,12 +190,12 @@ function showTimewindow(response) {
 }
 
 function getItemHtml(itemInfo) {
-    let em = Math.round(itemInfo.emissions * 100) / 100 // round to 2 decimals
+    let em = itemInfo.emissions.toFixed(5) * 1000 //Math.round(itemInfo.emissions * 100) / 100  // round to 2 decimals
     let distance = itemInfo.distance / 1000;
     let time = secondsToHms(itemInfo.time);
     let resultHtml = `<div class="result_card">`
          + `<div class="card_info">`
-         +      `<div class="card_info_text padding_bottom">Route Emissions: ${em} kg CO2</div>`
+         +      `<div class="card_info_text padding_bottom">Route Emissions: ${em} grams CO2</div>`
          +      `<div class="card_info_text padding_bottom">Distance: ${distance} km</div>`
          +      `<div class="card_info_text padding_bottom">Trip time: ${time}</div>`
          +      `<div class="card_info_text">Departure time: ${itemInfo.departure}</div>`
