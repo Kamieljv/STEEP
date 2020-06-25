@@ -167,7 +167,7 @@ function showReport(emissions, distance, time, departure) {
     $('#report').empty();
      $('#report').empty();
     $('#report').append('<h4>Calculation Results</h4>');
-    $('#report').append('<p><b>Route Emissions:</b> ' + em + ' grams CO2');
+    $('#report').append('<p><b>Route Emissions:</b> ' + em * 1000 + ' grams CO2');
     $('#report').append('<p><b>Distance:</b> ' + distance / 1000 + ' km');
     $('#report').append('<p><b>Trip time:</b> ' + secondsToHms(time));
     $('#report').append('<p><b>Departure time:</b> ' + departure);
