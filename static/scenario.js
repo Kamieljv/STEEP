@@ -114,7 +114,24 @@ function statsTable(response) {
         '<tbody>' +
             '<tr>' +
                 '<th scope="row">Emissions (kgCO2)</th>' +
+                '<td>'+ math.round(response.emissions * response.commuters, 3) +'</td>' +
                 '<td>'+ math.round(response.emissions, 3) +'</td>' +
+                '<td>'+ math.round(response.max.emissions, 3) +'</td>' +
+                '<td>'+ math.round(response.mean.emissions, 3) +'</td>' +
+            '</tr>' +
+            '<tr>' +
+                '<th scope="row">Distance (km)</th>' +
+                '<td>'+ math.round(response.distance * response.commuters / 1000, 3) +'</td>' +
+                '<td>'+ math.round(response.distance / 1000, 3) +'</td>' +
+                '<td>'+ math.round(response.max.distance / 1000, 3) +'</td>' +
+                '<td>'+ math.round(response.mean.distance / 1000, 3) +'</td>' +
+            '</tr>' +
+            '<tr>' +
+                '<th scope="row">Commute time</th>' +
+                '<td>'+ secondsToHms(response.time * response.commuters) +'</td>' +
+                '<td>'+ secondsToHms(response.time) +'</td>' +
+                '<td>'+ secondsToHms(response.max.time) +'</td>' +
+                '<td>'+ secondsToHms(response.mean.time) +'</td>' +
             '</tr>' +
         '</tbody>'
     );

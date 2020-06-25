@@ -114,10 +114,13 @@ def calculate_scenario():
     minDate, maxDate = datetime.strftime(tseries.index[0], "%Y-%m-%d"), datetime.strftime(tseries.index[-1], "%Y-%m-%d")
     tseries_lst = tseries.to_numpy()
     df_res = scenario.df_results
+    df_res.index = df_res.index.strftime('%Y-%m-%dT%H:%M:%S%z')
+    max = df_res[df_res['emissions'] == df_res['emissions'].max()] # max-emissions trip
+    mean = df_res.mean() # average trip statistics
 
     return jsonify({'emissions': df_res.emissions.sum(), 'distance': df_res.distance.sum(), 'time': df_res.time.sum(), \
                     'commuters': scenario.commuters, 'minDate': minDate, 'maxDate': maxDate, 'departures': scenario.departures, \
-                    'tseries': list(tseries_lst)})
+                    'tseries': list(tseries_lst), 'max': max.to_dict(orient='records')[0], 'mean': mean.to_dict()})
 
 @app.route('/about', methods=['GET'])
 def about():

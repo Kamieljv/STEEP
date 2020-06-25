@@ -69,7 +69,7 @@ class Scenario:
             return {'error': 'Number of API calls ('+ str(len(self.departures)) +') exceeds limit (' + str(self.callLimit) + '). Please reduce the length of the Date range or number of Commute days.'}
 
         # Define dataframe to store results
-        cols = ['departure', 'emissions', 'distance', 'time', 'emissions_tot', 'distance_tot', 'time_tot', 'routetype', 'fuel', 'segment', 'standard',
+        cols = ['departure', 'emissions', 'distance', 'time', 'routetype', 'fuel', 'segment', 'standard',
                 'start', 'startLat', 'startLon', 'dest', 'destLat', 'destLon']
         self.df_results = pd.DataFrame(columns=cols)
 
@@ -83,7 +83,7 @@ class Scenario:
             calculator = EmissionCalculator(fuel=self.fuel, segment=self.segment, standard=self.standard)
             calculator.calculate_ec_factor(route)
             stats = np.array(calculator.calculate_stats())
-            df_row = pd.DataFrame([[departure] + list(stats) + list(stats * self.commuters) + \
+            df_row = pd.DataFrame([[departure] + list(stats) + \
                                    [self.routetype, self.fuel, self.segment, self.standard, \
                                     self.start, self.startLat, self.startLon, \
                                     self.dest, self.destLat, self.destLon]], columns=cols)
