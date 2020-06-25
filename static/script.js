@@ -30,8 +30,9 @@ function send_form(form, url, type, formData) {
                 } else {
                     if (response.hasOwnProperty('error')) {
                         $('#form_error').html(response.error).show();
+                    } else {
+                        showScenario(response);
                     }
-                    showScenario(response);
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {

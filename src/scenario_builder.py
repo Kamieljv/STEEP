@@ -89,6 +89,11 @@ class Scenario:
                                     self.dest, self.destLat, self.destLon]], columns=cols)
             self.df_results = self.df_results.append(df_row)
 
+        # Check if results are empty, which indicates that the weekdays do not align with the dates
+        if len(self.df_results) == 0:
+            return {'error': 'The given weekdays do not match any date in the date range.'}
+
+
         # Create and write to file, with datestamp and hash in name, for security
         if write:
             self.fpath = 'output/scenario-results_' + datetime.strftime(datetime.now(), '%Y%m%dT%H%M') + '_%016x.csv' % random.getrandbits(64)
