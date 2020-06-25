@@ -19,15 +19,15 @@ from datetime import datetime, timedelta
 from src.routing import Routing
 from src.emission_calculator import EmissionCalculator
 
-def timeProfileLoop(date, timestep=10):
+def timeProfileLoop(date, timestep=10, days=1):
     """ Function to loop through a 24 hour day with a given time step and calculate the route and stats between two points.
         - date [string as '%Y-%m-%d %H:%M']: date on which to carry out the analysis (has to be future date!)
         - timestep [int]: time in minutes between each departure
+        - days [int]: number of days for which the
     """
     # Convert date input to datetime object
-    departure = datetime.strptime(date, '%Y-%m-%d')
-    maxdate = departure.replace(hour=23, minute=59)
-
+    departure = datetime.strptime(date, '%Y-%m-%d %H:%M')
+    maxdate = departure + timedelta(days=days)
     # Calculate route
     startLat, startLon = 52.3731, 4.8965
     destLat, destLon = 52.0859, 5.1201
@@ -51,13 +51,14 @@ def timeProfileLoop(date, timestep=10):
 
         router = Routing()
         route = router.get_route(startLat, startLon, destLat, float(destLon), dep_string, routetype=routetype, traffic=True)
+
         # Initialize calculator with COPERT model file
         fuel, segment, standard = ("Petrol", "Small", "Euro 5")
-        calculator = EmissionCalculator('../data/Ps_STEEP_a_emis.csv',
-                                        fuel=fuel,
+        calculator = EmissionCalculator(fuel=fuel,
                                         segment=segment,
-                                        standard=standard)
-        em_fac = calculator.calculate_emission_factor(route)
+                                        standard=standard, root="../")
+
+        calculator.calculate_ec_factor(route)
         stats = calculator.calculate_stats()
         df_row = pd.DataFrame([[dep_string] + list(stats) + [routetype, fuel, segment, standard, startLat, startLon, destLat, destLon]], columns=cols)
         df_timeprofile = df_timeprofile.append(df_row)
@@ -82,5 +83,5 @@ def plotTimeProfile(file):
 
 
 if __name__ == '__main__':
-    # timeProfileLoop("2020-07-01", timestep=60)
-    plotTimeProfile('output/timeprofile_20200618T1613.csv')
+   # timeProfileLoop("2020-07-01 00:00", timestep=60, days=1)
+    plotTimeProfile('output/timeprofile_20200625T1524.csv')
