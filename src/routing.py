@@ -172,10 +172,11 @@ class Routing:
             - departure [datetime object]: datetime object of departure
             - outFormat [string]: format of the outgoing departure data
         """
-
+        future_tw = True
         # Check if departure is far enough into the future to make two-sided time-window
         if departure - timedelta(minutes=11) >= datetime.now(self.tz):
             departure -= timedelta(minutes=10)
+            future_tw = False
 
         # Create time window
         departures = []
@@ -192,7 +193,7 @@ class Routing:
             departure = departure[:-2] + ':' + departure[-2:]
             dep_fmt.append(departure)
 
-        return dep_fmt
+        return dep_fmt, future_tw
 
 router = Routing()
 router.get_route(52.3727, 4.8936, 52.0458, 5.6702011, '2020-07-10T10:10:00+02:00', 'fastest', True)
