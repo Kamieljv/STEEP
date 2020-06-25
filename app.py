@@ -62,7 +62,8 @@ def calculate_route():
     # Initialize routing object and build timewindow if required
     router = Routing()
     fmt = '%Y-%m-%dT%H:%M:%S%z'
-    dep_fmt = router.timewindow(departure, outFormat=fmt) if 'timewindow' in request.form else [datetime.strftime(departure, fmt)]
+    dep_fmt, future_tw = router.timewindow(departure, outFormat=fmt) if 'timewindow' in request.form else ([datetime.strftime(departure, fmt)], True)
+    default_route_idx = 0 if (future_tw) else 2 # specify the default route, which is 0 if the full timewindow (tw) is in the future
 
     routes = {}
     for i, depa in enumerate(dep_fmt):
@@ -80,9 +81,9 @@ def calculate_route():
         calculator = EmissionCalculator(fuel=fuel, segment=segment, standard=standard)
         emfac_route = calculator.calculate_ec_factor(route)
         emissions, distance, time = calculator.calculate_stats()
-
+        default_route = 'true' if i == default_route_idx else 'false'
         routes['route' + str(i)] = {'route': emfac_route.to_json(), 'emissions': emissions,
-                                    'distance': distance, 'time': time, 'departure': depa }
+                                    'distance': distance, 'time': time, 'departure': depa, 'default': default_route }
 
     if len(routes) > 1: # return all routes
         return routes
