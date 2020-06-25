@@ -49,31 +49,17 @@ def getoptions():
 @app.route('/calculate_route', methods=['POST'])
 def calculate_route():
     """Gets route configuration; calculates route; returns route to view as JSON."""
+
+
     # Check if time is not in past, otherwise change to present
     departure = datetime.strptime(request.form['departure'], '%Y-%m-%d %H:%M')
     if departure < datetime.now():
         departure = datetime.now() + timedelta(minutes=1)
 
-    # Check if departure is far enough into the future to make two-sided time-window
-    if departure - timedelta(minutes=11) >= datetime.now():
-        departure -= timedelta(minutes=10)
-
-    # Create time window
-    departures = []
-    departures.append(datetime.strftime(departure, '%Y-%m-%d %H:%M'))
-    for i in range(4):
-        departure += timedelta(minutes=5)
-        departures.append(datetime.strftime(departure, '%Y-%m-%d %H:%M'))
-
-    dep_fmt = []
-    for dep in departures:
-        # Define and format the departure time variable
-        tz = pytz.timezone('Europe/Amsterdam') # set time zone
-        fmt = '%Y-%m-%dT%H:%M:%S%z' # set date format
-        t = [int(x) for x in re.split(' |-|:', dep)] # convert to integers
-        departure = tz.localize(datetime(t[0], t[1], t[2], t[3], t[4], 0)).strftime(fmt)
-        departure = departure[:-2] + ':' + departure[-2:]
-        dep_fmt.append(departure)
+    # Initialize routing object and build timewindow if required
+    router = Routing()
+    fmt = '%Y-%m-%dT%H:%M:%S%z'
+    dep_fmt = router.timewindow(departure, outFormat=fmt) if 'timewindow' in request.form else [datetime.strftime(departure, fmt)]
 
     routes = {}
     for i, depa in enumerate(dep_fmt):
@@ -95,7 +81,10 @@ def calculate_route():
         routes['route' + str(i)] = {'route': emfac_route.to_json(), 'emissions': emissions,
                                     'distance': distance, 'time': time, 'departure': depa }
 
-    return routes
+    if len(routes) > 1: # return all routes
+        return routes
+    else: # return a single route
+        return routes['route0']
 
 @app.route('/about', methods=['GET'])
 def about():
