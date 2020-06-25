@@ -2,7 +2,7 @@
 var map = null;
 var startMarker = null;
 var destMarker = null;
-var multiline = null;
+var routeLayer = null;
 var greenIcon = L.icon({
     iconUrl: '/static/marker-green.png',
     iconSize: [40, 40],
@@ -16,6 +16,10 @@ var redIcon = L.icon({
 
 $(document).ready(function (e) {
     var container = $('#map')
+    if (container.length === 0) {
+        console.log('No map on page');
+        return
+    }
 
     function resizeIFrame(object) {
         // the navigation bar takes up 56 px
@@ -88,26 +92,31 @@ function locationSearch(locationName, field, coordField) {
             coordField.value = lat + ", " + lon;
 
             // place a marker on the leaflet map
-            var location = new L.LatLng(lat, lon);
-            var bounds = new L.LatLngBounds();
-
-            if (field.name == 'start') {
-                if (startMarker) {map.removeLayer(startMarker);}
-                startMarker = L.marker(location, {icon: greenIcon}).addTo(map);
-                bounds.extend(startMarker.getLatLng());
-                if (destMarker) {bounds.extend(destMarker.getLatLng());}
-            } else {
-                if (destMarker) {map.removeLayer(destMarker);}
-                destMarker = L.marker(location, {icon: redIcon}).addTo(map);
-                bounds.extend(destMarker.getLatLng());
-                if (startMarker) {bounds.extend(startMarker.getLatLng());}
-            }
-
-            // pan/zoom to have all current features on screen
-            map.fitBounds(bounds);
+            placeMarker(lat, lon, field.name)
         }
     });
 }
+
+function placeMarker(lat, lon, type) {
+    var location = new L.LatLng(lat, lon);
+    var bounds = new L.LatLngBounds();
+
+    if (type == 'start') {
+        if (startMarker) {map.removeLayer(startMarker);}
+        startMarker = L.marker(location, {icon: greenIcon}).addTo(map);
+        bounds.extend(startMarker.getLatLng());
+        if (destMarker) {bounds.extend(destMarker.getLatLng());}
+    } else {
+        if (destMarker) {map.removeLayer(destMarker);}
+        destMarker = L.marker(location, {icon: redIcon}).addTo(map);
+        bounds.extend(destMarker.getLatLng());
+        if (startMarker) {bounds.extend(startMarker.getLatLng());}
+    }
+
+    // pan/zoom to have all current features on screen
+    map.fitBounds(bounds, {padding: [30, 30]});
+}
+
 function zoomToFeature(lat, lng, type) {
   var location = new L.LatLng(lat, lng);
   map.panTo(location);
@@ -119,46 +128,56 @@ function zoomToFeature(lat, lng, type) {
   }
 }
 
+// add min and max possible values for emission factor
+var minEmissionFactor = 0;
+var maxEmissionFactor = 0.3;
+
+var colorFunction = new L.HSLHueFunction(new L.Point(minEmissionFactor, 120), new L.Point(maxEmissionFactor, 20), { outputSaturation: '100%', outputLuminosity: '45%'});
+
 function addRoute(map, route) {
     /*
     Function that adds a route to the Leaflet map
     map: a Leaflet object
     route: GeoJSON object
     */
-
     // remove old line from
-    if (multiline != null) { map.removeLayer(multiline); }
-
-    // Define plot styles
-    var red = {
-        "color": "#f55142",
-        "weight": 5,
-        "opacity": 0.8
-    };
-    var orange = {
-        "color": "#fcbd00",
-        "weight": 10,
-        "opacity": 0.8
-    };
-    var green = {
-        "color": "#74f533",
-        "weight": 15,
-        "opacity": 0.8
+    if (routeLayer != null) {
+        map.removeLayer(routeLayer);
     }
-    // define multiline object with specific styling
-    multiline = L.geoJSON(route, {
-        style: function (feature) {
-            var em_fac = feature.properties.em_fac;
-            switch (true) {
-                case (em_fac <= 1.5): return green;
-                case (em_fac <= 2): return orange;
-                case (em_fac > 2): return red;
+
+    routeLayer = new L.ChoroplethDataLayer(route, {
+        recordsField: 'features',
+        locationMode: L.LocationModes.GEOJSON,
+        layerOptions: {
+            color: "#000000",
+            fillOpacity: 0.7,
+            opacity: 1,
+            weight: 5,
+        },
+        displayOptions: {
+            'properties.co2_fac': {
+                displayName: 'Emission factor (kgCO2/km)',
+                color: colorFunction
+            },
+            'properties.emissions': {
+                displayName: 'Emission',
+                excludeFromLegend: true,
             }
+        },
+        tooltipOptions: {
+            iconSize: new L.Point(80, 55),
+            iconAnchor: new L.Point(-10, 80)
+        },
+        showLegendTooltips: false,
+        onEachRecord: function(layer, record) {
+            layer.bindTooltip('<b>kg CO2/km:</b> ' + record.properties.co2_fac + '<br/>'
+                            + '<b>kg CO2:</b> ' + record.properties.emissions);
         }
     });
-    multiline.addTo(map);
-    // pan to multiline object
-    map.fitBounds(multiline.getBounds());
+    var legendControl = new L.Control.Legend();
+    legendControl.addTo(map);
+    map.addLayer(routeLayer);
+    map.fitBounds(routeLayer.getBounds());
 }
 
 function showReport(emissions, distance, time, departure) {
@@ -167,7 +186,7 @@ function showReport(emissions, distance, time, departure) {
     $('#report').empty();
      $('#report').empty();
     $('#report').append('<h4>Calculation Results</h4>');
-    $('#report').append('<p><b>Route Emissions:</b> ' + em * 1000 + ' grams CO2');
+    $('#report').append('<p><b>Route Emissions:</b> ' + em * 1000 + ' g CO2');
     $('#report').append('<p><b>Distance:</b> ' + distance / 1000 + ' km');
     $('#report').append('<p><b>Trip time:</b> ' + secondsToHms(time));
     $('#report').append('<p><b>Departure time:</b> ' + departure);
@@ -176,10 +195,10 @@ function showReport(emissions, distance, time, departure) {
 }
 
 function showTimewindow(response) {
-    console.log(response, 'response');
+
     $('#report').empty();
     $('#report').append('<h4>Calculation Results</h4>');
-    //let defaultEmissions = 0;
+
     let defaultEmissions = response['route2'] ? response['route2'].emissions * 1000 : 0;
     response['route2'].rightWidth = 0;
     response['route2'].leftWidth = 0;
@@ -198,22 +217,40 @@ function showTimewindow(response) {
 //        let resultHtml = getItemHtml(item);
 //        $('#report').append(resultHtml)
 //    }
+    diffs = [] // define a list of emission differences
+    // Loop through results to calculate maximum emission difference
+    for (i = 0; i < Object.keys(response).length; i++) {
+        em = response['route'+i].emissions * 1000; // convert from kg to g
+        let diff = Math.round(Number(em - defaultEmissions) * 100) / 100;
+        diffs.push(diff);
+    }
+
+    // Loop through results to add report cards
     for (i = 0; i < Object.keys(response).length; i++) {
         var item = response['route'+i];
         item.emissions = item.emissions * 1000;
         if (i !== 2) {
-            let width = Number(item.emissions - defaultEmissions).toFixed(2)
-            width = Number(width);
+            width = diffs[i];
             if (width < 0) {
                 item.leftWidth = width * -1;
             } else {
                 item.rightWidth = width;
             }
         }
+        // Calculate percentages of the maximum emission difference
+        item.leftPerc = item.leftWidth / Math.max.apply(null, diffs.map(Math.abs)) * 100;
+        item.rightPerc = item.rightWidth / Math.max.apply(null, diffs.map(Math.abs)) * 100;
+        // Fetch html and append to report section
         let resultHtml = getItemHtml(item);
         $('#report').append(resultHtml)
     };
+
     $('#report').show();
+
+    // Auto-scroll to report
+    $('#controls').animate({
+                    scrollTop: $("#report").offset().top
+    }, 500);
 }
 
 function getItemHtml(itemInfo) {
@@ -229,11 +266,15 @@ function getItemHtml(itemInfo) {
          + `</div>`
          + '<div class="card_div">'
          +  '<div class="card_img">'
-         +      `<div class="img_left" style="width: ${itemInfo.leftWidth ? itemInfo.leftWidth : 0}px"></div>`
+         +      `<div class="img_left">`
+         +          `<div class="bar_left" style="width: ${itemInfo.leftPerc ? itemInfo.leftPerc : 0}%;"></div>`
+         +      `</div>`
          +      `<div class="img_center"></div>`
-         +      `<div class="img_right" style="width: ${itemInfo.rightWidth ? itemInfo.rightWidth : 0}px"></div>`
+         +      `<div class="img_right">`
+         +          `<div class="bar_right" style="width: ${itemInfo.rightPerc ? itemInfo.rightPerc : 0}%;"></div>`
+         +      `</div>`
          +  '</div>'
-         +  `<div class="bottom_text">${itemInfo.leftWidth ? '-' : itemInfo.rightWidth ? '+' : ''}${itemInfo.leftWidth || itemInfo.rightWidth || em}</div>`
+         +  `<div class="bottom_text">${itemInfo.leftWidth ? '-' : itemInfo.rightWidth ? '+' : ''}${itemInfo.leftWidth || itemInfo.rightWidth || em} g</div>`
          + '</div>'
          +'</div>';
     return resultHtml;
