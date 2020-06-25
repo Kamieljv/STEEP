@@ -13,9 +13,9 @@
 import requests
 import pandas as pd
 import geopandas as gpd
+from geopandas import GeoSeries
 from shapely.geometry import Point, LineString, MultiPoint
-from shapely.ops import split, snap
-from flask import request
+from shapely.ops import nearest_points
 import pytz, re
 from datetime import datetime, timedelta
 
@@ -118,12 +118,10 @@ class Routing:
 
         # Convert segment coordinates to MultiPoint object
         segmentPoints = MultiPoint([Point(x, y) for x, y in zip(df_seg.longitude, df_seg.latitude)])
-
-        # Define a tolerance of roughly 1m
-        tolerance = 0.000005
+        segmentPoints_geoseries = GeoSeries(segmentPoints)
 
         # snap and split segment points on route line
-        split_line = split(routeLine, snap(segmentPoints, routeLine, tolerance))
+        split_line = self.cut_line_at_points(routeLine, segmentPoints)
 
         # transform resulting Geometry Collection to GeoDataFrame
         segments = [feature for feature in split_line]
@@ -134,6 +132,40 @@ class Routing:
         gdf_segments = gdf_segments.assign(speed=df_speed, distance=df_dis, time=df_time)
 
         return gdf_segments
+
+    def cut_line_at_points(self, line, points):
+        # First coords of line
+        coords = list(line.coords)
+
+        # Keep list coords where to cut (cuts = 1)
+        cuts = [0] * len(coords)
+        cuts[0] = 1
+        cuts[-1] = 1
+
+        # Add the coords from the points
+        points_proj = [nearest_points(line, p)[0] for p in points]
+        coords += [list(p.coords)[0] for p in points_proj]
+        cuts += [1] * len(points)
+
+        # Calculate the distance along the line for each point
+        dists = [line.project(Point(p)) for p in coords]
+
+        # sort the coords/cuts based on the distances
+        # see http://stackoverflow.com/questions/6618515/sorting-list-based-on-values-from-another-list
+        coords = [p for (d, p) in sorted(zip(dists, coords))]
+        cuts = [p for (d, p) in sorted(zip(dists, cuts))]
+
+        # generate the Lines
+        # lines = [LineString([coords[i], coords[i+1]]) for i in range(len(coords)-1)]
+        lines = []
+
+        for i in range(len(coords) - 1):
+            if cuts[i] == 1:
+                # find next element in cuts == 1 starting from index i + 1
+                j = cuts.index(1, i + 1)
+                lines.append(LineString(coords[i:j + 1]))
+
+        return lines[1:-1]
 
     def timewindow(self, departure, outFormat='%Y-%m-%dT%H:%M:%S%z'):
         """ Gives a time window around the chosen departure time, returning a list of departure times.
@@ -161,3 +193,6 @@ class Routing:
             dep_fmt.append(departure)
 
         return dep_fmt
+
+router = Routing()
+router.get_route(52.3727, 4.8936, 52.0458, 5.6702011, '2020-07-10T10:10:00+02:00', 'fastest', True)
