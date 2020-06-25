@@ -255,9 +255,21 @@ a:hover,a:focus{
     margin-left: 20px;
 }
 
-.img_left {
-    background: #009100;
+.img_left, .img_right {
+    width: 49%;
     height: 30px;
+}
+
+.bar_left {
+    background: #009100;
+    float: right;
+}
+.bar_right {
+    background: #EA0000;
+    float: left;
+}
+.bar_left, .bar_right {
+    height: 100%;
 }
 
 .img_center {
@@ -267,10 +279,7 @@ a:hover,a:focus{
     margin: 0 1px;
 }
 
-.img_right {
-    background: #EA0000;
-    height: 30px;
-}
+
 
 .bottom_text {
     font-size: 12px;

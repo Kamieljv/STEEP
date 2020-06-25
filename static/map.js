@@ -195,10 +195,10 @@ function showReport(emissions, distance, time, departure) {
 }
 
 function showTimewindow(response) {
-    console.log(response, 'response');
+
     $('#report').empty();
     $('#report').append('<h4>Calculation Results</h4>');
-    //let defaultEmissions = 0;
+
     let defaultEmissions = response['route2'] ? response['route2'].emissions * 1000 : 0;
     response['route2'].rightWidth = 0;
     response['route2'].leftWidth = 0;
@@ -217,22 +217,40 @@ function showTimewindow(response) {
 //        let resultHtml = getItemHtml(item);
 //        $('#report').append(resultHtml)
 //    }
+    diffs = [] // define a list of emission differences
+    // Loop through results to calculate maximum emission difference
+    for (i = 0; i < Object.keys(response).length; i++) {
+        em = response['route'+i].emissions * 1000; // convert from kg to g
+        let diff = Math.round(Number(em - defaultEmissions) * 100) / 100;
+        diffs.push(diff);
+    }
+
+    // Loop through results to add report cards
     for (i = 0; i < Object.keys(response).length; i++) {
         var item = response['route'+i];
         item.emissions = item.emissions * 1000;
         if (i !== 2) {
-            let width = Number(item.emissions - defaultEmissions).toFixed(2)
-            width = Number(width);
+            width = diffs[i];
             if (width < 0) {
                 item.leftWidth = width * -1;
             } else {
                 item.rightWidth = width;
             }
         }
+        // Calculate percentages of the maximum emission difference
+        item.leftPerc = item.leftWidth / Math.max.apply(null, diffs.map(Math.abs)) * 100;
+        item.rightPerc = item.rightWidth / Math.max.apply(null, diffs.map(Math.abs)) * 100;
+        // Fetch html and append to report section
         let resultHtml = getItemHtml(item);
         $('#report').append(resultHtml)
     };
+
     $('#report').show();
+
+    // Auto-scroll to report
+    $('#controls').animate({
+                    scrollTop: $("#report").offset().top
+    }, 500);
 }
 
 function getItemHtml(itemInfo) {
@@ -248,11 +266,15 @@ function getItemHtml(itemInfo) {
          + `</div>`
          + '<div class="card_div">'
          +  '<div class="card_img">'
-         +      `<div class="img_left" style="width: ${itemInfo.leftWidth ? itemInfo.leftWidth : 0}px"></div>`
+         +      `<div class="img_left">`
+         +          `<div class="bar_left" style="width: ${itemInfo.leftPerc ? itemInfo.leftPerc : 0}%;"></div>`
+         +      `</div>`
          +      `<div class="img_center"></div>`
-         +      `<div class="img_right" style="width: ${itemInfo.rightWidth ? itemInfo.rightWidth : 0}px"></div>`
+         +      `<div class="img_right">`
+         +          `<div class="bar_right" style="width: ${itemInfo.rightPerc ? itemInfo.rightPerc : 0}%;"></div>`
+         +      `</div>`
          +  '</div>'
-         +  `<div class="bottom_text">${itemInfo.leftWidth ? '-' : itemInfo.rightWidth ? '+' : ''}${itemInfo.leftWidth || itemInfo.rightWidth || em}</div>`
+         +  `<div class="bottom_text">${itemInfo.leftWidth ? '-' : itemInfo.rightWidth ? '+' : ''}${itemInfo.leftWidth || itemInfo.rightWidth || em} g</div>`
          + '</div>'
          +'</div>';
     return resultHtml;
