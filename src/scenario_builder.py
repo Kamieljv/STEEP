@@ -57,7 +57,7 @@ class Scenario:
 
         self.departures.sort()
 
-    def run(self):
+    def run(self, write=False):
         """ Run the scenario from the list of departures.
             - Returns:
                 * padndas dataframe with scenario results;
@@ -90,8 +90,9 @@ class Scenario:
             self.df_results = self.df_results.append(df_row)
 
         # Create and write to file, with datestamp and hash in name, for security
-        self.fpath = 'output/scenario-results_' + datetime.strftime(datetime.now(), '%Y%m%dT%H%M') + '_%016x.csv' % random.getrandbits(64)
-        self.df_results.to_csv(self.fpath, index=False)
+        if write:
+            self.fpath = 'output/scenario-results_' + datetime.strftime(datetime.now(), '%Y%m%dT%H%M') + '_%016x.csv' % random.getrandbits(64)
+            self.df_results.to_csv(self.fpath, index=False)
 
     def read(self, path):
         """ Read scenario from a logged file. """
