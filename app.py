@@ -51,11 +51,13 @@ def getoptions():
 def calculate_route():
     """Gets route configuration; calculates route; returns route to view as JSON."""
 
+    tz = pytz.timezone('Europe/Amsterdam')
 
     # Check if time is not in past, otherwise change to present
     departure = datetime.strptime(request.form['departure'], '%Y-%m-%d %H:%M')
-    if departure < datetime.now():
-        departure = datetime.now() + timedelta(minutes=1)
+    departure = tz.localize(departure) # attach time zone
+    if departure < datetime.now(tz):
+        departure = datetime.now(tz) + timedelta(minutes=1)
 
     # Initialize routing object and build timewindow if required
     router = Routing()
@@ -112,7 +114,6 @@ def calculate_scenario():
     minDate, maxDate = datetime.strftime(tseries.index[0], "%Y-%m-%d"), datetime.strftime(tseries.index[-1], "%Y-%m-%d")
     tseries_lst = tseries.to_numpy()
     df_res = scenario.df_results
-    print(df_res.emissions)
 
     return jsonify({'emissions': df_res.emissions.sum(), 'distance': df_res.distance.sum(), 'time': df_res.time.sum(), \
                     'commuters': scenario.commuters, 'minDate': minDate, 'maxDate': maxDate, 'departures': scenario.departures, \

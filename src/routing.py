@@ -28,6 +28,7 @@ class Routing:
         self.apiKEY = "x7b42zLGbh4VoCVGHgrDNjC2FKo2hZDo"
         if not self.apiKEY or self.apiKEY == "":
             raise Exception("'TOMTOM_API_KEY' not specified.")
+        self.tz = pytz.timezone('Europe/Amsterdam')
 
     def find(self, key, dictionary):
         """ Function to extract data from JSON API response """
@@ -140,12 +141,8 @@ class Routing:
             - outFormat [string]: format of the outgoing departure data
         """
 
-        # Check if time is not in past, otherwise change to present
-        if departure < datetime.now():
-            departure = datetime.now() + timedelta(minutes=1)
-
         # Check if departure is far enough into the future to make two-sided time-window
-        if departure - timedelta(minutes=11) >= datetime.now():
+        if departure - timedelta(minutes=11) >= datetime.now(self.tz):
             departure -= timedelta(minutes=10)
 
         # Create time window
@@ -158,9 +155,8 @@ class Routing:
         dep_fmt = []
         for dep in departures:
             # Define and format the departure time variable
-            tz = pytz.timezone('Europe/Amsterdam')  # set time zone
             t = [int(x) for x in re.split(' |-|:', dep)]  # convert to integers
-            departure = tz.localize(datetime(t[0], t[1], t[2], t[3], t[4], 0)).strftime(outFormat)
+            departure = self.tz.localize(datetime(t[0], t[1], t[2], t[3], t[4], 0)).strftime(outFormat)
             departure = departure[:-2] + ':' + departure[-2:]
             dep_fmt.append(departure)
 
