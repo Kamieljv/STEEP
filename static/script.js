@@ -1,9 +1,16 @@
+var error = "";
+
+$(document).ajaxComplete(function(event, request, settings) {
+  $('.loader').hide();
+});
 
 function send_form(form, url, type, formData) {
     // form validation and sending of form items
 
-    if (!isFormDataEmpty(form, formData)) { // checks if form is empty
+    if (!isFormDataEmpty(form, formData) && checkTimes(form)) { // checks if form is empty
         event.preventDefault();
+        $('.loader').show();
+
         // make AJAX call
         $.ajax({
             url: url,
@@ -12,21 +19,31 @@ function send_form(form, url, type, formData) {
             processData: false,
             contentType: false,
             success: function(response) {
-                if(response.hasOwnProperty('route')){
+                if (response.hasOwnProperty('route')) {
                     route = JSON.parse(response.route);
                     addRoute(map, route);
                     showReport(response.emissions, response.distance, response.time, response.departure);
-                } else {
+                } else if (response.hasOwnProperty('route0')) {
                     route = JSON.parse(response.route2.route);
                     addRoute(map, route);
                     showTimewindow(response);
+                } else {
+                    if (response.hasOwnProperty('error')) {
+                        $('#form_error').html(response.error).show();
+                    }
+                    showScenario(response);
                 }
             },
-            error: function(error) {
-                console.log(error);
-            }
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(thrownError);
+              }
         });
 
+    } else {
+        if (error.length != 0) {
+            $('#form_error').html(error).show();
+            error = "";
+        }
     }
 }
 
@@ -49,7 +66,25 @@ function isFormDataEmpty(form, formData) {
             status = true;
         }
     }
+    if (status) {
+        error = "Please fill in all required fields.";
+    }
+
     return status;
+}
+
+function checkTimes(form) {
+    // check if the #return-time element exists in the form
+    if ($(form).find('#return-time').length != 0) {
+        if ($('#departure-time').val() >= $('#return-time').val()) {
+            error = "The departure time has to be before the return time."
+            $('#departure-time').toggleClass('is-invalid', true).toggleClass('is-valid', false);
+            $('#return-time').toggleClass('is-invalid', true).toggleClass('is-valid', false);
+            return false;
+        }
+    }
+
+    return true;
 }
 
 $('#calculate-btn').click(function(event){
@@ -57,12 +92,21 @@ $('#calculate-btn').click(function(event){
     event.preventDefault();
 
     // hide Report
-    $('#report').hide()
+    $('#report').hide();
+    // clear form error
+    $('#form_error').empty().hide();
+    // hide scenario report
+    $('#scenario-report').hide();
 
     var form = $(this).parents('form')[0];
     var url = form.action;
     var type = form.method;
     var formData = new FormData(form);
+
+    // clear all invalids
+    for (var input of $(form).find('input, select')) {
+        $(input).toggleClass('is-invalid', false).toggleClass('is-valid', false);
+    }
 
     send_form(form, url, type, formData);
 });
@@ -70,19 +114,17 @@ $('#calculate-btn').click(function(event){
 $('form button.btn-loc').click(function(event){
     // Prevent redirection with AJAX for contact form
     event.preventDefault();
-    // Define parameters
+
     var objID = $(this).attr('for');
-    var field = $('#' + objID)[0];
-    var coordField = $(field).next()[0];
     // Geocode the input with Nomatim
-    locationSearch(field.value, field, coordField);
+    locationSearch($('#' + objID)[0].value, $('#' + objID)[0], $('#'+objID+'-coords')[0]);
 });
 
 // Clear validation class on keyup/click
 $(document).on('keyup', 'input', function(e) {
     $(this).toggleClass('is-invalid', false).toggleClass('is-valid', false);
 });
-$(document).on('click', '#departure', function(e) {
+$(document).on('click', 'input, select', function(e) {
     $(this).toggleClass('is-invalid', false).toggleClass('is-valid', false);
 });
 
@@ -90,9 +132,13 @@ $(document).on('click', '#departure', function(e) {
 $(document).on('keyup', '#start, #dest', function(e) {
     if (e.keyCode === 13) {
         e.preventDefault();
-        $('#' + this.id + '-btn').click();
         $(this).parent().parent().next().find('input').focus();
     }
+});
+// Search location on unfocus
+$(document).on('focusout', '#start, #dest', function(e) {
+    e.preventDefault();
+    locationSearch(this.value, this, $('#'+this.id+'-coords')[0]);
 });
 
 // initialize date-time picker
@@ -153,4 +199,13 @@ $(document).on('change', '#fuel, #segment, #standard', function (e) {
             console.log(error);
         }
     });
+});
+
+$('#swap-btn').click(function (e) {
+    var dest = $('#dest').val();
+    var destCoords = $('#dest-coords').val();
+    $('#dest').val($('#start').val());
+    $('#start').val(dest);
+    $('#start-btn').click();
+    $('#dest-btn').click();
 });

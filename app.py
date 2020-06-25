@@ -24,6 +24,7 @@ from datetime import datetime, timedelta
 
 from src.emission_calculator import EmissionCalculator
 from src.routing import Routing
+from src.scenario_builder import Scenario
 
 app = Flask(__name__)
 
@@ -50,11 +51,13 @@ def getoptions():
 def calculate_route():
     """Gets route configuration; calculates route; returns route to view as JSON."""
 
+    tz = pytz.timezone('Europe/Amsterdam')
 
     # Check if time is not in past, otherwise change to present
     departure = datetime.strptime(request.form['departure'], '%Y-%m-%d %H:%M')
-    if departure < datetime.now():
-        departure = datetime.now() + timedelta(minutes=1)
+    departure = tz.localize(departure) # attach time zone
+    if departure < datetime.now(tz):
+        departure = datetime.now(tz) + timedelta(minutes=1)
 
     # Initialize routing object and build timewindow if required
     router = Routing()
@@ -85,6 +88,36 @@ def calculate_route():
         return routes
     else: # return a single route
         return routes['route0']
+
+@app.route('/scenario', methods=['GET'])
+def scenario():
+    """Renders scenario-making page."""
+    calculator = EmissionCalculator()
+    options = calculator.get_options({'fuel':"", 'segment':"", 'standard': ""})
+    return render_template('scenario.html',
+                           title="Scenario Builder",
+                           fuels=options['fuel'],
+                           segments=options['segment'],
+                           standards=options['standard'],
+                           routetypes=['Eco', 'Fastest'])
+
+@app.route('/calculate_scenario', methods=['POST'])
+def calculate_scenario():
+    data = request.form.to_dict()
+
+    scenario = Scenario(**data)
+    error = scenario.run()
+    if error:
+        return jsonify(error)
+
+    tseries = scenario.timeseries()
+    minDate, maxDate = datetime.strftime(tseries.index[0], "%Y-%m-%d"), datetime.strftime(tseries.index[-1], "%Y-%m-%d")
+    tseries_lst = tseries.to_numpy()
+    df_res = scenario.df_results
+
+    return jsonify({'emissions': df_res.emissions.sum(), 'distance': df_res.distance.sum(), 'time': df_res.time.sum(), \
+                    'commuters': scenario.commuters, 'minDate': minDate, 'maxDate': maxDate, 'departures': scenario.departures, \
+                    'tseries': list(tseries_lst)})
 
 @app.route('/about', methods=['GET'])
 def about():

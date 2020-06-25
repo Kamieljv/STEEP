@@ -13,9 +13,9 @@
 import requests
 import pandas as pd
 import geopandas as gpd
+from geopandas import GeoSeries
 from shapely.geometry import Point, LineString, MultiPoint
-from shapely.ops import split, snap
-from flask import request
+from shapely.ops import nearest_points
 import pytz, re
 from datetime import datetime, timedelta
 
@@ -28,6 +28,7 @@ class Routing:
         self.apiKEY = "x7b42zLGbh4VoCVGHgrDNjC2FKo2hZDo"
         if not self.apiKEY or self.apiKEY == "":
             raise Exception("'TOMTOM_API_KEY' not specified.")
+        self.tz = pytz.timezone('Europe/Amsterdam')
 
     def find(self, key, dictionary):
         """ Function to extract data from JSON API response """
@@ -117,12 +118,10 @@ class Routing:
 
         # Convert segment coordinates to MultiPoint object
         segmentPoints = MultiPoint([Point(x, y) for x, y in zip(df_seg.longitude, df_seg.latitude)])
-
-        # Define a tolerance of roughly 1m
-        tolerance = 0.000005
+        segmentPoints_geoseries = GeoSeries(segmentPoints)
 
         # snap and split segment points on route line
-        split_line = split(routeLine, snap(segmentPoints, routeLine, tolerance))
+        split_line = self.cut_line_at_points(routeLine, segmentPoints)
 
         # transform resulting Geometry Collection to GeoDataFrame
         segments = [feature for feature in split_line]
@@ -134,18 +133,48 @@ class Routing:
 
         return gdf_segments
 
+    def cut_line_at_points(self, line, points):
+        # First coords of line
+        coords = list(line.coords)
+
+        # Keep list coords where to cut (cuts = 1)
+        cuts = [0] * len(coords)
+        cuts[0] = 1
+        cuts[-1] = 1
+
+        # Add the coords from the points
+        points_proj = [nearest_points(line, p)[0] for p in points]
+        coords += [list(p.coords)[0] for p in points_proj]
+        cuts += [1] * len(points)
+
+        # Calculate the distance along the line for each point
+        dists = [line.project(Point(p)) for p in coords]
+
+        # sort the coords/cuts based on the distances
+        # see http://stackoverflow.com/questions/6618515/sorting-list-based-on-values-from-another-list
+        coords = [p for (d, p) in sorted(zip(dists, coords))]
+        cuts = [p for (d, p) in sorted(zip(dists, cuts))]
+
+        # generate the Lines
+        # lines = [LineString([coords[i], coords[i+1]]) for i in range(len(coords)-1)]
+        lines = []
+
+        for i in range(len(coords) - 1):
+            if cuts[i] == 1:
+                # find next element in cuts == 1 starting from index i + 1
+                j = cuts.index(1, i + 1)
+                lines.append(LineString(coords[i:j + 1]))
+
+        return lines[1:-1]
+
     def timewindow(self, departure, outFormat='%Y-%m-%dT%H:%M:%S%z'):
         """ Gives a time window around the chosen departure time, returning a list of departure times.
             - departure [datetime object]: datetime object of departure
             - outFormat [string]: format of the outgoing departure data
         """
 
-        # Check if time is not in past, otherwise change to present
-        if departure < datetime.now():
-            departure = datetime.now() + timedelta(minutes=1)
-
         # Check if departure is far enough into the future to make two-sided time-window
-        if departure - timedelta(minutes=11) >= datetime.now():
+        if departure - timedelta(minutes=11) >= datetime.now(self.tz):
             departure -= timedelta(minutes=10)
 
         # Create time window
@@ -158,10 +187,12 @@ class Routing:
         dep_fmt = []
         for dep in departures:
             # Define and format the departure time variable
-            tz = pytz.timezone('Europe/Amsterdam')  # set time zone
             t = [int(x) for x in re.split(' |-|:', dep)]  # convert to integers
-            departure = tz.localize(datetime(t[0], t[1], t[2], t[3], t[4], 0)).strftime(outFormat)
+            departure = self.tz.localize(datetime(t[0], t[1], t[2], t[3], t[4], 0)).strftime(outFormat)
             departure = departure[:-2] + ':' + departure[-2:]
             dep_fmt.append(departure)
 
         return dep_fmt
+
+router = Routing()
+router.get_route(52.3727, 4.8936, 52.0458, 5.6702011, '2020-07-10T10:10:00+02:00', 'fastest', True)
