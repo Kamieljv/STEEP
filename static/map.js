@@ -13,6 +13,7 @@ var redIcon = L.icon({
     iconSize: [40, 40],
     iconAnchor: [20, 40],
 });
+var TWResponse = null;
 
 $(document).ready(function (e) {
     var container = $('#map')
@@ -195,28 +196,23 @@ function showReport(emissions, distance, time, departure) {
 }
 
 function showTimewindow(response) {
+    TWResponse = response; // store response as global variable
 
     $('#report').empty();
     $('#report').append('<h4>Calculation Results</h4>');
+    var defaultKey = null;
+    for ( d= 0; d < Object.keys(response).length; d++) {
+        if (response['route'+d].default === 'true') {
+            defaultKey = 'route'+d;
+        }
+    }
+    route = JSON.parse(response[defaultKey].route);
+    addRoute(map, route); // add default route to map
 
-    let defaultEmissions = response['route2'] ? response['route2'].emissions * 1000 : 0;
-    response['route2'].rightWidth = 0;
-    response['route2'].leftWidth = 0;
-//    for (let key of Object.keys(response)) {
-//        item = response[key];
-//        item.emissions = item.emissions * 1000;
-//        if (key !== 'def') {
-//            let width = Number(item.emissions - defaultEmissions).toFixed(2)
-//            width = Number(width);
-//            if (width > 0) {
-//                item.leftWidth = width;
-//            } else {
-//                item.rightWidth = width * -1;
-//            }
-//        }
-//        let resultHtml = getItemHtml(item);
-//        $('#report').append(resultHtml)
-//    }
+    let defaultEmissions = response[defaultKey] ? response[defaultKey].emissions * 1000 : 0;
+    response[defaultKey].rightWidth = 0;
+    response[defaultKey].leftWidth = 0;
+
     diffs = [] // define a list of emission differences
     // Loop through results to calculate maximum emission difference
     for (i = 0; i < Object.keys(response).length; i++) {
@@ -229,7 +225,7 @@ function showTimewindow(response) {
     for (i = 0; i < Object.keys(response).length; i++) {
         var item = response['route'+i];
         item.emissions = item.emissions * 1000;
-        if (i !== 2) {
+        if (item.default !== 'true') {
             width = diffs[i];
             if (width < 0) {
                 item.leftWidth = width * -1;
@@ -241,7 +237,7 @@ function showTimewindow(response) {
         item.leftPerc = item.leftWidth / Math.max.apply(null, diffs.map(Math.abs)) * 100;
         item.rightPerc = item.rightWidth / Math.max.apply(null, diffs.map(Math.abs)) * 100;
         // Fetch html and append to report section
-        let resultHtml = getItemHtml(item);
+        let resultHtml = getItemHtml(item, i);
         $('#report').append(resultHtml)
     };
 
@@ -253,13 +249,14 @@ function showTimewindow(response) {
     }, 500);
 }
 
-function getItemHtml(itemInfo) {
+function getItemHtml(itemInfo, index) {
     let em = Math.round(itemInfo.emissions * 100) / 100  // round to 2 decimals
     let distance = itemInfo.distance / 1000;
     let time = secondsToHms(itemInfo.time);
-    let resultHtml = `<div class="result_card">`
+    let def = itemInfo.default === "true"
+    let resultHtml = `<div class="result_card ${def ? 'chosen' : ''}" data-index="${i}">`
          + `<div class="card_info">`
-         +      `<div class="card_info_text padding_bottom">Route Emissions: ${em} grams CO2</div>`
+         +      `<div class="card_info_text padding_bottom">Route Emissions: ${em} g CO2</div>`
          +      `<div class="card_info_text padding_bottom">Distance: ${distance} km</div>`
          +      `<div class="card_info_text padding_bottom">Trip time: ${time}</div>`
          +      `<div class="card_info_text">Departure time: ${itemInfo.departure}</div>`
@@ -279,6 +276,15 @@ function getItemHtml(itemInfo) {
          +'</div>';
     return resultHtml;
 }
+
+$(document).on('click', '.result_card:not(.chosen)', function(e) {
+    e.preventDefault();
+    var index = this.dataset.index;
+    var route = JSON.parse(TWResponse['route'+index].route);
+    addRoute(map, route);
+    $('.result_card.chosen').removeClass('chosen');
+    $(this).addClass('chosen');
+});
 
 
 function secondsToHms(d) {

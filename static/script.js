@@ -24,8 +24,6 @@ function send_form(form, url, type, formData) {
                     addRoute(map, route);
                     showReport(response.emissions, response.distance, response.time, response.departure);
                 } else if (response.hasOwnProperty('route0')) {
-                    route = JSON.parse(response.route2.route);
-                    addRoute(map, route);
                     showTimewindow(response);
                 } else {
                     if (response.hasOwnProperty('error')) {
