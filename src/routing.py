@@ -30,6 +30,12 @@ class Routing:
             raise Exception("'TOMTOM_API_KEY' not specified.")
         self.tz = pytz.timezone('Europe/Amsterdam')
 
+    def has_key(self):
+        if not self.apiKEY or self.apiKEY == "":
+            raise Exception("'TOMTOM_API_KEY' not specified.")
+        else:
+            return True
+
     def find(self, key, dictionary):
         """ Function to extract data from JSON API response """
         for k, v in dictionary.items():
@@ -194,6 +200,3 @@ class Routing:
             dep_fmt.append(departure)
 
         return dep_fmt, future_tw
-
-router = Routing()
-router.get_route(52.3727, 4.8936, 52.0458, 5.6702011, '2020-07-10T10:10:00+02:00', 'fastest', True)
