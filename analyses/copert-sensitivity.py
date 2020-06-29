@@ -51,16 +51,22 @@ def plotEmFacProfile(ax, parameter='fuel', min_speed=10, max_speed=130):
     ax.set_title(parameter.capitalize() + 's')
     ax.set(xlabel='Speed (km/h)', ylabel='Emission factor (kgCO2/km)')
 
-def plotMultipleProfiles():
+    return df_co2fac
+
+def plotMultipleProfiles(outdir, fbase):
     fig, axs = plt.subplots(1, 3)
+    fig.set_figheight(5)
+    fig.set_figwidth(16)
+    fig.subplots_adjust(left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.4, hspace=0.2)
 
+    df_profiles = pd.DataFrame()
     for i, param in enumerate(['fuel', 'segment', 'standard']):
-        plotEmFacProfile(axs[i], param)
+        df_profile = plotEmFacProfile(axs[i], param)
+        df_profiles['speed'], df_profiles['ec_fac_'+param], df_profiles['co2_fac_'+param] = df_profile['speed'], df_profile['ec_fac'], df_profile['co2_fac']
 
-    plt.show()
-
+    plt.savefig(outdir + fbase + 'plot.pdf')
+    df_profiles.to_csv(outdir + fbase + 'data.csv')
 
 
 if __name__ == '__main__':
-    plotMultipleProfiles()
-
+    plotMultipleProfiles(outdir='output/', fbase='d01_sensitiv_copert_')

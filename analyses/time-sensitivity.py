@@ -102,7 +102,10 @@ def plotWeekTimeProfile(file1, t1, file2, t2,  file3, t3):
     ax3.set(xlabel="Date of Departure", ylabel="Travel Distance (km)")
 
     plt.legend(loc='best')
-    plt.show()
+    fig.subplots_adjust(left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.4, hspace=0.2)
+    fig.set_figheight(6)
+    fig.set_figwidth(16)
+    plt.savefig('output/d02_sensitiv_routing_week_plot.pdf')
 
 def plotDailyTimeProfile(file1, int1, file2, int2):
         """ Function to plot weekly sensitivity against eachother.
@@ -136,10 +139,13 @@ def plotDailyTimeProfile(file1, int1, file2, int2):
         ax3.set(xlabel="Time of Departure", ylabel="Travel Distance (km)")
 
         plt.legend(loc='best')
-        plt.show()
+        fig.subplots_adjust(left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.4, hspace=0.2)
+        fig.set_figheight(6)
+        fig.set_figwidth(16)
+        plt.savefig('output/d02_sensitiv_routing_daily_plot.pdf')
 
 
 if __name__ == '__main__':
-   #timeProfileLoop("2020-06-28 17:00", timestep=1440, days=7)
-   plotWeekTimeProfile('output/timeprofile_20200625T1648.csv','10 AM', 'output/timeprofile_20200628T0927.csv', '5 PM', 'output/timeprofile_20200625T1642.csv', '6 PM')
-plotDailyTimeProfile('output/timeprofile_20200625T1524.csv', '10 min', 'output/timeprofile_20200625T1658.csv', '60 min')
+    #timeProfileLoop("2020-06-28 17:00", timestep=1440, days=7) # uncomment to create custom time profiles
+    plotWeekTimeProfile('output/d02_sensitiv_routing_timeprofile_10AM.csv','10 AM', 'output/d02_sensitiv_routing_timeprofile_5PM.csv', '5 PM', 'output/d02_sensitiv_routing_timeprofile_6PM.csv', '6 PM')
+    plotDailyTimeProfile('output/d02_sensitiv_routing_timeprofile_10min.csv', '10 min', 'output/d02_sensitiv_routing_timeprofile_60min.csv', '60 min')
