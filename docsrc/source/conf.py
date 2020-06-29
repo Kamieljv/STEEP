@@ -17,9 +17,9 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'STEEP'
-copyright = '2020, Verónica Arambula, Alena Izotova, Elina Kreuzberg, Huanhuan Li, Kamiel Verhelst'
-author = 'Verónica Arambula, Alena Izotova, Elina Kreuzberg, Huanhuan Li, Kamiel Verhelst'
+project = 'STEEEP'
+copyright = '2020, Kamiel'
+author = 'Kamiel'
 
 
 # -- General configuration ---------------------------------------------------
