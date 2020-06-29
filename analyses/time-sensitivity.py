@@ -65,10 +65,14 @@ def timeProfileLoop(date, timestep=10, days=1):
 
     df_timeprofile.to_csv('output/timeprofile_'+ datetime.strftime(datetime.now(), '%Y%m%dT%H%M') +'.csv', index=False)
 
-def plotTimeProfile(file, file2, file3):
+
+def plotWeekTimeProfile(file1, t1, file2, t2,  file3, t3):
+    """ Function to plot weekly sensitivity against eachother.
+        - file1, file2, file3, [.csv]: result of timeProfileLoop function, in which the timestep was set for 1440
+        - t1, t2, t3, [string]; the time for which each respective time profile was conducted """
 
     # Read from csv file into pandas dataframe
-    df_timeprofile = pd.read_csv(file, index_col=0, parse_dates=True)
+    df_timeprofile = pd.read_csv(file1, index_col=0, parse_dates=True)
     df_timeprofile['time'] = df_timeprofile['time']/60
     df_timeprofile['distance'] = df_timeprofile['distance']/1000
     df_timeprofile2 = pd.read_csv(file2, index_col=0, parse_dates=True)
@@ -79,28 +83,63 @@ def plotTimeProfile(file, file2, file3):
     df_timeprofile3['distance'] = df_timeprofile3['distance'] / 1000
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
 
-    df_timeprofile['time'].plot(ax=ax1, label="10 AM")
-    df_timeprofile2['time'].plot(ax=ax1, color='r', label='5 PM')
-    df_timeprofile3['time'].plot(ax=ax1, color='g', label='6 PM')
+    df_timeprofile['time'].plot(ax=ax1, label=t1)
+    df_timeprofile2['time'].plot(ax=ax1, color='r', label=t2)
+    df_timeprofile3['time'].plot(ax=ax1, color='g', label=t3)
     ax1.set_title('Time')
     ax1.set(xlabel="Date of Departure", ylabel="Travel Time (min)")
 
-    df_timeprofile['emissions'].plot(ax=ax2, label="10 AM")
-    df_timeprofile2['emissions'].plot(ax=ax2, color='r', label='5 PM')
-    df_timeprofile3['emissions'].plot(ax=ax2, color='g', label='6 PM')
+    df_timeprofile['emissions'].plot(ax=ax2, label=t1)
+    df_timeprofile2['emissions'].plot(ax=ax2, color='r', label=t2)
+    df_timeprofile3['emissions'].plot(ax=ax2, color='g', label=t3)
     ax2.set_title('Emissions')
     ax2.set(xlabel="Date of Departure", ylabel="CO2 Emissions (kg)")
 
-    df_timeprofile['distance'].plot(ax=ax3, label="10 AM")
-    df_timeprofile2['distance'].plot(ax=ax3, color='r', label='5 PM')
-    df_timeprofile3['distance'].plot(ax=ax3, color='g', label='6 PM')
+    df_timeprofile['distance'].plot(ax=ax3, label=t1)
+    df_timeprofile2['distance'].plot(ax=ax3, color='r', label=t2)
+    df_timeprofile3['distance'].plot(ax=ax3, color='g', label=t3)
     ax3.set_title('Distance')
     ax3.set(xlabel="Date of Departure", ylabel="Travel Distance (km)")
 
     plt.legend(loc='best')
     plt.show()
 
+def plotDailyTimeProfile(file1, int1, file2, int2):
+        """ Function to plot weekly sensitivity against eachother.
+            - file1, file2, [.csv]: result of timeProfileLoop function for a single day
+            - int1, int2, [string]; the time interval for which each respective time profile was conducted """
+
+        # Read from csv file into pandas dataframe
+        df_timeprofile = pd.read_csv(file1, index_col=0, parse_dates=True)
+        df_timeprofile['time'] = df_timeprofile['time'] / 60
+        df_timeprofile['distance'] = df_timeprofile['distance'] / 1000
+
+        df_timeprofile2 = pd.read_csv(file2, index_col=0, parse_dates=True)
+        df_timeprofile2['time'] = df_timeprofile2['time'] / 60
+        df_timeprofile2['distance'] = df_timeprofile2['distance'] / 1000
+
+        fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
+
+        df_timeprofile['time'].plot(ax=ax1, label=int1)
+        df_timeprofile2['time'].plot(ax=ax1, color='r', label=int2)
+        ax1.set_title('Time')
+        ax1.set(xlabel="Time of Departure", ylabel="Travel Time (min)")
+
+        df_timeprofile['emissions'].plot(ax=ax2, label=int1)
+        df_timeprofile2['emissions'].plot(ax=ax2, color='r', label=int2)
+        ax2.set_title('Emissions')
+        ax2.set(xlabel="Time of Departure", ylabel="CO2 Emissions (kg)")
+
+        df_timeprofile['distance'].plot(ax=ax3, label=int1)
+        df_timeprofile2['distance'].plot(ax=ax3, color='r', label=int2)
+        ax3.set_title('Distance')
+        ax3.set(xlabel="Time of Departure", ylabel="Travel Distance (km)")
+
+        plt.legend(loc='best')
+        plt.show()
+
 
 if __name__ == '__main__':
    #timeProfileLoop("2020-06-28 17:00", timestep=1440, days=7)
-   plotTimeProfile('output/timeprofile_20200625T1648.csv', 'output/timeprofile_20200628t0927.csv', 'output/timeprofile_20200625T1642.csv')
+   plotWeekTimeProfile('output/timeprofile_20200625T1648.csv','10 AM', 'output/timeprofile_20200628T0927.csv', '5 PM', 'output/timeprofile_20200625T1642.csv', '6 PM')
+plotDailyTimeProfile('output/timeprofile_20200625T1524.csv', '10 min', 'output/timeprofile_20200625T1658.csv', '60 min')
