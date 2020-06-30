@@ -1,5 +1,7 @@
-# STEEP (by Team Inselberg)
+# STEEP (by Team Inselberg*)
 > STEEP: A SpatioTemporal Emission Estimator for Passenger vehicles
+
+_*Team Inselberg: Verónica Arambula Coyote, Alena Izotova, Elina Kreuzberg, HuanHuan Li, Kamiel Verhelst; all students of the Master Geo-Information Science at Wageningen University, The Netherlands._
 
 STEEP is a model that estimates the CO2 emissions of passenger cars on a specific route, at a specific time of departure.
 The model combines a time-dependent routing algorithm ([TomTom's Routing API](https://developer.tomtom.com/routing-api/routing-api-documentation)) 
