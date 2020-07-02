@@ -62,7 +62,7 @@ def calculate_route():
     # Initialize routing object and build timewindow if required
     router = Routing()
     fmt = '%Y-%m-%dT%H:%M:%S%z'
-    dep_fmt, future_tw = router.timewindow(departure, outFormat=fmt) if 'timewindow' in request.form else ([datetime.strftime(departure, fmt)], True)
+    dep_fmt, future_tw = router.timewindow(departure, timestep=int(request.form['timestep']), outFormat=fmt) if 'timewindow' in request.form else ([datetime.strftime(departure, fmt)], True)
     default_route_idx = 0 if (future_tw) else 2 # specify the default route, which is 0 if the full timewindow (tw) is in the future
 
     routes = {}

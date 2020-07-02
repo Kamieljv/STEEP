@@ -39,8 +39,12 @@
                                 </div>
                             </div>
                             <div class="row mt-3 offset-1 pl-2">
-                                 <input type="checkbox" class="form-check-input" name="timewindow" id="timewindow">
-                                 <label class="form-check-label" for="timewindow">Suggest alternative departure times</label>
+                                <input type="checkbox" class="form-check-input" name="timewindow" id="timewindow">
+                                <label class="form-check-label" for="timewindow">Suggest alternative departure times</label>
+                            </div>
+                            <div id="ts-container" class="col-6 ml-3 mt-2" style="display: none">
+                                <label for="timestep">Time step (mins):</label>
+                                <input id="timestep" type="number" class="form-control" name="timestep" value="5" min="5" max="60" step="5" placeholder="Enter a number" required>
                             </div>
                         </div>
                         <div class="row mb-3">

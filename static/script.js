@@ -208,3 +208,13 @@ $('#swap-btn').click(function (e) {
     $('#start-btn').click();
     $('#dest-btn').click();
 });
+
+$('#timewindow').click(function (e){
+    if ($('#ts-container').hasClass('show')) {
+        $('#ts-container').hide();
+        $('#ts-container').removeClass('show');
+    } else {
+        $('#ts-container').show();
+        $('#ts-container').addClass('show');
+    }
+});

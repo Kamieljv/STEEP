@@ -173,22 +173,22 @@ class Routing:
 
         return lines[1:-1]
 
-    def timewindow(self, departure, outFormat='%Y-%m-%dT%H:%M:%S%z'):
+    def timewindow(self, departure, timestep=5, outFormat='%Y-%m-%dT%H:%M:%S%z'):
         """ Gives a time window around the chosen departure time, returning a list of departure times.
             - departure [datetime object]: datetime object of departure
             - outFormat [string]: format of the outgoing departure data
         """
         future_tw = True
         # Check if departure is far enough into the future to make two-sided time-window
-        if departure - timedelta(minutes=11) >= datetime.now(self.tz):
-            departure -= timedelta(minutes=10)
+        if departure - timedelta(minutes=(2 * timestep + 1)) >= datetime.now(self.tz):
+            departure -= timedelta(minutes=(2 * timestep))
             future_tw = False
 
         # Create time window
         departures = []
         departures.append(datetime.strftime(departure, '%Y-%m-%d %H:%M'))
         for i in range(4):
-            departure += timedelta(minutes=5)
+            departure += timedelta(minutes=timestep)
             departures.append(datetime.strftime(departure, '%Y-%m-%d %H:%M'))
 
         dep_fmt = []
