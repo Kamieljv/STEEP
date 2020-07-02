@@ -155,7 +155,8 @@ $('#today-btn').click(function(e) {
     // get date
     var today = new Date();
     var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-    var time = today.getHours() + ":" + today.getMinutes();
+    var mins = (today.getMinutes() > 9)? today.getMinutes() : ('0'+today.getMinutes());
+    var time = today.getHours() + ":" + mins;
     var dateTime = date+' '+time;
     $('#departure')[0].value = dateTime;
 });
