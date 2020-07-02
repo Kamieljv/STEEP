@@ -25,7 +25,7 @@ class Routing:
     def __init__(self):
         # Tomtom url and key
         self.apiURL = "https://api.tomtom.com/routing/1/calculateRoute/"
-        self.apiKEY = ""
+        self.apiKEY = "x7b42zLGbh4VoCVGHgrDNjC2FKo2hZDo"
         if not self.apiKEY or self.apiKEY == "":
             raise Exception("'TOMTOM_API_KEY' not specified.")
         self.tz = pytz.timezone('Europe/Amsterdam')
